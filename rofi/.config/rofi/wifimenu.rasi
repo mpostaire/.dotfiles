@@ -1,0 +1,13 @@
+@import "base.rasi"
+
+window {
+    location: northeast;
+    y-offset: 32px;
+    width: 54ch;
+    border: 0 0 2px 2px;
+}
+
+listview {
+    dynamic: true;
+    lines: 15;
+}

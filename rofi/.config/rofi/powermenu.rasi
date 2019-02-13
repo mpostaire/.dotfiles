@@ -1,0 +1,15 @@
+@import "base.rasi"
+
+window {
+	border-color: @black-alt;
+	border: 2px;
+    location: north east;
+    y-offset: 32px;
+    width: 30ch;
+	border: 0 0 2px 2px;
+}
+
+listview {
+    scrollbar: false;
+    lines: 5;
+}

@@ -1,0 +1,178 @@
+configuration {
+    display-drun: "Lancer";
+    display-run: "Exécuter";
+    display-window: "Fenêtre";
+    display-ssh: "SSH";
+    
+    fixed-num-lines: false;
+    scroll-method: 1; // continuous scroll
+
+    kb-remove-word-forward: "Control+Delete";
+    kb-remove-word-back: "Control+BackSpace";
+	kb-cancel: "Escape,Super+q";
+    kb-mode-next: "Super+Tab,Super+Right";
+	kb-mode-previous: "Super+Left";
+
+    // select the nth item
+	kb-select-1: "Super+ampersand";
+	kb-select-2: "Super+eacute";
+	kb-select-3: "Super+quotedbl";
+	kb-select-4: "Super+apostrophe";
+	kb-select-5: "Super+parenleft";
+	kb-select-6: "Super+section";
+	kb-select-7: "Super+egrave";
+	kb-select-8: "Super+exclam";
+	kb-select-9: "Super+ccedilla";
+	kb-select-10: "Super+agrave";
+}
+
+* {
+    black:           #282C34;
+    black-alt:       #3E4452;
+
+    red:             #E06C75;
+    red-alt:         #BE5046;
+
+    green:           #98C379;
+    green-alt:       #98C379;
+
+    yellow:          #E5C07B;
+    yellow-alt:      #D19A66;
+
+    blue:            #61AFEF;
+    blue-alt:        #61AFEF;
+
+    magenta:         #C678DD;
+    magenta-alt:     #C678DD;
+
+    cyan:            #56B6C2;
+    cyan-alt:        #56B6C2;
+
+    white:           #ABB2BF;
+    white-alt:       #5C6370;
+
+	spacing: 0;
+	background-color: @black;
+
+	/*text-color: @red;*/
+
+	font: "DejaVuSansMono Nerd Font 10";
+}
+
+window {
+	/*transparency: "real";*/
+	/*fullscreen: true;*/
+	border-color: @black-alt;
+	border: 2px;
+}
+
+mainbox {
+	children: [inputbar, message, listview, sidebar];
+	spacing: 10px;
+	padding: 25px 0;
+	/*border: 2px;*/
+	/*border-color: @black;*/
+}
+
+inputbar {
+    border-color: @white;
+	padding: 0 25px;
+	children: [prompt, textbox-prompt-colon, entry, case-indicator];
+}
+
+prompt {
+	text-color: @green;
+    text-style: bold;
+}
+
+textbox-prompt-colon {
+	expand: false;
+	str: ":";
+	margin: 0 1ch 0 0;
+	text-color: @green;
+}
+
+entry {
+	text-color: @white;
+}
+
+case-indicator {
+	text-color: @white;
+}
+
+sidebar, message {
+	/*border: 1px 0;
+	border-color: @white;*/
+    margin: 0 25px 0 25px;
+}
+
+button {
+	background-color: @black;
+	text-color: @white;
+	padding: 5px;
+}
+
+message, textbox {
+	text-color: @white;
+	background-color: @black-alt;
+	padding: 3px;
+}
+
+button selected {
+	background-color: @white;
+    text-color: @black;
+}
+
+listview {
+	scrollbar: true;
+	margin: 0 25px 0 25px;
+	dynamic: true;
+}
+
+scrollbar {
+	background-color: @black;
+	handle-color: @white-alt;
+	handle-width: 10px;
+	margin: 0 0 0 10px;
+}
+
+element {
+	padding: 5px;
+	highlight: bold underline;
+}
+
+element normal, element urgent, element alternate {
+	background-color: @black;
+}
+
+element selected {
+	background-color: @white;
+}
+
+element normal normal, element alternate normal {
+	text-color: @white;
+}
+element selected normal {
+    text-color: @black;
+}
+
+element normal urgent, element alternate urgent {
+	text-color: @yellow;
+}
+element selected urgent {
+    background-color: @yellow;
+    text-color: @black;
+}
+
+element normal active, element alternate active {
+	text-color: @blue;
+}
+element selected active {
+    background-color: @blue;
+    text-color: @black;
+}
+
+error-message {
+	background-color: @black;
+	text-color: @white;
+}

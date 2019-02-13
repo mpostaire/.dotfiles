@@ -1,0 +1,262 @@
+;==========================================================
+;
+;
+;   ██████╗  ██████╗ ██╗  ██╗   ██╗██████╗  █████╗ ██████╗
+;   ██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗
+;   ██████╔╝██║   ██║██║   ╚████╔╝ ██████╔╝███████║██████╔╝
+;   ██╔═══╝ ██║   ██║██║    ╚██╔╝  ██╔══██╗██╔══██║██╔══██╗
+;   ██║     ╚██████╔╝███████╗██║   ██████╔╝██║  ██║██║  ██║
+;   ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+;
+;
+;==========================================================
+
+[color]
+black = ${xrdb:color0:#FFFFFF}
+black-alt = ${xrdb:color8:#FFFFFF}
+
+red = ${xrdb:color1:#FFFFFF}
+red-alt = ${xrdb:color9:#FFFFFF}
+
+green = ${xrdb:color2:#FFFFFF}
+green-alt = ${xrdb:color10:#FFFFFF}
+
+yellow = ${xrdb:color3:#FFFFFF}
+yellow-alt = ${xrdb:color11:#FFFFFF}
+
+blue = ${xrdb:color4:#FFFFFF}
+blue-alt = ${xrdb:color12:#FFFFFF}
+
+magenta = ${xrdb:color5:#FFFFFF}
+magenta-alt = ${xrdb:color13:#FFFFFF}
+
+cyan = ${xrdb:color6:#FFFFFF}
+cyan-alt = ${xrdb:color14:#FFFFFF}
+
+white = ${xrdb:color7:#FFFFFF}
+white-alt = ${xrdb:color15:#FFFFFF}
+
+bg = ${self.black}
+fg = ${self.white}
+fg-alt = ${self.white-alt}
+
+truewhite = #FFFFFF
+
+;==========================================================
+
+[bar/top]
+;monitor = ${env:MONITOR:LVDS}
+width = 100%
+height = 30
+fixed-center = true
+
+background = ${color.bg}
+foreground = ${color.fg}
+
+border-size = 2
+border-color = ${color.bg}
+border-bottom-color = ${color.black-alt}
+
+module-margin-left = 1
+module-margin-right = 1
+
+locale = fr_FR.UTF-8
+
+wm-restack = bspwm
+
+font-0 = "DejaVuSansMono Nerd Font:size=10;3"
+font-1 = "Material Icons:size=12;4"
+font-2 = "Material Icons:size=14;5"
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+;tray-position = right
+;tray-padding = 0
+;tray-maxsize = 16
+
+modules-left = launcher bspwm mpd
+modules-center = xwindow
+modules-right = updates brightness volume battery wlan eth date powermenu
+
+;==========================================================
+
+[module/launcher]
+type = custom/text
+content = 
+content-font = 3
+content-padding = 1
+content-background = ${color.red}
+content-foreground = ${color.truewhite}
+click-left = ~/.config/polybar/modules/launchermenu drun &
+click-right = ~/.config/polybar/modules/launchermenu window &
+
+;==========================================================
+
+[module/xwindow]
+type = internal/xwindow
+
+label-maxlen = 50
+label = %title%
+
+;==========================================================
+
+[module/bspwm]
+type = internal/bspwm
+
+label-focused = 
+label-focused-foreground = ${color.red}
+label-focused-padding = 1
+
+label-occupied = 
+label-occupied-padding = 1
+
+label-urgent = 
+label-urgent-foreground = ${color.yellow}
+label-urgent-padding = 1
+
+label-empty = 
+label-empty-foreground = ${color.white-alt}
+label-empty-padding = 1
+
+;==========================================================
+
+[module/mpd]
+type = internal/mpd
+
+host = 127.0.0.1
+port = 6600
+
+format-online = %{A1:mpc toggle &:}<toggle> <label-song> - <label-time>%{A}
+
+format-stopped =
+
+label-song = %title% - %artist%
+label-time = %elapsed%
+
+icon-play = 
+icon-pause = 
+
+label-song-maxlen = 20
+label-song-ellipsis = true
+
+;==========================================================
+
+[module/updates]
+type = custom/script
+
+exec = ~/.config/polybar/modules/updates.sh
+tail = true
+
+;==========================================================
+
+[module/battery]
+type = internal/battery
+
+battery = BAT0
+adapter = AC
+full-at = 98
+
+format-charging = <animation-charging> <label-charging>
+label-charging = %percentage%%
+
+format-discharging = <ramp-capacity> <label-discharging>
+label-discharging = %percentage%%
+
+format-full = <label-full>
+label-full = " %percentage%%"
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+ramp-capacity-0-foreground = ${color.red}
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+
+animation-charging-foreground = ${color.yellow}
+
+animation-charging-framerate = 1000
+
+;==========================================================
+
+[module/volume]
+type = internal/alsa
+
+;speaker-mixer = Speaker
+;headphone-mixer = Headphone
+;headphone-id = 16
+;mapped = true
+format-volume = <ramp-volume> <label-volume>
+label-volume = %percentage%%
+label-muted =  %percentage%%
+label-muted-foreground = ${color.fg-alt}
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+ramp-volume-3 = 
+ramp-volume-4 = 
+ramp-volume-5 = 
+
+ramp-headphones-0 = 
+ramp-headphones-1 = 
+
+;==========================================================
+
+[module/wlan]
+type = internal/network
+interface = wlo1
+interval = 3.0
+
+format-connected = <label-connected>
+format-disconnected = <label-disconnected>
+label-connected = %{A1:~/.config/polybar/modules/networkmanager_dmenu &:} %essid%%{A}
+label-disconnected = %{A1:~/.config/polybar/modules/networkmanager_dmenu &:}%{A}
+
+[module/eth]
+type = internal/network
+interface = enp0s25
+interval = 3.0
+
+label-connected = %{A1:notify-send "TODO" "menu de connection" &:} %local_ip%%{A}
+
+format-disconnected =
+
+;==========================================================
+
+; TODO: replace this by a script for better control
+[module/brightness]
+type = internal/backlight
+card = radeon_bl0
+
+format = <label>
+
+label =  %percentage%%
+
+;==========================================================
+
+[module/date]
+type = custom/script
+exec = ~/.config/polybar/modules/date.sh
+tail = true
+click-left = kill -USR1 %pid%
+
+;==========================================================
+
+[module/powermenu]
+type = custom/text
+
+content = 
+content-padding = 1
+content-background = ${color.red}
+content-foreground = ${color.truewhite}
+click-left = ~/.config/polybar/modules/powermenu &
+
+;==========================================================

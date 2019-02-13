@@ -1,0 +1,46 @@
+configuration {
+    kb-row-up: "";
+    kb-row-down: "";
+    kb-row-left: "";
+    kb-row-right: "";
+    kb-move-char-back: "";
+    kb-move-char-forward: "";
+    kb-row-tab: "";
+    kb-page-prev: "Left";
+    kb-page-next: "Right";
+    ml-row-up: "";
+    ml-row-down: "";
+    ml-row-left: "ScrollLeft,ScrollUp";
+    ml-row-right: "ScrollRight,ScrollDown";
+}
+
+@import "base.rasi"
+
+* {
+    text-color: @black;
+}
+
+window {
+    location: northeast;
+    width: 28ch;
+    y-offset: 32px;
+	border: 0 0 2px 2px;
+}
+
+mainbox {
+    children: [listview];
+    padding: 20px 0px 25px 0px;
+}
+
+listview {
+    scrollbar: false;
+    lines: 8;
+}
+
+element selected {
+    background-color: @black;
+}
+
+element selected normal {
+    text-color: @white;
+}
