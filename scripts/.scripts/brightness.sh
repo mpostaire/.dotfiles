@@ -3,7 +3,11 @@
 min=10
 
 usage() {
-    echo "Usage: $0 [-s <45|90>] [-p <string>]" 1>&2
+    echo "Usage:
+    -g           get brightness in percents
+    -i VALUE     increase brightness by VALUE percents.
+    -d VALUE     decrease brightness by VALUE percents.
+    -h           show this help message." 1>&2
     exit 1
 }
 
@@ -18,6 +22,9 @@ show_notification() {
     # ugly but I can't use sed :(
     bar_spaces=$(seq -s " " $(( 20 - ${#bar})) | sed 's/[0-9]//g')
     dunstify -a "changebrightness" -i $brightness_icon -r "$msgId" -u low "[$bar$bar_spaces]"
+
+    # update all polybars with my custom brightness module
+    echo hook:module/brightness1 >> /tmp/ipc-polybar*
 }
 
 get_brightness() {
@@ -25,16 +32,16 @@ get_brightness() {
 }
 
 inc_brightness() {
-    brightnessctl s ${1}%+
+    brightnessctl -q s ${1}%+
     show_notification
 }
 
 dec_brightness() {
     # if new brightness value is greater than min, apply new brightness else set it to min
     if [ $(($(get_brightness)-$1)) -gt $min ]; then
-        brightnessctl s ${1}%-
+        brightnessctl -q s ${1}%-
     else
-        brightnessctl s ${min}%
+        brightnessctl -q s ${min}%
     fi
     show_notification
 }

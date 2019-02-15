@@ -75,6 +75,9 @@ cursor-scroll = ns-resize
 ;tray-padding = 0
 ;tray-maxsize = 16
 
+; Enable support for inter-process messaging
+enable-ipc = true
+
 modules-left = launcher bspwm mpd
 modules-center = xwindow
 modules-right = updates brightness volume battery wlan eth date powermenu
@@ -231,14 +234,15 @@ format-disconnected =
 
 ;==========================================================
 
-; TODO: replace this by a script for better control
 [module/brightness]
-type = internal/backlight
-card = radeon_bl0
+type = custom/ipc
 
-format = <label>
+; Define the command to be executed when the hook is triggered
+hook-0 = echo " $(~/.scripts/brightness.sh -g)%"
 
-label =  %percentage%%
+; Hook to execute on launch. The index is 1-based.
+; Default: 0
+initial = 1
 
 ;==========================================================
 
