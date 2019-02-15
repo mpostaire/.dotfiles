@@ -192,6 +192,8 @@ animation-charging-framerate = 1000
 [module/volume]
 type = internal/alsa
 
+; TODO faire apparaître la notif de volume en scrollant sur l'icône (comme pour brightness)
+
 ;speaker-mixer = Speaker
 ;headphone-mixer = Headphone
 ;headphone-id = 16
@@ -244,10 +246,12 @@ hook-0 = echo " $(~/.scripts/brightness.sh -g)%" &
 ; Default: 0
 initial = 1
 
-scroll-up = ~/.scripts/brightness.sh -i 5
-scroll-down = ~/.scripts/brightness.sh -d 5
-; show hand cursor instead of resize... plus it can update the value if it somehow failed
-click-left = echo " $(~/.scripts/brightness.sh -g)%" &
+scroll-up = ~/.scripts/brightness.sh -i 5 &
+scroll-down = ~/.scripts/brightness.sh -d 5 &
+
+click-left = ~/.scripts/brightness.sh -s 25 &
+click-middle = ~/.scripts/brightness.sh -s 50 &
+click-right = ~/.scripts/brightness.sh -s 75 &
 
 ;==========================================================
 

@@ -7,6 +7,7 @@ usage() {
     -g           get brightness in percents
     -i VALUE     increase brightness by VALUE percents.
     -d VALUE     decrease brightness by VALUE percents.
+    -s VALUE     set brightness by VALUE percents.
     -h           show this help message." 1>&2
     exit 1
 }
@@ -46,7 +47,17 @@ dec_brightness() {
     show_notification
 }
 
-while getopts "hgi:d:" arg; do
+set_brightness() {
+    # if new brightness value is greater than min, apply new brightness else set it to min
+    if [ $1 -gt $min ]; then
+        brightnessctl -q s ${1}%
+    else
+        brightnessctl -q s ${min}%
+    fi
+    show_notification
+}
+
+while getopts "hgi:d:s:" arg; do
     case $arg in
         g)
             get_brightness
@@ -56,6 +67,9 @@ while getopts "hgi:d:" arg; do
             ;;
         d)
             dec_brightness $OPTARG
+            ;;
+        s)
+            set_brightness $OPTARG
             ;;
         h | *)
             usage
