@@ -91,8 +91,8 @@ content-font = 3
 content-padding = 1
 content-background = ${color.red}
 content-foreground = ${color.truewhite}
-click-left = ~/.config/polybar/modules/launchermenu drun &
-click-right = ~/.config/polybar/modules/launchermenu window &
+click-left = ~/.config/polybar/modules/launchermenu.sh drun &
+click-right = ~/.config/polybar/modules/launchermenu.sh window &
 
 ;==========================================================
 
@@ -255,7 +255,7 @@ content = 
 content-padding = 1
 content-background = ${color.red}
 content-foreground = ${color.truewhite}
-click-left = ~/.config/polybar/modules/powermenu &
-click-right = ~/.config/polybar/modules/powermenu &
+click-left = ~/.config/polybar/modules/powermenu.sh &
+click-right = ~/.config/polybar/modules/powermenu.sh &
 
 ;==========================================================

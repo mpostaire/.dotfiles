@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# todo make a theme .rasi for each menu
-
 datepid=~/.config/polybar/modules/datepid
 
 green=$(xrdb -query | grep "color2" | head -n1 | awk '{print $NF}')

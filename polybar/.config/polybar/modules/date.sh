@@ -15,7 +15,7 @@ while true; do
         echo " $(date "+%H:%M")"
     else
         echo " $(date "+%H:%M")"
-        ~/.config/polybar/modules/calendarmenu &
+        ~/.config/polybar/modules/calendarmenu.sh &
     fi
     sleep 30 &
     wait

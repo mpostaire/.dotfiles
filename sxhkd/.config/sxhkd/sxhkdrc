@@ -8,11 +8,11 @@ super + Return
 
 # menus
 super + space
-    ~/.config/polybar/modules/launchermenu drun
+    ~/.config/polybar/modules/launchermenu.sh drun
 super + p
-    ~/.config/polybar/modules/powermenu
+    ~/.config/polybar/modules/powermenu.sh
 super + Tab
-    ~/.config/polybar/modules/launchermenu window
+    ~/.config/polybar/modules/launchermenu.sh window
 super + w
 	~/.config/polybar/modules/networkmanager_dmenu
 super + c

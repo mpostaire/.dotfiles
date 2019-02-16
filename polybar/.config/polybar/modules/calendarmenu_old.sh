@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# TODO: make each day clickable for integration with real calendar app (each day is an element in rofi and set col to display to 7)
-# make current day the default selected day
-# maybe use python for this because it could be difficult otherwise
-
 DATEFTM="${DATEFTM:-+%a. %d. %b. %Y}"
 SHORTFMT="${SHORTFMT:-+%d.%m.%Y}"
 LABEL="${LABEL:-}"
