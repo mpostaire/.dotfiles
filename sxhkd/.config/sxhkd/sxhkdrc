@@ -28,7 +28,7 @@ super + Escape
 
 # special keys
 XF86AudioMute
-    amixer set Master toggle
+    ~/.scripts/volume.sh -s toggle
 
 XF86Calculator
     gnome-calculator
@@ -37,10 +37,10 @@ XF86HomePage
     firefox
 
 XF86AudioRaiseVolume
-    ~/.scripts/volume.sh 5%+ unmute
+    ~/.scripts/volume.sh -i 5
     
 XF86AudioLowerVolume
-    ~/.scripts/volume.sh 5%- unmute
+    ~/.scripts/volume.sh -d 5
 
 XF86MonBrightnessUp
     ~/.scripts/brightness.sh -i 5

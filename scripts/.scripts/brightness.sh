@@ -5,6 +5,7 @@ min=10
 usage() {
     echo "Usage:
     -g           get brightness in percents
+    -p           print volume in polybar formatting.
     -i VALUE     increase brightness by VALUE percents.
     -d VALUE     decrease brightness by VALUE percents.
     -s VALUE     set brightness by VALUE percents.
@@ -32,6 +33,10 @@ get_brightness() {
     echo $(($(brightnessctl g) * 100 / $(brightnessctl m)))
 }
 
+polybar_format() {    
+    echo " $(($(brightnessctl g) * 100 / $(brightnessctl m)))%"
+}
+
 inc_brightness() {
     brightnessctl -q s ${1}%+
     show_notification
@@ -57,7 +62,7 @@ set_brightness() {
     show_notification
 }
 
-while getopts "hgi:d:s:" arg; do
+while getopts "hgi:d:s:p" arg; do
     case $arg in
         g)
             get_brightness
@@ -70,6 +75,9 @@ while getopts "hgi:d:s:" arg; do
             ;;
         s)
             set_brightness $OPTARG
+            ;;
+        p)
+            polybar_format $OPTARG
             ;;
         h | *)
             usage

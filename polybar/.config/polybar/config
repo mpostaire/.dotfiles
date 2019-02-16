@@ -190,28 +190,16 @@ animation-charging-framerate = 1000
 ;==========================================================
 
 [module/volume]
-type = internal/alsa
+type = custom/ipc
 
-; TODO faire apparaître la notif de volume en scrollant sur l'icône (comme pour brightness)
+hook-0 = ~/.scripts/volume.sh -p &
 
-;speaker-mixer = Speaker
-;headphone-mixer = Headphone
-;headphone-id = 16
-;mapped = true
-format-volume = <ramp-volume> <label-volume>
-label-volume = %percentage%%
-label-muted =  %percentage%%
-label-muted-foreground = ${color.fg-alt}
+initial = 1
 
-ramp-volume-0 = 
-ramp-volume-1 = 
-ramp-volume-2 = 
-ramp-volume-3 = 
-ramp-volume-4 = 
-ramp-volume-5 = 
+scroll-up = ~/.scripts/volume.sh -i 5 &
+scroll-down = ~/.scripts/volume.sh -d 5 &
 
-ramp-headphones-0 = 
-ramp-headphones-1 = 
+click-left = ~/.scripts/volume.sh -s toggle &
 
 ;==========================================================
 
@@ -239,7 +227,7 @@ format-disconnected =
 [module/brightness]
 type = custom/ipc
 
-hook-0 = echo " $(~/.scripts/brightness.sh -g)%" &
+hook-0 = ~/.scripts/brightness.sh -p &
 
 initial = 1
 
