@@ -160,13 +160,13 @@ battery = BAT0
 adapter = AC
 full-at = 98
 
-format-charging = <animation-charging> <label-charging>
+format-charging = %{A1:~/.config/polybar/modules/battery_notification.sh:}<animation-charging> <label-charging>%{A}
 label-charging = %percentage%%
 
-format-discharging = <ramp-capacity> <label-discharging>
+format-discharging = %{A1:~/.config/polybar/modules/battery_notification.sh:}<ramp-capacity> <label-discharging>%{A}
 label-discharging = %percentage%%
 
-format-full = <label-full>
+format-full = %{A1:~/.config/polybar/modules/battery_notification.sh:}<label-full>%{A}
 label-full = " %percentage%%"
 
 ramp-capacity-0 = 
@@ -210,7 +210,7 @@ interval = 3.0
 
 format-connected = <label-connected>
 format-disconnected = <label-disconnected>
-label-connected = %{A1:~/.config/polybar/modules/networkmanager_dmenu &:} %essid%%{A}
+label-connected = %{A1:~/.config/polybar/modules/networkmanager_dmenu &:} %essid:0:10:...:%%{A}
 label-disconnected = %{A1:~/.config/polybar/modules/networkmanager_dmenu &:}%{A}
 
 [module/eth]
