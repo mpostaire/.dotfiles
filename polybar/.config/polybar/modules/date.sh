@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo $$ > ~/.config/polybar/modules/datepid
+
 t=0
 
 toggle() {
@@ -13,7 +15,7 @@ while true; do
         echo " $(date "+%H:%M")"
     else
         echo " $(date "+%H:%M")"
-        ~/.config/polybar/modules/calendarmenu $$ &
+        ~/.config/polybar/modules/calendarmenu &
     fi
     sleep 30 &
     wait

@@ -239,11 +239,8 @@ format-disconnected =
 [module/brightness]
 type = custom/ipc
 
-; Define the command to be executed when the hook is triggered
 hook-0 = echo " $(~/.scripts/brightness.sh -g)%" &
 
-; Hook to execute on launch. The index is 1-based.
-; Default: 0
 initial = 1
 
 scroll-up = ~/.scripts/brightness.sh -i 5 &

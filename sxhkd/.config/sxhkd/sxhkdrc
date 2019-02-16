@@ -16,7 +16,7 @@ super + Tab
 super + w
 	~/.config/polybar/modules/networkmanager_dmenu
 super + c
-	~/.config/polybar/modules/calendarmenu
+	kill -USR1 $(cat ~/.config/polybar/modules/datepid)
 
 # lock screen
 super + l
