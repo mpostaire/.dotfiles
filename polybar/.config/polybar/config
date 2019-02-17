@@ -149,10 +149,12 @@ label-song-ellipsis = true
 type = custom/script
 
 exec = ~/.config/polybar/modules/updates.sh
-tail = true
+
+interval = 1800
+
+click-left = (urxvt -e yay -Syu && ~/.config/polybar/modules/updates.sh) &
 
 ;==========================================================
-
 [module/battery]
 type = internal/battery
 

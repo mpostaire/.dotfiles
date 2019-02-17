@@ -18,6 +18,9 @@ super + w
 super + c
 	kill -USR1 $(cat ~/.config/polybar/modules/datepid)
 
+super + b
+	~/.config/polybar/modules/battery_notification.sh
+
 # lock screen
 super + l
     ~/.scripts/lock.sh
