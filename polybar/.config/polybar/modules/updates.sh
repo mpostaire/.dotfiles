@@ -37,6 +37,7 @@ while true; do
         else
             echo "$BAR_ICON $UPDATES%{F${yellow}}+$UPDATES_AUR%{F-}"
         fi
+        notification
     fi
     sleep 1800 &
     wait
