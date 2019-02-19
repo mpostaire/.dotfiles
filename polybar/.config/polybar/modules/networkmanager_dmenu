@@ -11,6 +11,8 @@ OR running the script as root
 Add dmenu formatting options and default terminal if desired to
 ~/.config/networkmanager-dmenu/config.ini
 
+TODO traduire en français
+
 """
 import itertools
 import locale

@@ -3,4 +3,5 @@ icons
 themes
 zsh-autosuggestions
 mpd/.config/mpd/pid
+mpd/.config/mpd/state
 polybar/.config/polybar/modules/datepid

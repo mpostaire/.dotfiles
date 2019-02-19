@@ -1,0 +1,43 @@
+@import "base.rasi"
+
+* {
+    transparent: #00000000;
+    background-color: @transparent;
+}
+
+window {
+    background-color: @transparent;
+	orientation: horizontal;
+	children: [coverbox, box];
+    location: northwest;
+    y-offset: 32px;
+    x-offset: 26ch;
+    border: 0 2px 2px 2px;
+    height: 116px;
+    width: 40ch;
+}
+
+box {
+    background-color: @black;
+    orientation: vertical;
+    children: [message, listview];
+}
+
+coverbox {
+    border: 25px 0 25px 25px;
+    border-color: @black;
+	expand: false;
+	width: 87px;
+}
+
+message, textbox {
+    background-color: @black;
+    padding: 12px 0 2px 0;
+}
+
+listview {
+    background-color: @black;
+    border-color: @black;
+    scrollbar: false;
+    columns: 3;
+}

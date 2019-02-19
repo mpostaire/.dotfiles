@@ -130,15 +130,12 @@ type = internal/mpd
 host = 127.0.0.1
 port = 6600
 
-format-online = %{A1:mpc toggle &:}<toggle> <label-song> - <label-time>%{A}
-
+format-online = %{A1:~/.config/polybar/modules/musicmenu.sh &:} <label-song> - <label-time>%{A}
 format-stopped =
+format-offline =
 
 label-song = %title% - %artist%
 label-time = %elapsed%
-
-icon-play = 
-icon-pause = 
 
 label-song-maxlen = 20
 label-song-ellipsis = true
@@ -147,12 +144,9 @@ label-song-ellipsis = true
 
 [module/updates]
 type = custom/script
-
 exec = ~/.config/polybar/modules/updates.sh
-
-interval = 1800
-
-click-left = (urxvt -e yay -Syu && ~/.config/polybar/modules/updates.sh) &
+tail = true
+click-left = kill -USR1 %pid%
 
 ;==========================================================
 [module/battery]
