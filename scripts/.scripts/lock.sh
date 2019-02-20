@@ -61,8 +61,7 @@ i3lock -n -e $background              \
 --time-font="DejaVu Sans Mono"        \
 --date-font="DejaVu Sans Mono"        \
 --verif-font="DejaVu Sans Mono"       \
---wrong-font="DejaVu Sans Mono"       \
+--wrong-font="DejaVu Sans Mono"
 
 # resume notifications
 killall -SIGUSR2 dunst
-

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 notification() {
-    if [ $UPDATES == 1 ]; then
+    if [[ $UPDATES == 1 ]]; then
         majstr="mise à jour"
     else
         majstr="mises à jour"
@@ -23,12 +23,17 @@ trap "notification" USR1
 # Icons
 BAR_ICON=""
 
+first_loop=1
 while true; do
     UPDATES=$(checkupdates 2>/dev/null | wc -l)
     UPDATES_AUR=$(yay -Qum 2> /dev/null | wc -l)
     if [[ $UPDATES == 0 && $UPDATES_AUR == 0 ]]; then
         echo
     else
+        if [[ $first_loop == 1 ]]; then
+            notification
+            first_loop=0
+        fi
         yellow=$(xrdb -query | grep "color6" | head -n1 | awk '{print $NF}')
         if [[ $UPDATES == 0 ]]; then
             echo "$BAR_ICON %{F${yellow}}$UPDATES_AUR%{F-}"
@@ -37,7 +42,6 @@ while true; do
         else
             echo "$BAR_ICON $UPDATES%{F${yellow}}+$UPDATES_AUR%{F-}"
         fi
-        notification
     fi
     sleep 1800 &
     wait

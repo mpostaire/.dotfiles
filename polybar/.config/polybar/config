@@ -130,14 +130,14 @@ type = internal/mpd
 host = 127.0.0.1
 port = 6600
 
-format-online = %{A1:~/.config/polybar/modules/musicmenu.sh &:} <label-song> - <label-time>%{A}
+format-online = %{A1:~/.config/polybar/modules/musicmenu.sh &:}%{A3:mpc toggle &:} <label-song> - <label-time>%{A}%{A}
 format-stopped =
 format-offline =
 
-label-song = %title% - %artist%
+label-song = %title%
 label-time = %elapsed%
 
-label-song-maxlen = 20
+label-song-maxlen = 24
 label-song-ellipsis = true
 
 ;==========================================================
