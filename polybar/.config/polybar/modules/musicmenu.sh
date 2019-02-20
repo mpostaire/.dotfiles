@@ -77,10 +77,10 @@ while [[ $ret == 0 ]]; do
     # writing it in a temp file instead does not work because its in a background
     # process and so it's not reliable due do racing conditions
     # (mpc idle > /dev/null; killall rofi; force_reload=0) &
-    
+
     MENU=$(rofi -dmenu -mesg "$artist
 $title" -selected-row 1 -fake-background "$(find_cover)" \
-    -fake-transparency -scroll-method 0 -sep "|" -theme musicmenu <<< "${prev_icon}|$playbutton|$next_icon")
+    -fake-transparency -scroll-method 0 -sep "|" -theme musicmenu <<< "$prev_icon|$playbutton|$next_icon")
     ret=$?
 
     case $MENU in
