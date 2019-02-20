@@ -1,15 +1,10 @@
 #!/bin/bash
 
-# extract cover from music file
-#ffmpeg -i file.mp3 file.jpg
-
-# put converted images to /tmp/
-
-# resize image keeping aspect ratio centering it ant filling the gaps with specified color
-#convert default_cover.png -resize 64x64 -background red -gravity center -extent 64x64 default_cover.png 
-
-# add border of size 25 whith color white (it always makes a white color ??)
-#convert default_cover.png -border 25 -bordercolor white input.jpg output.jpg default_cover.png
+# TODO Improvements:
+# Search for cover art in music folder before extracting it from the file
+# find a way to reload this menu when a song/state is changing (right now if it is the case the menu won't
+# reload and the informations displayed will be outdated)
+# It's not that big of a deal because it will still work but it's a bit ugly
 
 play_icon=""
 pause_icon=""
@@ -19,8 +14,6 @@ maxstrlen=22
 music_dir="$HOME/Musique"
 
 find_cover() {
-    # find cover in folder. if not generate one from file
-
     # default cover
     cover="~/.config/polybar/modules/default_cover.png"
     out_dir="/tmp"
