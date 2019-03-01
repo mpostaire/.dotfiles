@@ -4,4 +4,5 @@ My dotfiles.
 
 # TODO
 
-Add icons and gtk theme.
+- Add cursor, icons and gtk theme.
+- Better install script.

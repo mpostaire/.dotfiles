@@ -138,7 +138,7 @@ super + bracket{left,right}
 	bspc desktop -f {prev,next}.local
 
 # focus the last node/desktop
-alt + {grave,Tab}
+alt + {shift + Tab,Tab}
 	bspc {node,desktop} -f last
 
 # focus the older or newer node in the focus history
