@@ -101,6 +101,9 @@ super + y
 # toggle gaps
 super + g
 	bspc config window_gap {0, 12}
+# toggle gaps when only one window
+super + shift + g
+	{bspc config borderless_monocle false && bspc config gapless_monocle false && bspc config single_monocle false, bspc config borderless_monocle true && bspc config gapless_monocle true && bspc config single_monocle true}
 
 #
 # state/flags
