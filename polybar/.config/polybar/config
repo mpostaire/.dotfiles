@@ -206,8 +206,8 @@ interval = 3.0
 
 format-connected = <label-connected>
 format-disconnected = <label-disconnected>
-label-connected = %{A1:~/.config/polybar/modules/networkmanager_dmenu &:} %essid:0:10:...:%%{A}
-label-disconnected = %{A1:~/.config/polybar/modules/networkmanager_dmenu &:}%{A}
+label-connected = %{A1:networkmanager_dmenu &:} %essid:0:10:...:%%{A}
+label-disconnected = %{A1:networkmanager_dmenu &:}%{A}
 
 [module/eth]
 type = internal/network
