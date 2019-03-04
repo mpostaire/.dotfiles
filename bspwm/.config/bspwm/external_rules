@@ -4,15 +4,23 @@ wid=$1
 class=$2
 instance=$3
 
-if [ "$class" = "Code" ]; then
-    default_desktop=1
-    window_count=$(bspc query -N -n .window -d "^$default_desktop" | wc -l)
-    if [ $window_count > 1 ]; then
-        current_desktop=$(bspc query -D -d focused)
-        bspc node $wid -d $current_desktop
-    else
-        echo "desktop=^$default_desktop"
-    fi
-fi
+# /!\ this rule below does not work because of popups that are considered
+#     normal vscode intances and so they will be spawned on default_desktop if it is empty.
+#     This causes desktop switching just for a popup.
+# Place vscode instance on desktop 1.
+# If there already is an instance of vscode on desktop1,
+# place this instance in the current desktop
+# if [ "$class" = "Code" ]; then
+#     default_desktop=1
+#     # change window_count to count only instances of vscode
+#     window_count=$(bspc query -N -n .window -d "^$default_desktop" | wc -l)
+#     if [ $window_count -lt 1 ]; then
+#         # bspc node $wid -d $default_desktop
+#         echo "desktop=^$default_desktop"
+#     else
+#         # current_desktop=$(bspc query -D -d focused)
+#         # bspc node $wid -d $current_desktop
+#     fi
+# fi
 
 # echo "$@" >> ~/.config/bspwm/rules_cmd.log
