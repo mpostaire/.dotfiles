@@ -7,7 +7,7 @@ configuration {
 @import "base.rasi"
 
 window {
-	y-offset: 32px;
+	y-offset: 30px;
 	location: north west;
 	width: 62ch;
 	height: 96.5%;

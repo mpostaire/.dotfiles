@@ -6,8 +6,8 @@ configuration {
     kb-move-char-back: "";
     kb-move-char-forward: "";
     kb-row-tab: "";
-    kb-page-prev: "Left";
-    kb-page-next: "Right";
+    kb-page-prev: "Left,Up";
+    kb-page-next: "Right,Down";
     ml-row-up: "";
     ml-row-down: "";
     ml-row-left: "ScrollLeft,ScrollUp";
@@ -23,7 +23,7 @@ configuration {
 window {
     location: northeast;
     width: 28ch;
-    y-offset: 32px;
+    y-offset: 30px;
 	border: 0 0 2px 2px;
 }
 

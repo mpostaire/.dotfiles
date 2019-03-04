@@ -4,7 +4,7 @@ window {
 	border-color: @black-alt;
 	border: 2px;
     location: north east;
-    y-offset: 32px;
+    y-offset: 30px;
     width: 30ch;
 	border: 0 0 2px 2px;
 }

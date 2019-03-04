@@ -2,7 +2,7 @@
 
 window {
     location: northeast;
-    y-offset: 32px;
+    y-offset: 30px;
     width: 54ch;
     border: 0 0 2px 2px;
 }
