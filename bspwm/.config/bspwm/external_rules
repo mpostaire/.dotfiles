@@ -1,0 +1,18 @@
+#! /bin/sh
+
+wid=$1
+class=$2
+instance=$3
+
+if [ "$class" = "Code" ]; then
+    default_desktop=1
+    window_count=$(bspc query -N -n .window -d "^$default_desktop" | wc -l)
+    if [ $window_count > 1 ]; then
+        current_desktop=$(bspc query -D -d focused)
+        bspc node $wid -d $current_desktop
+    else
+        echo "desktop=^$default_desktop"
+    fi
+fi
+
+# echo "$@" >> ~/.config/bspwm/rules_cmd.log

@@ -34,14 +34,19 @@ bspc config focus_follows_pointer true
 
 bspc config single_monocle       true
 
-# bspc rule -a Gimp desktop='^8' state=floating follow=on
-# bspc rule -a Chromium desktop='^2'
-bspc rule -a Firefox desktop='^2'
-bspc rule -a Code desktop='^1'
+# Firefox's main window
+bspc rule -a Firefox:Navigator desktop='^2' state=tiling
+# The child windows
+bspc rule -a Firefox:Browser state=floating center=true
+bspc rule -a Firefox:Places state=floating center=true
+
 bspc rule -a mplayer2 state=floating
 bspc rule -a Kupfer.py focus=on
 bspc rule -a Screenkey manage=off
 bspc rule -a Gnome-calculator state=floating follow=on
+
+# contains rules for vscode
+bspc config external_rules_command ~/.config/bspwm/external_rules
 
 ~/.fehbg
 compton &
