@@ -13,8 +13,8 @@ super + p
     ~/.config/polybar/modules/powermenu.sh
 super + Tab
     ~/.config/polybar/modules/launchermenu.sh window
-super + w
-	~/.config/polybar/modules/networkmanager_dmenu
+super + {_,shift +} w
+	{networkmanager_dmenu, urxvt -name nmtui -e "nmtui-connect"}
 super + c
 	kill -USR1 $(cat ~/.config/polybar/modules/datepid)
 super + m
