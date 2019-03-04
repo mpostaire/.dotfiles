@@ -26,8 +26,10 @@ find_cover() {
 
         if [ $? -eq 0 ]; then
             black=$(xrdb -query | grep "color0" | head -n1 | awk '{print $NF}')
-            convert "$out_file" -resize 64x64 -background "$black" -gravity center -extent 64x64 "$out_file"
-            convert "$out_file" -border 25 -bordercolor white "$out_file"
+            # extent/resize and border values depend of the theme of the musicmenu
+            # when changing the theme, tweak these values to adjust the image correctly 
+            convert "$out_file" -resize 64x64 -background "$black" -gravity center \
+                    -extent 64x64 -border 25 -gravity east -extent 116x114 "$out_file"
             cover="$out_file"
         fi
     else

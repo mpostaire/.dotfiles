@@ -27,7 +27,7 @@ coverbox {
     border: 25px 0 25px 25px;
     border-color: @black;
 	expand: false;
-	width: 87px;
+	width: 89px;
 }
 
 message, textbox {
