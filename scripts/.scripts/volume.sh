@@ -44,7 +44,7 @@ show_notification() {
 }
 
 get_volume() {
-    awk -F"[][]" '/dB/ { print $2 }' <(amixer sget Master) | tr -d %
+    awk -F "[][]" '/dB/ { print $2 }' <(amixer sget Master) | tr -d %
 }
 
 polybar_format() {
