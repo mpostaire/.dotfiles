@@ -9,10 +9,9 @@ window {
     background-color: @transparent;
 	orientation: horizontal;
 	children: [coverbox, box];
-    location: northwest;
+    location: northeast;
     y-offset: 30px;
-    x-offset: 26ch;
-    border: 0 2px 2px 2px;
+    border: 0 0 2px 2px;
     height: 116px;
     width: 40ch;
 }

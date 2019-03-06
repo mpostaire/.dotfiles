@@ -78,7 +78,7 @@ enable-ipc = true
 
 modules-left = launcher bspwm mpd
 modules-center = xwindow
-modules-right = updates brightness volume battery wlan eth date powermenu
+modules-right = updates wlan eth brightness volume battery date powermenu
 
 ;==========================================================
 
@@ -119,24 +119,6 @@ label-urgent-padding = 1
 label-empty = 
 label-empty-foreground = ${color.white-alt}
 label-empty-padding = 1
-
-;==========================================================
-
-[module/mpd]
-type = internal/mpd
-
-host = 127.0.0.1
-port = 6600
-
-format-online = %{A1:~/.config/polybar/modules/musicmenu.sh &:}%{A3:mpc toggle &:} <label-song> - <label-time>%{A}%{A}
-format-stopped =
-format-offline =
-
-label-song = %title%
-label-time = %elapsed%
-
-label-song-maxlen = 24
-label-song-ellipsis = true
 
 ;==========================================================
 
@@ -194,6 +176,7 @@ scroll-up = ~/.scripts/volume.sh -i 5 &
 scroll-down = ~/.scripts/volume.sh -d 5 &
 
 click-left = ~/.scripts/volume.sh -s toggle &
+click-right = ~/.config/polybar/modules/musicmenu.sh &
 
 ;==========================================================
 
