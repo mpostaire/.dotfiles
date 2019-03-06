@@ -71,6 +71,8 @@ ctrl + KP_Right
 	mpc next
 ctrl + KP_Left
 	mpc prev
+ctrl + KP_Begin
+	mpc stop
 
 #
 # bspwm hotkeys
