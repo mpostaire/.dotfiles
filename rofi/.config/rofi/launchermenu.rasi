@@ -10,7 +10,7 @@ window {
 	y-offset: 30px;
 	location: north west;
 	width: 62ch;
-	height: 96.5%;
+	height: 96.67%;
 	border: 0 2px 0 0;
 }
 

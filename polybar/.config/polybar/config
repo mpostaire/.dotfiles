@@ -181,6 +181,8 @@ click-right = ~/.config/polybar/modules/musicmenu.sh &
 ;==========================================================
 
 [module/wlan]
+; TODO module qui regarde toutes les interfaces au lieu des deux prédéfinies
+; intéressant lorsque partage de connexion par exemple car sinon on le voit pas qu'il y a partage
 type = internal/network
 interface = wlo1
 interval = 3.0

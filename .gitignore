@@ -1,6 +1,7 @@
 .vscode
 icons
 themes
+!awesome/.config/awesome/themes
 zsh-autosuggestions
 mpd/.config/mpd/pid
 mpd/.config/mpd/state
