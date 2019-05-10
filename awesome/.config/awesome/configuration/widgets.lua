@@ -99,20 +99,28 @@ widgets.tasklist_buttons = gears.table.join(
 --   buttons = widgets.tasklist_buttons
 -- }
 
+local function make_taglist_icons(widget, tag, index, tags)
+    local outer_circle = widget:get_children_by_id('outer_circle')[1]
+    local inner_circle = widget:get_children_by_id('inner_circle')[1]
+
+    if tag.selected then -- if tag selected
+        outer_circle.bg = beautiful.taglist_fg_focus
+        inner_circle.bg = beautiful.taglist_fg_focus
+    elseif #tag:clients() == 0 then -- if tag empty
+        outer_circle.bg = beautiful.taglist_fg_empty
+        inner_circle.bg = beautiful.taglist_bg_empty
+    elseif tag.urgent then -- if tag urgent
+        outer_circle.bg = beautiful.taglist_fg_urgent
+        inner_circle.bg = beautiful.taglist_fg_urgent
+    else -- if tag occupied
+        outer_circle.bg = beautiful.taglist_fg_occupied
+        inner_circle.bg = beautiful.taglist_fg_occupied
+    end
+end
+
 -- Place a widget for each screen
 awful.screen.connect_for_each_screen(function(s)
     -- Create a taglist widget
-    -- s.mytaglist = awful.widget.taglist {
-    --     screen  = s,
-    --     filter  = awful.widget.taglist.filter.all,
-    --     buttons = widgets.taglist_buttons,
-    --     widget_template = {
-    --         id     = 'text_role',
-    --         widget = wibox.widget.textbox
-    --     }
-    -- }
-
-
     s.mytaglist = awful.widget.taglist {
       screen  = s,
       filter  = awful.widget.taglist.filter.all,
@@ -121,22 +129,32 @@ awful.screen.connect_for_each_screen(function(s)
             {
                 {
                     {
-                        id     = 'text_role',
-                        widget = wibox.widget.textbox,
+                        {
+                            margins = 4,
+                            widget  = wibox.container.margin,
+                        },
+                        id     = 'inner_circle',
+                        shape  = gears.shape.circle,
+                        widget = wibox.container.background,
                     },
-                    margins = 5,
+                    margins = 1,
                     widget  = wibox.container.margin,
                 },
-                bg     = "#000000",
+                id     = 'outer_circle',
                 shape  = gears.shape.circle,
                 widget = wibox.container.background,
             },
             left  = 8,
             right = 8,
-            widget = wibox.container.margin
+            widget = wibox.container.margin,
+            create_callback = function(self, tag, index, tags) --luacheck: no unused args
+                make_taglist_icons(self, tag, index, tags)
+            end,
+            update_callback = function(self, tag, index, tags) --luacheck: no unused args
+                make_taglist_icons(self, tag, index, tags)
+            end,
         },
     }
-
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {

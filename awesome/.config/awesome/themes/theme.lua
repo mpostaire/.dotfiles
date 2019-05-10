@@ -31,7 +31,15 @@ theme.border_normal = xresources_theme["color8"]
 theme.border_focus  = xresources_theme["color1"]
 theme.border_marked = "#91231c"
 
-theme.taglist_bg_focus = "FF0000"
+theme.taglist_fg_focus = xresources_theme["color1"]
+theme.taglist_fg_occupied = xresources_theme["color7"]
+theme.taglist_fg_empty = xresources_theme["color15"]
+theme.taglist_fg_urgent = xresources_theme["color3"]
+
+theme.taglist_bg_focus = xresources_theme["color0"]
+theme.taglist_bg_occupied = theme.taglist_bg_focus
+theme.taglist_bg_empty = theme.taglist_bg_focus
+theme.taglist_bg_urgent = theme.taglist_bg_focus
 
 -- theme.taglist_fg_focus = xresources_theme["color1"]
 
