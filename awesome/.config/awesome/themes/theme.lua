@@ -38,7 +38,7 @@ local white_alt = xresources_theme["color15"]
 
 local true_white = "#FFFFFF"
 
-theme.font          = "sans 8"
+theme.font          = "DejaVu Sans Mono 9"
 
 theme.bg_normal     = black
 theme.bg_focus      = theme.bg_normal
