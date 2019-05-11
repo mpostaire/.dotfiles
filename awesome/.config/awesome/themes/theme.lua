@@ -41,14 +41,14 @@ local true_white = "#FFFFFF"
 theme.font          = "DejaVu Sans Mono 9"
 
 theme.bg_normal     = black
-theme.bg_focus      = theme.bg_normal
+theme.bg_focus      = black_alt
 theme.bg_urgent     = yellow
-theme.bg_minimize   = "#444444"
-theme.bg_systray    = theme.bg_normal
+theme.bg_minimize   = black
+theme.bg_systray    = black
 
-theme.fg_normal     = "#aaaaaa"
+theme.fg_normal     = white
 theme.fg_focus      = true_white
-theme.fg_urgent     = true_white
+theme.fg_urgent     = black
 theme.fg_minimize   = true_white
 
 theme.gap_single_client = false
@@ -67,17 +67,19 @@ theme.taglist_fg_empty = white_alt
 theme.taglist_fg_urgent = yellow
 
 theme.taglist_bg_focus = black
-theme.taglist_bg_occupied = theme.taglist_bg_focus
-theme.taglist_bg_empty = theme.taglist_bg_focus
-theme.taglist_bg_urgent = theme.taglist_bg_focus
+theme.taglist_bg_occupied = black
+theme.taglist_bg_empty = black
+theme.taglist_bg_urgent = black
 
-theme.titlebar_bg_normal = theme.bg_normal
+theme.titlebar_bg_normal = black
 theme.titlebar_bg_focus = red
 
-theme.titlebar_fg_normal = theme.fg_normal
+theme.titlebar_fg_normal = white
 theme.titlebar_fg_focus = true_white
 
 theme.wibar_border_color = black_alt
+
+theme.hotkeys_modifiers_fg = white_alt
 
 -- theme.taglist_fg_focus = red
 

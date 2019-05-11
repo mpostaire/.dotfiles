@@ -164,3 +164,29 @@ tag.connect_signal("property::layout", function(t)
         end
     end
 end)
+
+tag.connect_signal("property::selected", function(t)
+    local shown_clients = get_shown_clients()
+    for _, c in ipairs(shown_clients) do
+        if c.floating or c.first_tag.layout.name == "floating" then
+            awful.titlebar.show(c)
+            if c.was_maximized then
+                c.maximized = true
+                c.was_maximized = false
+            end
+        else
+            awful.titlebar.hide(c)
+            if c.maximized then
+                c.was_maximized = true
+                c.maximized = false
+            end
+            if #shown_clients == 1 then
+                c.border_width = beautiful.border_width_single_client
+            else
+                c.border_width = beautiful.border_width
+            end
+        end
+    end
+end)
+
+-- }}}
