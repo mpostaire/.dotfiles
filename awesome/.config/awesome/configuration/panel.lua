@@ -34,25 +34,30 @@ awful.screen.connect_for_each_screen(function(s)
     awful.tag({ "1", "2", "3", "4", "5", "6" }, s, awful.layout.layouts[2])
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = 30, })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height = 32, })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
-        layout = wibox.layout.align.horizontal,
-        { -- Left widgets
-            layout = wibox.layout.fixed.horizontal,
-            widgets.mylauncher,
-            s.mytaglist,
-            s.mypromptbox,
+        {
+            layout = wibox.layout.align.horizontal,
+            { -- Left widgets
+                layout = wibox.layout.fixed.horizontal,
+                widgets.mylauncher,
+                s.mytaglist,
+                s.mypromptbox,
+            },
+            s.mytasklist, -- Middle widget
+            { -- Right widgets
+                layout = wibox.layout.fixed.horizontal,
+                widgets.mykeyboardlayout,
+                wibox.widget.systray(),
+                widgets.mytextclock,
+                s.mylayoutbox,
+            },
         },
-        s.mytasklist, -- Middle widget
-        { -- Right widgets
-            layout = wibox.layout.fixed.horizontal,
-            widgets.mykeyboardlayout,
-            wibox.widget.systray(),
-            widgets.mytextclock,
-            s.mylayoutbox,
-        },
+        bottom = 2,
+        color = beautiful.wibar_border_color,
+        widget = wibox.container.margin,
     }
 end)
 -- }}}

@@ -12,45 +12,74 @@ local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
+local black = xresources_theme["color0"]
+local black_alt = xresources_theme["color8"]
+
+local red = xresources_theme["color1"]
+local red_alt = xresources_theme["color9"]
+
+local green = xresources_theme["color2"]
+local green_alt = xresources_theme["color10"]
+
+local yellow = xresources_theme["color3"]
+local yellow_alt = xresources_theme["color11"]
+
+local blue = xresources_theme["color4"]
+local blue_alt = xresources_theme["color12"]
+
+local magenta = xresources_theme["color5"]
+local magenta_alt = xresources_theme["color13"]
+
+local cyan = xresources_theme["color6"]
+local cyan_alt = xresources_theme["color14"]
+
+local white = xresources_theme["color7"]
+local white_alt = xresources_theme["color15"]
+
+local true_white = "#FFFFFF"
+
 theme.font          = "sans 8"
 
-theme.bg_normal     = xresources_theme["color0"]
+theme.bg_normal     = black
 theme.bg_focus      = theme.bg_normal
-theme.bg_urgent     = xresources_theme["color3"]
+theme.bg_urgent     = yellow
 theme.bg_minimize   = "#444444"
 theme.bg_systray    = theme.bg_normal
 
 theme.fg_normal     = "#aaaaaa"
-theme.fg_focus      = "#ffffff"
-theme.fg_urgent     = "#ffffff"
-theme.fg_minimize   = "#ffffff"
+theme.fg_focus      = true_white
+theme.fg_urgent     = true_white
+theme.fg_minimize   = true_white
 
 theme.gap_single_client = false
 theme.border_width_single_client = 0
 theme.maximized_hide_border = true
+theme.fullscreen_hide_border = true
 theme.useless_gap   = dpi(10)
 theme.border_width  = dpi(2)
-theme.border_normal = xresources_theme["color8"]
-theme.border_focus  = xresources_theme["color1"]
+theme.border_normal = black_alt
+theme.border_focus  = red
 theme.border_marked = "#91231c"
 
-theme.taglist_fg_focus = xresources_theme["color1"]
-theme.taglist_fg_occupied = xresources_theme["color7"]
-theme.taglist_fg_empty = xresources_theme["color15"]
-theme.taglist_fg_urgent = xresources_theme["color3"]
+theme.taglist_fg_focus = red
+theme.taglist_fg_occupied = white
+theme.taglist_fg_empty = white_alt
+theme.taglist_fg_urgent = yellow
 
-theme.taglist_bg_focus = xresources_theme["color0"]
+theme.taglist_bg_focus = black
 theme.taglist_bg_occupied = theme.taglist_bg_focus
 theme.taglist_bg_empty = theme.taglist_bg_focus
 theme.taglist_bg_urgent = theme.taglist_bg_focus
 
 theme.titlebar_bg_normal = theme.bg_normal
-theme.titlebar_bg_focus = xresources_theme["color1"]
+theme.titlebar_bg_focus = red
 
 theme.titlebar_fg_normal = theme.fg_normal
-theme.titlebar_fg_focus = xresources_theme["#FFFFFF"]
+theme.titlebar_fg_focus = true_white
 
--- theme.taglist_fg_focus = xresources_theme["color1"]
+theme.wibar_border_color = black_alt
+
+-- theme.taglist_fg_focus = red
 
 -- There are other variable sets
 -- overriding the default one when
