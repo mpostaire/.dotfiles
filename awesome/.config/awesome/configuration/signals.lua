@@ -8,7 +8,7 @@ local beautiful = require("beautiful")
 client.connect_signal("manage", function (c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
-    -- if not awesome.startup then awful.client.setslave(c) end
+    if not awesome.startup then awful.client.setslave(c) end
 
     if awesome.startup
       and not c.size_hints.user_position
@@ -66,3 +66,32 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+-- {{{ Titlebar only in floating mode
+tag.connect_signal("property::layout", function(t)
+    local clients = t:clients()
+    for _, c in pairs(clients) do
+        if c.floating or c.first_tag.layout.name == "floating" then
+            awful.titlebar.show(c)
+        else
+            awful.titlebar.hide(c)
+        end
+    end
+end)
+
+client.connect_signal("manage", function(c)
+    if c.floating or c.first_tag.layout.name == "floating" then
+        awful.titlebar.show(c)
+    else
+        awful.titlebar.hide(c)
+    end
+end)
+
+client.connect_signal("property::floating", function(c)
+    if c.floating then
+        awful.titlebar.show(c)
+    else
+        awful.titlebar.hide(c)
+    end
+end)
+-- Titlebar only in floating mode }}}

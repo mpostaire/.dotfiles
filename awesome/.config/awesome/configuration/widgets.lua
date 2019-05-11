@@ -10,14 +10,6 @@ local variables = require("configuration.variables")
 
 local widgets = {}
 
--- function test(s)
--- 	if s.focus then --if switch is nil, function f() will not complete anything else below Return
--- 		return "FF0000"
---     else
---         return "00FF00"
---     end
--- end
-
 -- {{{ Menu
 -- Create a launcher widget and a main menu
 widgets.myawesomemenu = {
@@ -64,12 +56,6 @@ widgets.taglist_buttons = gears.table.join(
                     awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
                 )
 
--- -- Create the taglist widget
--- s.mytaglist = awful.widget.taglist {
---   filter  = awful.widget.taglist.filter.all,
---   buttons = widgets.taglist_buttons
--- }
-
 -- launched programs widget mouse handling
 widgets.tasklist_buttons = gears.table.join(
                      awful.button({ }, 1, function (c)
@@ -92,12 +78,6 @@ widgets.tasklist_buttons = gears.table.join(
                      awful.button({ }, 5, function ()
                                               awful.client.focus.byidx(-1)
                                           end))
-
--- -- Create the tasklist widget
--- mytasklist = awful.widget.tasklist {
---   filter  = awful.widget.tasklist.filter.currenttags,
---   buttons = widgets.tasklist_buttons
--- }
 
 local function make_taglist_icons(widget, tag, index, tags)
     local outer_circle = widget:get_children_by_id('outer_circle')[1]
@@ -122,38 +102,38 @@ end
 awful.screen.connect_for_each_screen(function(s)
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
-      screen  = s,
-      filter  = awful.widget.taglist.filter.all,
-      buttons = widgets.taglist_buttons,
-      widget_template = {
-            {
+        screen  = s,
+        filter  = awful.widget.taglist.filter.all,
+        buttons = widgets.taglist_buttons,
+        widget_template = {
                 {
                     {
                         {
-                            margins = 4,
-                            widget  = wibox.container.margin,
+                            {
+                                margins = 4,
+                                widget  = wibox.container.margin,
+                            },
+                            id     = 'inner_circle',
+                            shape  = gears.shape.circle,
+                            widget = wibox.container.background,
                         },
-                        id     = 'inner_circle',
-                        shape  = gears.shape.circle,
-                        widget = wibox.container.background,
+                        margins = 1,
+                        widget  = wibox.container.margin,
                     },
-                    margins = 1,
-                    widget  = wibox.container.margin,
+                    id     = 'outer_circle',
+                    shape  = gears.shape.circle,
+                    widget = wibox.container.background,
                 },
-                id     = 'outer_circle',
-                shape  = gears.shape.circle,
-                widget = wibox.container.background,
+                left  = 8,
+                right = 8,
+                widget = wibox.container.margin,
+                create_callback = function(self, tag, index, tags) --luacheck: no unused args
+                    make_taglist_icons(self, tag, index, tags)
+                end,
+                update_callback = function(self, tag, index, tags) --luacheck: no unused args
+                    make_taglist_icons(self, tag, index, tags)
+                end,
             },
-            left  = 8,
-            right = 8,
-            widget = wibox.container.margin,
-            create_callback = function(self, tag, index, tags) --luacheck: no unused args
-                make_taglist_icons(self, tag, index, tags)
-            end,
-            update_callback = function(self, tag, index, tags) --luacheck: no unused args
-                make_taglist_icons(self, tag, index, tags)
-            end,
-        },
     }
 
     -- Create a tasklist widget

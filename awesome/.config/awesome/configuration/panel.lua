@@ -4,7 +4,6 @@ local beautiful = require("beautiful")
 local wibox = require("wibox")
 
 local widgets = require("configuration.widgets")
-local variables = require("configuration.variables")
 
 -- MOVE BELOW WALLPAPER BLOCK INTO ITS OWN FILE
 -- WALLPAPER
