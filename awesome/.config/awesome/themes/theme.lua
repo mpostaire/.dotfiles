@@ -26,6 +26,8 @@ theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
 
 theme.gap_single_client = false
+theme.border_width_single_client = 0
+theme.maximized_hide_border = true
 theme.useless_gap   = dpi(10)
 theme.border_width  = dpi(2)
 theme.border_normal = xresources_theme["color8"]
@@ -41,6 +43,12 @@ theme.taglist_bg_focus = xresources_theme["color0"]
 theme.taglist_bg_occupied = theme.taglist_bg_focus
 theme.taglist_bg_empty = theme.taglist_bg_focus
 theme.taglist_bg_urgent = theme.taglist_bg_focus
+
+theme.titlebar_bg_normal = theme.bg_normal
+theme.titlebar_bg_focus = xresources_theme["color1"]
+
+theme.titlebar_fg_normal = theme.fg_normal
+theme.titlebar_fg_focus = xresources_theme["#FFFFFF"]
 
 -- theme.taglist_fg_focus = xresources_theme["color1"]
 

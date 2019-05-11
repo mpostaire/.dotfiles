@@ -67,31 +67,100 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
--- {{{ Titlebar only in floating mode
-tag.connect_signal("property::layout", function(t)
-    local clients = t:clients()
-    for _, c in pairs(clients) do
-        if c.floating or c.first_tag.layout.name == "floating" then
-            awful.titlebar.show(c)
-        else
-            awful.titlebar.hide(c)
-        end
+local function join(t1, t2)
+    for _,v in ipairs(t2) do
+        table.insert(t1, v)
     end
-end)
+end
 
+-- maybe a bit faster than #get_shown_clients() because it doesn't use join()
+local function get_shown_clients_number()
+    local tags = awful.screen.focused().selected_tags
+    local count = 0
+    for _,t in ipairs(tags) do
+        count = count + #t:clients()
+    end
+    return count
+end
+
+local function get_shown_clients()
+    local tags = awful.screen.focused().selected_tags
+    local clients = {}
+    for _, t in ipairs(tags) do
+        join(clients, t:clients())
+    end
+    return clients
+end
+
+-- {{{ No borders if tiled and is only one client, titlebar only in floating layout, client remember if was maximized in
+--     floating layout when switching layout
+-- bug: maximized window then go tiled and window is not set back to not maximized
 client.connect_signal("manage", function(c)
+    local shown_clients = get_shown_clients()
+    c.was_maximized = false -- hack to remember maximized state when switching from floating to another layout and back
     if c.floating or c.first_tag.layout.name == "floating" then
         awful.titlebar.show(c)
     else
         awful.titlebar.hide(c)
+        if #shown_clients == 1 then
+            c.border_width = beautiful.border_width_single_client
+        else
+            for _, cl in ipairs(shown_clients) do
+                cl.border_width = beautiful.border_width
+            end
+        end
     end
 end)
 
-client.connect_signal("property::floating", function(c)
-    if c.floating then
+client.connect_signal("unmanage", function(c)
+    local shown_clients = get_shown_clients()
+    for _, cl in ipairs(shown_clients) do
+        if cl.floating or cl.first_tag.layout.name == "floating" then
+            awful.titlebar.show(cl)
+        else
+            awful.titlebar.hide(cl)
+            if #shown_clients == 1 then
+                cl.border_width = beautiful.border_width_single_client
+            else
+                cl.border_width = beautiful.border_width
+            end
+        end
+    end
+end)
+
+client.connect_signal("property::maximized", function(c)
+    if c.floating or c.first_tag.layout.name == "floating" then
         awful.titlebar.show(c)
     else
         awful.titlebar.hide(c)
+        if get_shown_clients_number == 1 then
+            c.border_width = beautiful.border_width_single_client
+        else
+            c.border_width = beautiful.border_width
+        end
     end
 end)
--- Titlebar only in floating mode }}}
+
+tag.connect_signal("property::layout", function(t)
+    local shown_clients = get_shown_clients()
+    for _, c in ipairs(shown_clients) do
+        if c.floating or c.first_tag.layout.name == "floating" then
+            awful.titlebar.show(c)
+            if c.was_maximized then
+                c.maximized = true
+                c.was_maximized = false
+            end
+        else
+            awful.titlebar.hide(c)
+            if c.maximized then
+                c.was_maximized = true
+                c.maximized = false
+            end
+            if #shown_clients == 1 then
+                c.border_width = beautiful.border_width_single_client
+            else
+                c.border_width = beautiful.border_width
+            end
+        end
+    end
+end)
