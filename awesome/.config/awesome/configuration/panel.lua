@@ -3,7 +3,7 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
 
-local widgets = require("configuration.widgets")
+local widgets = require("widgets.widgets")
 
 -- MOVE BELOW WALLPAPER BLOCK INTO ITS OWN FILE
 -- WALLPAPER
@@ -30,9 +30,6 @@ screen.connect_signal("property::geometry", set_wallpaper)
 -- WALLPAPER END
 
 awful.screen.connect_for_each_screen(function(s)
-    -- Each screen has its own tag table.
-    awful.tag({ "1", "2", "3", "4", "5", "6" }, s, awful.layout.layouts[2])
-
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, height = 32, })
 
@@ -49,9 +46,11 @@ awful.screen.connect_for_each_screen(function(s)
             s.mytasklist, -- Middle widget
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
-                widgets.mykeyboardlayout,
                 wibox.widget.systray(),
-                widgets.mytextclock,
+                widgets.archupdates,
+                widgets.volume,
+                widgets.battery,
+                widgets.clock,
                 s.mylayoutbox,
             },
         },

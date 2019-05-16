@@ -34,13 +34,13 @@ while true; do
             notification
             first_loop=0
         fi
-        yellow=$(xrdb -query | grep "color6" | head -n1 | awk '{print $NF}')
+        blue=$(xrdb -query | grep "color6" | head -n1 | awk '{print $NF}')
         if [[ $UPDATES == 0 ]]; then
-            echo "$BAR_ICON %{F${yellow}}$UPDATES_AUR%{F-}"
+            echo "$BAR_ICON %{F${blue}}$UPDATES_AUR%{F-}"
         elif [[ $UPDATES_AUR == 0 ]]; then
             echo "$BAR_ICON $UPDATES"
         else
-            echo "$BAR_ICON $UPDATES%{F${yellow}}+$UPDATES_AUR%{F-}"
+            echo "$BAR_ICON $UPDATES%{F${blue}}+$UPDATES_AUR%{F-}"
         fi
     fi
     sleep 1800 &

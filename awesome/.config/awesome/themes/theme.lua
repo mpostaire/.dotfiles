@@ -12,74 +12,90 @@ local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
-local black = xresources_theme["color0"]
-local black_alt = xresources_theme["color8"]
+theme.black = xresources_theme["color0"]
+theme.black_alt = xresources_theme["color8"]
 
-local red = xresources_theme["color1"]
-local red_alt = xresources_theme["color9"]
+theme.red = xresources_theme["color1"]
+theme.red_alt = xresources_theme["color9"]
 
-local green = xresources_theme["color2"]
-local green_alt = xresources_theme["color10"]
+theme.green = xresources_theme["color2"]
+theme.green_alt = xresources_theme["color10"]
 
-local yellow = xresources_theme["color3"]
-local yellow_alt = xresources_theme["color11"]
+theme.yellow = xresources_theme["color3"]
+theme.yellow_alt = xresources_theme["color11"]
 
-local blue = xresources_theme["color4"]
-local blue_alt = xresources_theme["color12"]
+theme.blue = xresources_theme["color4"]
+theme.blue_alt = xresources_theme["color12"]
 
-local magenta = xresources_theme["color5"]
-local magenta_alt = xresources_theme["color13"]
+theme.magenta = xresources_theme["color5"]
+theme.magenta_alt = xresources_theme["color13"]
 
-local cyan = xresources_theme["color6"]
-local cyan_alt = xresources_theme["color14"]
+theme.cyan = xresources_theme["color6"]
+theme.cyan_alt = xresources_theme["color14"]
 
-local white = xresources_theme["color7"]
-local white_alt = xresources_theme["color15"]
+theme.white = xresources_theme["color7"]
+theme.white_alt = xresources_theme["color15"]
 
-local true_white = "#FFFFFF"
+theme.true_white = "#FFFFFF"
 
-theme.font          = "DejaVu Sans Mono 9"
+theme.font          = "DejaVu Sans Mono 10"
 
-theme.bg_normal     = black
-theme.bg_focus      = black_alt
-theme.bg_urgent     = yellow
-theme.bg_minimize   = black
-theme.bg_systray    = black
+theme.bg_normal     = theme.black
+theme.bg_focus      = theme.black_alt
+theme.bg_urgent     = theme.yellow
+theme.bg_minimize   = theme.black
+theme.bg_systray    = theme.black
 
-theme.fg_normal     = white
-theme.fg_focus      = true_white
-theme.fg_urgent     = black
-theme.fg_minimize   = true_white
+theme.fg_normal     = theme.white
+theme.fg_focus      = theme.true_white
+theme.fg_urgent     = theme.black
+theme.fg_minimize   = theme.true_white
 
 theme.gap_single_client = false
-theme.border_width_single_client = 0
 theme.maximized_hide_border = true
 theme.fullscreen_hide_border = true
+theme.column_count = 1
 theme.useless_gap   = dpi(10)
 theme.border_width  = dpi(2)
-theme.border_normal = black_alt
-theme.border_focus  = red
+theme.border_normal = theme.black_alt
+theme.border_focus  = theme.red
 theme.border_marked = "#91231c"
 
-theme.taglist_fg_focus = red
-theme.taglist_fg_occupied = white
-theme.taglist_fg_empty = white_alt
-theme.taglist_fg_urgent = yellow
+-- {{{ taglist
+theme.taglist_fg_focus = theme.red
+theme.taglist_fg_occupied = theme.white
+theme.taglist_fg_empty = theme.white_alt
+theme.taglist_fg_urgent = theme.yellow
 
-theme.taglist_bg_focus = black
-theme.taglist_bg_occupied = black
-theme.taglist_bg_empty = black
-theme.taglist_bg_urgent = black
+theme.taglist_bg_focus = theme.black
+theme.taglist_bg_occupied = theme.black
+theme.taglist_bg_empty = theme.black
+theme.taglist_bg_urgent = theme.black
+-- }}}
 
-theme.titlebar_bg_normal = black
-theme.titlebar_bg_focus = red
+-- {{{ titlebar
+theme.titlebar_bg_normal = theme.black_alt
+theme.titlebar_bg_focus = theme.red
 
-theme.titlebar_fg_normal = white
-theme.titlebar_fg_focus = true_white
+theme.titlebar_fg_normal = theme.white
+theme.titlebar_fg_focus = theme.true_white
+-- }}}
 
-theme.wibar_border_color = black_alt
+-- {{{ notifications
+local naughty = require("naughty")
+theme.notification_border_width = dpi(2)
+theme.notification_margin = dpi(20)
+-- these parameters needs to be manually overwritten as of now
+naughty.config.defaults.margin = theme.notification_margin
+naughty.config.defaults.border_width = theme.border_width
+-- }}}
 
-theme.hotkeys_modifiers_fg = white_alt
+theme.wibar_border_color = theme.black_alt
+
+-- {{{ hotkeys popup
+theme.hotkeys_modifiers_fg = theme.white_alt
+theme.hotkeys_border_color = theme.black_alt
+-- }}}
 
 -- theme.taglist_fg_focus = red
 
@@ -179,6 +195,12 @@ theme.awesome_icon = theme_assets.awesome_icon(
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
 theme.icon_theme = nil
+
+-- {{{ User defined variables
+theme.border_width_single_client = dpi(0)
+theme.wibar_widgets_padding = dpi(8)
+theme.widgets_inner_padding = dpi(4)
+-- }}}
 
 return theme
 

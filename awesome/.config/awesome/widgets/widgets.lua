@@ -8,6 +8,11 @@ require("awful.hotkeys_popup.keys")
 
 local variables = require("configuration.variables")
 
+local clock_widget = require("widgets.clock")
+local battery_widget = require("widgets.battery")
+local archupdates_widget = require("widgets.archupdates")
+local volume_widget = require("widgets.volume")
+
 local widgets = {}
 
 -- {{{ Menu
@@ -18,8 +23,8 @@ widgets.myawesomemenu = {
     { "edit config", variables.editor_cmd .. " " .. awesome.conffile },
     { "restart", awesome.restart },
     { "quit", function() awesome.quit() end },
- }
- 
+}
+
 widgets.mymainmenu = awful.menu({ items = { { "awesome", widgets.myawesomemenu, beautiful.awesome_icon },
                                     { "open terminal", variables.terminal }
                                   }
@@ -33,10 +38,19 @@ menubar.utils.terminal = variables.terminal -- Set the terminal for applications
 -- }}}
 
 -- Keyboard map indicator and switcher
-widgets.mykeyboardlayout = awful.widget.keyboardlayout()
+-- widgets.mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- Create a textclock widget
-widgets.mytextclock = wibox.widget.textclock()
+widgets.clock = clock_widget
+
+-- Create a battery widget
+widgets.battery = battery_widget
+
+-- Create an archupdate widget
+widgets.archupdates = archupdates_widget
+
+-- Create a volume widget
+widgets.volume = volume_widget
 
 -- tags buttons widget mouse handling
 widgets.taglist_buttons = gears.table.join(
@@ -124,8 +138,8 @@ awful.screen.connect_for_each_screen(function(s)
                     shape  = gears.shape.circle,
                     widget = wibox.container.background,
                 },
-                left  = 8,
-                right = 8,
+                left  = beautiful.wibar_widgets_padding,
+                right = beautiful.wibar_widgets_padding,
                 widget = wibox.container.margin,
                 create_callback = function(self, tag, index, tags) --luacheck: no unused args
                     make_taglist_icons(self, tag, index, tags)

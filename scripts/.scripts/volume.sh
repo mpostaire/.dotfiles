@@ -6,10 +6,13 @@ usage() {
     -p           print volume in polybar formatting.
     -i VALUE     increase volume by VALUE percents.
     -d VALUE     decrease volume by VALUE percents.
-    -s VALUE     set brightvolumeness by VALUE percents. Mute/unmute if VALUE is 'toggle'
+    -s VALUE     set volume by VALUE percents. Mute/unmute if VALUE is 'toggle'
+    -n           set polybar integration
     -h           show this help message." 1>&2
     exit 1
 }
+
+polybar_integration=0
 
 show_notification() {
     # Arbitrary but unique message id
@@ -44,7 +47,12 @@ show_notification() {
 }
 
 get_volume() {
-    awk -F "[][]" '/dB/ { print $2 }' <(amixer sget Master) | tr -d %
+    if [ $polybar_integration -eq 1 ]; then
+        awk -F "[][]" '/dB/ { print $2 }' <(amixer sget Master) | tr -d %
+        return
+    else
+        awk -F "[][]" '/dB/ { print $2$6 }' <(amixer sget Master)
+    fi
 }
 
 polybar_format() {
@@ -60,12 +68,18 @@ polybar_format() {
 
 inc_volume() {
     amixer -q sset 'Master' ${1}%+ unmute
-    show_notification
+        
+    if [ $polybar_integration -eq 1 ]; then
+        show_notification
+    fi
 }
 
 dec_volume() {
     amixer -q sset 'Master' ${1}%- unmute
-    show_notification
+        
+    if [ $polybar_integration -eq 1 ]; then
+        show_notification
+    fi
 }
 
 set_volume() {
@@ -78,10 +92,13 @@ set_volume() {
     else
         amixer -q sset 'Master' ${1}%
     fi
-    show_notification
+    
+    if [ $polybar_integration -eq 1 ]; then
+        show_notification
+    fi
 }
 
-while getopts "hgi:d:s:p" arg; do
+while getopts "hgi:d:s:pv" arg; do
     case $arg in
         g)
             get_volume
@@ -97,6 +114,9 @@ while getopts "hgi:d:s:p" arg; do
             ;;
         p)
             polybar_format $OPTARG
+            ;;
+        n)
+            polybar_integration=1
             ;;
         h | *)
             usage
