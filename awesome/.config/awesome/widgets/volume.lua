@@ -1,5 +1,4 @@
 -- sometimes (after supsend) this widget need awesome to restart to update.
--- TODO replace volume.sh by a lua script
 
 local wibox = require("wibox")
 local beautiful = require("beautiful")
@@ -12,10 +11,10 @@ local icons = {
 }
 local status, percentage = "", 0
 local cmds = {
-    toggle = "~/.scripts/volume.sh -s toggle",
-    inc = "~/.scripts/volume.sh -i 5",
-    dec = "~/.scripts/volume.sh -d 5",
-    get = "~/.scripts/volume.sh -g"
+    toggle = "amixer -q sset 'Master' toggle",
+    inc = "amixer -q sset 'Master' 5%+ unmute",
+    dec = "amixer -q sset 'Master' 5%- unmute",
+    get = [[awk -F "[][]" '/dB/ { print $2$6 }' <(amixer sget Master)]]
 }
 
 local notification = popup_notification:new()
@@ -103,11 +102,11 @@ end)
 
 volume_widget:connect_signal("button::press", function(_, _, _, button)
     if button == 4 then
-        spawn.easy_async_with_shell(cmds.inc, function() end)
+        spawn.easy_async(cmds.inc, function() end)
     elseif button == 5 then
-        spawn.easy_async_with_shell(cmds.dec, function() end)
+        spawn.easy_async(cmds.dec, function() end)
     elseif button == 1 then
-        spawn.easy_async_with_shell(cmds.toggle, function() end)
+        spawn.easy_async(cmds.toggle, function() end)
     end
 end)
 

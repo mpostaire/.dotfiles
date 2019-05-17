@@ -6,6 +6,7 @@ local theme_assets = require("beautiful.theme_assets")
 local xresources = require("beautiful.xresources")
 local xresources_theme = xresources.get_current_theme()
 local dpi = xresources.apply_dpi
+local gears = require("gears")
 
 local gfs = require("gears.filesystem")
 local themes_path = gfs.get_themes_dir()
@@ -79,6 +80,12 @@ theme.titlebar_bg_focus = theme.red
 
 theme.titlebar_fg_normal = theme.white
 theme.titlebar_fg_focus = theme.true_white
+-- }}}
+
+-- {{{ snap
+theme.snap_bg = theme.yellow
+theme.snap_shape = gears.shape.rectangle
+theme.snap_border_width = dpi(3)
 -- }}}
 
 -- {{{ notifications
@@ -206,6 +213,7 @@ theme.wibar_widgets_padding = dpi(8)
 theme.widgets_inner_padding = dpi(4)
 theme.wibar_bottom_border_width = theme.border_width
 theme.notification_offset = dpi(4)
+theme.font_height = require("beautiful").get_font_height(theme.font)
 -- }}}
 
 return theme
