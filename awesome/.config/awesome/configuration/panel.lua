@@ -31,7 +31,7 @@ screen.connect_signal("property::geometry", set_wallpaper)
 
 awful.screen.connect_for_each_screen(function(s)
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = 32, })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height = beautiful.wibar_height, })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -48,13 +48,14 @@ awful.screen.connect_for_each_screen(function(s)
                 layout = wibox.layout.fixed.horizontal,
                 wibox.widget.systray(),
                 widgets.archupdates,
+                widgets.brightness,
                 widgets.volume,
                 widgets.battery,
                 widgets.clock,
                 s.mylayoutbox,
             },
         },
-        bottom = 2,
+        bottom = beautiful.wibar_bottom_border_width,
         color = beautiful.wibar_border_color,
         widget = wibox.container.margin,
     }

@@ -12,6 +12,7 @@ local clock_widget = require("widgets.clock")
 local battery_widget = require("widgets.battery")
 local archupdates_widget = require("widgets.archupdates")
 local volume_widget = require("widgets.volume")
+local brightness_widget = require("widgets.brightness")
 
 local widgets = {}
 
@@ -37,10 +38,7 @@ widgets.mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
 menubar.utils.terminal = variables.terminal -- Set the terminal for applications that require it
 -- }}}
 
--- Keyboard map indicator and switcher
--- widgets.mykeyboardlayout = awful.widget.keyboardlayout()
-
--- Create a textclock widget
+-- Create a clock widget
 widgets.clock = clock_widget
 
 -- Create a battery widget
@@ -51,6 +49,9 @@ widgets.archupdates = archupdates_widget
 
 -- Create a volume widget
 widgets.volume = volume_widget
+
+-- Create a brightness widget
+widgets.brightness = brightness_widget
 
 -- tags buttons widget mouse handling
 widgets.taglist_buttons = gears.table.join(
@@ -141,12 +142,8 @@ awful.screen.connect_for_each_screen(function(s)
                 left  = beautiful.wibar_widgets_padding,
                 right = beautiful.wibar_widgets_padding,
                 widget = wibox.container.margin,
-                create_callback = function(self, tag, index, tags) --luacheck: no unused args
-                    make_taglist_icons(self, tag, index, tags)
-                end,
-                update_callback = function(self, tag, index, tags) --luacheck: no unused args
-                    make_taglist_icons(self, tag, index, tags)
-                end,
+                create_callback = make_taglist_icons,
+                update_callback = make_taglist_icons,
             },
     }
 

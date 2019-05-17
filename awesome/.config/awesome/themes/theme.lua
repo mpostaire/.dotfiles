@@ -83,7 +83,7 @@ theme.titlebar_fg_focus = theme.true_white
 
 -- {{{ notifications
 local naughty = require("naughty")
-theme.notification_border_width = dpi(2)
+theme.notification_border_width = theme.border_width
 theme.notification_margin = dpi(20)
 -- these parameters needs to be manually overwritten as of now
 naughty.config.defaults.margin = theme.notification_margin
@@ -95,6 +95,10 @@ theme.wibar_border_color = theme.black_alt
 -- {{{ hotkeys popup
 theme.hotkeys_modifiers_fg = theme.white_alt
 theme.hotkeys_border_color = theme.black_alt
+-- }}}
+
+-- {{{ wibar
+theme.wibar_height = dpi(32)
 -- }}}
 
 -- theme.taglist_fg_focus = red
@@ -196,10 +200,12 @@ theme.awesome_icon = theme_assets.awesome_icon(
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
 theme.icon_theme = nil
 
--- {{{ User defined variables
+-- {{{ User defined variables (use search to find what they do)
 theme.border_width_single_client = dpi(0)
 theme.wibar_widgets_padding = dpi(8)
 theme.widgets_inner_padding = dpi(4)
+theme.wibar_bottom_border_width = theme.border_width
+theme.notification_offset = dpi(4)
 -- }}}
 
 return theme

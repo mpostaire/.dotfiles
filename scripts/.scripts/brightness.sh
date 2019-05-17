@@ -9,9 +9,12 @@ usage() {
     -i VALUE     increase brightness by VALUE percents.
     -d VALUE     decrease brightness by VALUE percents.
     -s VALUE     set brightness by VALUE percents.
+    -n           set polybar integration
     -h           show this help message." 1>&2
     exit 1
 }
+
+polybar_integration=0
 
 show_notification() {
     # Arbitrary but unique message id
@@ -39,7 +42,10 @@ polybar_format() {
 
 inc_brightness() {
     brightnessctl -q s ${1}%+
-    show_notification
+
+    if [ $polybar_integration -eq 1 ]; then
+        show_notification
+    fi
 }
 
 dec_brightness() {
@@ -49,7 +55,10 @@ dec_brightness() {
     else
         brightnessctl -q s ${min}%
     fi
-    show_notification
+
+    if [ $polybar_integration -eq 1 ]; then
+        show_notification
+    fi
 }
 
 set_brightness() {
@@ -59,10 +68,13 @@ set_brightness() {
     else
         brightnessctl -q s ${min}%
     fi
-    show_notification
+
+    if [ $polybar_integration -eq 1 ]; then
+        show_notification
+    fi
 }
 
-while getopts "hgi:d:s:p" arg; do
+while getopts "hgi:d:s:pn" arg; do
     case $arg in
         g)
             get_brightness
@@ -78,6 +90,9 @@ while getopts "hgi:d:s:p" arg; do
             ;;
         p)
             polybar_format $OPTARG
+            ;;
+        n)
+            polybar_integration=1
             ;;
         h | *)
             usage

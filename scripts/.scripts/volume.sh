@@ -98,7 +98,7 @@ set_volume() {
     fi
 }
 
-while getopts "hgi:d:s:pv" arg; do
+while getopts "hgi:d:s:pn" arg; do
     case $arg in
         g)
             get_volume

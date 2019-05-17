@@ -2,12 +2,10 @@ local gears = require("gears")
 local awful = require("awful")
 local spawn = require("awful.spawn")
 local hotkeys_popup = require("awful.hotkeys_popup")
-local naughty = require("naughty")
 
 require("awful.hotkeys_popup.keys")
 local variables = require("configuration.variables")
 local widgets = require("widgets.widgets")
-require("configuration.panel")
 local rofi = require("widgets.rofi")
 
 -- {{{ Mouse bindings
@@ -166,7 +164,7 @@ globalkeys = gears.table.join(
     function()
         spawn.easy_async_with_shell("~/.scripts/volume.sh -s toggle", function() end)
     end,
-    {description = "toggle mute volume", group = "launcher"}),
+    {description = "toggle mute volume", group = "multimedia"}),
     awful.key({}, "XF86AudioRaiseVolume",
     function()
         spawn.easy_async_with_shell("~/.scripts/volume.sh -i 5", function() end)
@@ -179,12 +177,12 @@ globalkeys = gears.table.join(
     {description = "volume down", group = "multimedia"}),
     awful.key({}, "XF86MonBrightnessUp",
     function()
-        spawn.easy_async_with_shell("~/.scripts/brightness.sh -i 5", function() end)
+        spawn.easy_async_with_shell("~/.scripts/brightness.sh -i 5", function() widgets.brightness:emit_signal("update") end)
     end,
     {description = "brightness up", group = "multimedia"}),
     awful.key({}, "XF86MonBrightnessDown",
     function()
-        spawn.easy_async_with_shell("~/.scripts/brightness.sh -d 5", function() end)
+        spawn.easy_async_with_shell("~/.scripts/brightness.sh -d 5", function() widgets.brightness:emit_signal("update") end)
     end,
     {description = "brightness down", group = "multimedia"}),
 
