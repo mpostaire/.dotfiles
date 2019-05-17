@@ -13,7 +13,7 @@ end
 
 function rofi.power_menu()
     local opts = " Verrouiller\n Déconnexion\n Mettre en veille\n Redémarrer\n Éteindre"
-    local cmd = "echo -e \"" ..opts.. "\" | rofi -dmenu -i -theme powermenu -p 'System'"
+    local cmd = "echo -e \"" ..opts.. "\" | rofi -dmenu -i -theme powermenu -p 'Système'"
 
     spawn.easy_async_with_shell(cmd,
         function(stdout)
