@@ -100,7 +100,10 @@ local function handle_floating(client)
         awful.titlebar.show(client)
         client.border_width = beautiful.border_width
         -- resize client to its previous size minus titlebar size
-        client:relative_move(0, 0, 0, -beautiful.font_height * 1.5)
+        -- font_heigth * 1.5 is default titlebar height (-1 at the end because on my screen 1 pixel is missing)
+        if not client.floating then
+            client:relative_move(0, 0, 0, -(beautiful.font_height * 1.5) - 1)
+        end
     end
 end
 
@@ -169,7 +172,10 @@ client.connect_signal("property::floating", function(c)
             shown_tiled_clients[1].border_width = beautiful.border_width_single_client
         end
         -- resize client to its previous size minus titlebar size
-        c:relative_move(0, 0, 0, -beautiful.font_height * 1.5)
+        -- font_heigth * 1.5 is default titlebar height (-1 at the end because on my screen 1 pixel is missing)
+        if awful.layout.getname() ~= "floating" then
+            c:relative_move(0, 0, 0, -(beautiful.font_height * 1.5) - 1)
+        end
     else
         awful.titlebar.hide(c)
         -- show borders of tiled clients only if multiple clients

@@ -8,50 +8,21 @@ require("awful.hotkeys_popup.keys")
 
 local variables = require("configuration.variables")
 
-local clock_widget = require("widgets.clock")
-local battery_widget = require("widgets.battery")
-local archupdates_widget = require("widgets.archupdates")
-local volume_widget = require("widgets.volume")
-local brightness_widget = require("widgets.brightness")
-
 local widgets = {}
 
--- {{{ Menu
--- Create a launcher widget and a main menu
-widgets.myawesomemenu = {
-    { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
-    { "manual", variables.terminal .. " -e man awesome" },
-    { "edit config", variables.editor_cmd .. " " .. awesome.conffile },
-    { "restart", awesome.restart },
-    { "quit", function() awesome.quit() end },
-}
-
-widgets.mymainmenu = awful.menu({ items = { { "awesome", widgets.myawesomemenu, beautiful.awesome_icon },
-                                    { "open terminal", variables.terminal }
-                                  }
-                        })
-
-widgets.mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                    menu = widgets.mymainmenu })
+widgets.clock = require("widgets.clock")
+widgets.battery = require("widgets.battery-dbus")
+widgets.archupdates = require("widgets.archupdates")
+widgets.volume = require("widgets.volume")
+widgets.brightness = require("widgets.brightness")
+widgets.network = require("widgets.network-dbus")
+widgets.music = require("widgets.music")
+widgets.launcher = require("widgets.launcher")
+widgets.menu = require("widgets.menu")
 
 -- Menubar configuration
 menubar.utils.terminal = variables.terminal -- Set the terminal for applications that require it
 -- }}}
-
--- Create a clock widget
-widgets.clock = clock_widget
-
--- Create a battery widget
-widgets.battery = battery_widget
-
--- Create an archupdate widget
-widgets.archupdates = archupdates_widget
-
--- Create a volume widget
-widgets.volume = volume_widget
-
--- Create a brightness widget
-widgets.brightness = brightness_widget
 
 -- tags buttons widget mouse handling
 widgets.taglist_buttons = gears.table.join(
@@ -121,43 +92,60 @@ awful.screen.connect_for_each_screen(function(s)
         filter  = awful.widget.taglist.filter.all,
         buttons = widgets.taglist_buttons,
         widget_template = {
+            {
                 {
                     {
                         {
-                            {
-                                margins = 4,
-                                widget  = wibox.container.margin,
-                            },
-                            id     = 'inner_circle',
-                            shape  = gears.shape.circle,
-                            widget = wibox.container.background,
+                            margins = 4,
+                            widget  = wibox.container.margin,
                         },
-                        margins = 1,
-                        widget  = wibox.container.margin,
+                        id     = 'inner_circle',
+                        shape  = gears.shape.circle,
+                        widget = wibox.container.background,
                     },
-                    id     = 'outer_circle',
-                    shape  = gears.shape.circle,
-                    widget = wibox.container.background,
+                    margins = 1,
+                    widget  = wibox.container.margin,
                 },
-                left  = beautiful.wibar_widgets_padding,
-                right = beautiful.wibar_widgets_padding,
-                widget = wibox.container.margin,
-                create_callback = make_taglist_icons,
-                update_callback = make_taglist_icons,
+                id     = 'outer_circle',
+                shape  = gears.shape.circle,
+                widget = wibox.container.background,
             },
+            left  = beautiful.wibar_widgets_padding,
+            right = beautiful.wibar_widgets_padding,
+            widget = wibox.container.margin,
+            create_callback = function(self, tag, index, tags)
+                local old_cursor, old_wibox
+                self:connect_signal("mouse::enter", function()
+                    local w = mouse.current_wibox
+                    old_cursor, old_wibox = w.cursor, w
+                    w.cursor = "hand1"
+                end)
+
+                self:connect_signal("mouse::leave", function()
+                    if old_wibox then
+                        old_wibox.cursor = old_cursor
+                        old_wibox = nil
+                    end
+                end)
+
+                make_taglist_icons(self, tag, index, tags)
+            end,
+            update_callback = make_taglist_icons,
+        },
     }
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
-      screen  = s,
-      filter  = awful.widget.tasklist.filter.currenttags,
-      buttons = widgets.tasklist_buttons
+        screen  = s,
+        filter  = awful.widget.tasklist.filter.currenttags,
+        buttons = widgets.tasklist_buttons
     }
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
     -- Create an imagebox widget which will contain an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
+    -- make my own implementation to allow margins (use tag.connect_signal("property::layout") to change icon)
     s.mylayoutbox = awful.widget.layoutbox(s)
     s.mylayoutbox:buttons(gears.table.join(
                            awful.button({ }, 1, function () awful.layout.inc( 1) end),

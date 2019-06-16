@@ -108,11 +108,11 @@ archupdates_widget:connect_signal("mouse::leave", function()
     end
 end)
 
-archupdates_widget:connect_signal("button::press",
-    function()
+archupdates_widget:connect_signal("button::press", function(_, _, _, button)
+    if button == 1 then
         notification:set_markup(get_title(), "Recherche en cours...")
         text_widget_timer:emit_signal("timeout")
     end
-)
+end)
 
 return archupdates_widget

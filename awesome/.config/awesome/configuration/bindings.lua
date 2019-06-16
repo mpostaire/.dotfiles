@@ -6,11 +6,11 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 require("awful.hotkeys_popup.keys")
 local variables = require("configuration.variables")
 local widgets = require("widgets.widgets")
-local rofi = require("widgets.rofi")
+local rofi = require("util.rofi")
 
 -- {{{ Mouse bindings
 root.buttons(gears.table.join(
-    awful.button({ }, 3, function () widgets.mymainmenu:toggle() end),
+    awful.button({ }, 3, function () widgets.menu:toggle() end),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
@@ -26,24 +26,28 @@ globalkeys = gears.table.join(
     awful.key({ variables.modkey,           }, "Left",
         function ()
             awful.client.focus.bydirection("left")
+            if client.focus then client.focus:raise() end
         end,
         {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Right",
     function ()
         awful.client.focus.bydirection("right")
+        if client.focus then client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Up",
     function ()
         awful.client.focus.bydirection("up")
+        if client.focus then client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Down",
     function ()
         awful.client.focus.bydirection("down")
+        if client.focus then client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
@@ -115,31 +119,22 @@ globalkeys = gears.table.join(
     -- awful.key({ variables.modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
     --           {description = "run prompt", group = "launcher"}),
 
-    awful.key({ variables.modkey }, "x",
-                function ()
-                    awful.prompt.run {
-                        prompt       = "Run Lua code: ",
-                        textbox      = awful.screen.focused().mypromptbox.widget,
-                        exe_callback = awful.util.eval,
-                        history_path = awful.util.get_cache_dir() .. "/history_eval"
-                    }
-                end,
-                {description = "lua execute prompt", group = "awesome"}),
+    -- awful.key({ variables.modkey }, "x",
+    --             function ()
+    --                 awful.prompt.run {
+    --                     prompt       = "Run Lua code: ",
+    --                     textbox      = awful.screen.focused().mypromptbox.widget,
+    --                     exe_callback = awful.util.eval,
+    --                     history_path = awful.util.get_cache_dir() .. "/history_eval"
+    --                 }
+    --             end,
+    --             {description = "lua execute prompt", group = "awesome"}),
     -- lock screen
     awful.key({ variables.modkey }, "l",
         function()
             spawn.with_shell("~/.scripts/lock.sh")
         end,
     {description = "raise lock screen", group = "launcher"}),
-    -- -- rofi music menu
-    -- awful.key({ variables.modkey }, "m", rofi.music_menu,
-    -- {description = "show the music menu", group = "launcher"}),
-    -- rofi calendar menu
-    awful.key({ variables.modkey }, "c", rofi.calendar_menu,
-    {description = "show the calendar menu", group = "launcher"}),
-    -- rofi networkmanager
-    awful.key({ variables.modkey }, "w", rofi.network_menu,
-                {description = "show the network menu", group = "launcher"}),
     -- rofi power menu
     awful.key({ variables.modkey }, "p", rofi.power_menu,
                 {description = "show the power menu", group = "launcher"}),
@@ -159,53 +154,7 @@ globalkeys = gears.table.join(
     function()
         spawn.easy_async("firefox", function() end)
     end,
-    {description = "launch web browser", group = "launcher"}),
-    awful.key({}, "XF86AudioMute",
-    function()
-        spawn.easy_async_with_shell("~/.scripts/volume.sh -s toggle", function() end)
-    end,
-    {description = "toggle mute volume", group = "multimedia"}),
-    awful.key({}, "XF86AudioRaiseVolume",
-    function()
-        spawn.easy_async_with_shell("~/.scripts/volume.sh -i 5", function() end)
-    end,
-    {description = "volume up", group = "multimedia"}),
-    awful.key({}, "XF86AudioLowerVolume",
-    function()
-        spawn.easy_async_with_shell("~/.scripts/volume.sh -d 5", function() end)
-    end,
-    {description = "volume down", group = "multimedia"}),
-    awful.key({}, "XF86MonBrightnessUp",
-    function()
-        spawn.easy_async_with_shell("~/.scripts/brightness.sh -i 5", function() widgets.brightness:emit_signal("update") end)
-    end,
-    {description = "brightness up", group = "multimedia"}),
-    awful.key({}, "XF86MonBrightnessDown",
-    function()
-        spawn.easy_async_with_shell("~/.scripts/brightness.sh -d 5", function() widgets.brightness:emit_signal("update") end)
-    end,
-    {description = "brightness down", group = "multimedia"}),
-
-    awful.key({ "Control" }, "KP_Divide",
-    function()
-        spawn.easy_async("mpc toggle", function() end)
-    end,
-    {description = "music player pause", group = "multimedia"}),
-    awful.key({ "Control" }, "KP_Right",
-    function()
-        spawn.easy_async("mpc next", function() end)
-    end,
-    {description = "music player next song", group = "multimedia"}),
-    awful.key({ "Control" }, "KP_Left",
-    function()
-        spawn.easy_async("mpc prev", function() end)
-    end,
-    {description = "music player previous song", group = "multimedia"}),
-    awful.key({ "Control" }, "KP_Begin",
-    function()
-        spawn.easy_async("mpc stop", function() end)
-    end,
-    {description = "music player stop", group = "multimedia"})
+    {description = "launch web browser", group = "launcher"})
 )
 
 clientkeys = gears.table.join(
@@ -224,7 +173,7 @@ clientkeys = gears.table.join(
     awful.key({ variables.modkey,           }, "o",      function (c) c:move_to_screen()               end,
               {description = "move to screen", group = "client"}),
     awful.key({ variables.modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
-              {description = "toggle keep on top", group = "client"}),
+              {description = "toggle keep on top", group = "client"})
     -- awful.key({ variables.modkey,           }, "n",
     --     function (c)
     --         -- The client currently has the input focus, so it cannot be
@@ -232,12 +181,12 @@ clientkeys = gears.table.join(
     --         c.minimized = true
     --     end ,
     --     {description = "minimize", group = "client"}),
-    awful.key({ variables.modkey,           }, "m",
-        function (c)
-            c.maximized = not c.maximized
-            c:raise()
-        end ,
-        {description = "(un)maximize", group = "client"})
+    -- awful.key({ variables.modkey,           }, "m",
+    --     function (c)
+    --         c.maximized = not c.maximized
+    --         c:raise()
+    --     end ,
+    --     {description = "(un)maximize", group = "client"})
     -- awful.key({ variables.modkey, "Control" }, "m",
     --     function (c)
     --         c.maximized_vertical = not c.maximized_vertical
@@ -315,6 +264,13 @@ clientbuttons = gears.table.join(
         awful.mouse.client.resize(c)
     end)
 )
+
+-- Set widgets keys if they have any
+for k,v in pairs(widgets) do
+    if v.keys then
+        globalkeys = gears.table.join(globalkeys, v.keys)
+    end
+end
 
 -- Set keys
 root.keys(globalkeys)

@@ -43,10 +43,13 @@ local function get_icon()
 
     if status == "Charging" then
         icon = '<span foreground="' ..beautiful.yellow.. '">' ..icon.. '</span>'
+    elseif status == "Discharging" and percentage <= 10 then
+        icon = '<span foreground="' ..beautiful.red.. '">' ..icon.. '</span>'
     end
 
     return icon
 end
+
 local function get_title()
     if time == "" then
         return "<b>Batterie chargée</b>"

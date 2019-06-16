@@ -31,5 +31,11 @@ require("configuration.panel")
 -- signals
 require("configuration.signals")
 
+-- app switcher (alt+tab)
+require("popups.app_switcher")
+
 -- autostart
 require("configuration.autostart")
+
+-- collision (TODO make my own)
+-- require("collision")()

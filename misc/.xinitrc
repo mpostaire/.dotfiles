@@ -49,6 +49,7 @@ xss-lock -- $HOME/.scripts/lock.sh &
 
 numlockx
 mpd $HOME/.config/mpd/mpd.conf
-$HOME/.scripts/lock.sh
-sxhkd &
-exec bspwm
+# $HOME/.scripts/lock.sh
+# sxhkd &
+# exec bspwm
+exec awesome

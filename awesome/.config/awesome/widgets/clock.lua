@@ -1,6 +1,9 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local rofi = require("widgets.rofi")
+local rofi = require("util.rofi")
+local awful = require("awful")
+local gears = require("gears")
+local variables = require("configuration.variables")
 
 local icon = ""
 
@@ -39,6 +42,15 @@ clock_widget:connect_signal("mouse::leave", function()
     end
 end)
 
-clock_widget:connect_signal("button::press", rofi.calendar_menu)
+clock_widget:connect_signal("button::press", function(_, _, _, button)
+    if button == 1 then
+        rofi.calendar_menu()
+    end
+end)
+
+clock_widget.keys = gears.table.join(
+    awful.key({ variables.modkey }, "c", rofi.calendar_menu,
+    {description = "show the calendar menu", group = "launcher"})
+)
 
 return clock_widget

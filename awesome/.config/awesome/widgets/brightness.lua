@@ -4,6 +4,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local spawn = require("awful.spawn")
+local gears = require("gears")
 local popup_notification = require("util.popup_notification")
 
 local icon = ""
@@ -102,9 +103,21 @@ brightness_widget:connect_signal("mouse::leave", function()
     end
 end)
 
-brightness_widget:connect_signal("update", function()
-    text_widget_timer:emit_signal("timeout")
-    notification:show()
-end)
+brightness_widget.keys = gears.table.join(
+    awful.key({}, "XF86MonBrightnessUp", function()
+        spawn.easy_async_with_shell(cmds.inc, function()
+            text_widget_timer:emit_signal("timeout")
+            notification:show()
+        end)
+    end,
+    {description = "brightness up", group = "multimedia"}),
+    awful.key({}, "XF86MonBrightnessDown", function()
+        spawn.easy_async_with_shell(cmds.dec, function()
+            text_widget_timer:emit_signal("timeout")
+            notification:show()
+        end)
+    end,
+    {description = "brightness down", group = "multimedia"})
+)
 
 return brightness_widget

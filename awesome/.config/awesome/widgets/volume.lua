@@ -1,8 +1,8 @@
--- sometimes (after supsend) this widget need awesome to restart to update.
-
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local spawn = require("awful.spawn")
+local awful = require("awful")
+local gears = require("gears")
 local popup_notification = require("util.popup_notification")
 
 local icons = {
@@ -14,7 +14,7 @@ local cmds = {
     toggle = "amixer -q sset 'Master' toggle",
     inc = "amixer -q sset 'Master' 5%+ unmute",
     dec = "amixer -q sset 'Master' 5%- unmute",
-    get = [[awk -F "[][]" '/dB/ { print $2$6 }' <(amixer sget Master)]]
+    get = "amixer sget Master"
 }
 
 local notification = popup_notification:new()
@@ -71,10 +71,12 @@ local function get_icon()
     end
 end
 
-local function update(show_notification)
-    spawn.easy_async_with_shell(cmds.get, function(stdout)
-        local s = stdout:match("[^\r\n]+")
-        percentage, status = s:match("(%d+)%%(%w+)")
+local function update(listener_stdout, show_notification)
+    spawn.easy_async(cmds.get, function(stdout)
+        local s = stdout:match("%d+%%[^\r\n]+")
+        percentage = s:match("(%d+)%%")
+        status = s:match("%[(%a+)%]$")
+
         if status == "on" then
             icon_widget:get_children_by_id('icon')[1]:set_markup_silently(icons[1])
             text_widget:set_markup_silently(percentage.. "%")
@@ -91,14 +93,19 @@ local function update(show_notification)
 end
 
 -- update once so the widget displays information before being updated at least once
-update(false)
+update("", false)
 
--- if we use signals there is no need of a listener
--- we keep it for the example, to see implementation with signals, see brightness widget
-local listener = spawn.with_line_callback({'stdbuf', '-oL', 'alsactl', 'monitor'}, {stdout = update})
-awesome.connect_signal("exit", function()
-    awesome.kill(listener, awesome.unix_signal.SIGTERM)
-end)
+-- after suspend alsactl monitor is killed so we restart the listener at exit
+local function start_listener()
+    local listener = spawn.with_line_callback({'stdbuf', '-oL', 'alsactl', 'monitor'}, {
+        stdout = update,
+        exit = start_listener
+    })
+    awesome.connect_signal("exit", function()
+        awesome.kill(listener, awesome.unix_signal.SIGTERM)
+    end)
+end
+start_listener()
 
 volume_widget:connect_signal("button::press", function(_, _, _, button)
     if button == 4 then
@@ -127,5 +134,20 @@ volume_widget:connect_signal("mouse::leave", function()
         old_wibox = nil
     end
 end)
+
+volume_widget.keys = gears.table.join(
+    awful.key({}, "XF86AudioRaiseVolume", function()
+        spawn.easy_async(cmds.inc, function() end)
+    end,
+    {description = "volume up", group = "multimedia"}),
+    awful.key({}, "XF86AudioMute", function()
+        spawn.easy_async(cmds.toggle, function() end)
+    end,
+    {description = "toggle mute volume", group = "multimedia"}),
+    awful.key({}, "XF86AudioLowerVolume", function()
+        spawn.easy_async(cmds.dec, function() end)
+    end,
+    {description = "volume down", group = "multimedia"})
+)
 
 return volume_widget

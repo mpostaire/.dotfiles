@@ -61,7 +61,6 @@ end
 function popup_notification:new()
     local pop_notif = {}
     setmetatable(pop_notif, popup_notification)
-    -- self._index = self
     pop_notif.popup = make_popup()
     pop_notif.timer = gears.timer {
         timeout   = 2,

@@ -12,4 +12,5 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 # fix android emulator
 export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 
+# auto startx if connected in tty1
 #[[ $(tty) = "/dev/tty1" ]] && exec startx

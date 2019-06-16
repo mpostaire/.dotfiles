@@ -39,8 +39,9 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.align.horizontal,
             { -- Left widgets
                 layout = wibox.layout.fixed.horizontal,
-                widgets.mylauncher,
+                widgets.launcher,
                 s.mytaglist,
+                widgets.music,
                 s.mypromptbox,
             },
             s.mytasklist, -- Middle widget
@@ -48,6 +49,7 @@ awful.screen.connect_for_each_screen(function(s)
                 layout = wibox.layout.fixed.horizontal,
                 wibox.widget.systray(),
                 widgets.archupdates,
+                widgets.network,
                 widgets.brightness,
                 widgets.volume,
                 widgets.battery,

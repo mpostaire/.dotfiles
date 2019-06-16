@@ -1,5 +1,6 @@
 .vscode
 icons
+!awesome/.config/awesome/themes/icons
 themes
 !awesome/.config/awesome/themes
 zsh-autosuggestions
