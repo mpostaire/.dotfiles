@@ -11,9 +11,13 @@ local submenu = {
     { "quit", function() awesome.quit() end },
 }
 
-local mainmenu = awful.menu({ items = { { "awesome", submenu, beautiful.awesome_icon },
-                                    { "open terminal", variables.terminal }
-                                  }
-                        })
+local mainmenu = awful.menu(
+    {
+        items = {
+            { "awesome", submenu, beautiful.awesome_icon },
+            { "open terminal", variables.terminal }
+        }
+    }
+)
 
 return mainmenu

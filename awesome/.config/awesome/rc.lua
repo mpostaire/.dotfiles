@@ -31,6 +31,9 @@ require("configuration.panel")
 -- signals
 require("configuration.signals")
 
+-- titlebars
+require("configuration.titlebars")
+
 -- app switcher (alt+tab)
 require("popups.app_switcher")
 

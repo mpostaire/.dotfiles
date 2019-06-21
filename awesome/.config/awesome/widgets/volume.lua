@@ -16,6 +16,7 @@ local cmds = {
     dec = "amixer -q sset 'Master' 5%- unmute",
     get = "amixer sget Master"
 }
+local mouse_hover = false
 
 local notification = popup_notification:new()
 
@@ -63,11 +64,35 @@ local function get_title()
     end
 end
 
-local function get_icon()
+local function get_icon(mouse_hover)
     if status == "on" then
-        return icons[1]
+        if mouse_hover then
+            return '<span foreground="'..beautiful.fg_normal_hover..'">'..icons[1]..'</span>'
+        else
+            return icons[1]
+        end
     else
-        return '<span foreground ="' ..beautiful.white_alt.. '">' ..icons[2].. '</span>'
+        if mouse_hover then
+            return '<span foreground="'..beautiful.white_alt_hover..'">'..icons[2]..'</span>'
+        else
+            return '<span foreground ="' ..beautiful.white_alt.. '">' ..icons[2].. '</span>'
+        end
+    end
+end
+
+local function get_text(mouse_hover)
+    if status == "on" then
+        if mouse_hover then
+            return '<span foreground="'..beautiful.fg_normal_hover..'">'..tostring(percentage)..'%</span>'
+        else
+            return tostring(percentage).."%"
+        end
+    else
+        if mouse_hover then
+            return '<span foreground="'..beautiful.white_alt_hover..'">'..tostring(percentage)..'%</span>'
+        else
+            return '<span foreground ="' ..beautiful.white_alt.. '">' ..tostring(percentage).. '%</span>'
+        end
     end
 end
 
@@ -77,15 +102,11 @@ local function update(listener_stdout, show_notification)
         percentage = s:match("(%d+)%%")
         status = s:match("%[(%a+)%]$")
 
-        if status == "on" then
-            icon_widget:get_children_by_id('icon')[1]:set_markup_silently(icons[1])
-            text_widget:set_markup_silently(percentage.. "%")
-        else
-            icon_widget:get_children_by_id('icon')[1]:set_markup_silently('<span foreground ="' ..beautiful.white_alt.. '">' ..icons[2].. '</span>')
-            text_widget:set_markup_silently('<span foreground="' ..beautiful.white_alt.. '">' ..percentage.. '%</span>')
-        end
+        icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(mouse_hover))
+        text_widget:set_markup_silently(get_text(mouse_hover))
+
         notification:set_markup(get_title(), get_message())
-        notification:set_icon(get_icon())
+        notification:set_icon(get_icon(false))
         if show_notification == nil or show_notification then
             notification:show()
         end
@@ -121,6 +142,11 @@ local old_cursor, old_wibox
 volume_widget:connect_signal("mouse::enter", function()
     notification:show(true)
 
+    -- mouse_hover color highlight
+    mouse_hover = true
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(mouse_hover))
+    text_widget:set_markup_silently(get_text(mouse_hover))
+
     local w = mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
     w.cursor = "hand1"
@@ -128,6 +154,11 @@ end)
 
 volume_widget:connect_signal("mouse::leave", function()
     notification:hide()
+
+    -- no mouse_hover color highlight
+    mouse_hover = false
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(mouse_hover))
+    text_widget:set_markup_silently(get_text(mouse_hover))
 
     if old_wibox then
         old_wibox.cursor = old_cursor

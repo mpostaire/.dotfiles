@@ -84,7 +84,7 @@ local proxy = p.Proxy:new(
     }
 )
 
-local function get_icon()
+local function get_icon(mouse_hover)
     local icon = icons[5]
     if proxy.Percentage >= 0 and proxy.Percentage < 20 then
         icon = icons[1]
@@ -99,12 +99,33 @@ local function get_icon()
     end
 
     if proxy.State == states.charging then
-        icon = '<span foreground="' ..beautiful.yellow.. '">' ..icon.. '</span>'
+        if mouse_hover then
+            icon = '<span foreground="' ..beautiful.yellow_hover.. '">' ..icon.. '</span>'
+        else
+            icon = '<span foreground="' ..beautiful.yellow.. '">' ..icon.. '</span>'
+        end
     elseif proxy.State == states.discharging and proxy.Percentage <= 15 then
-        icon = '<span foreground="' ..beautiful.red.. '">' ..icon.. '</span>'
+        if mouse_hover then
+            icon = '<span foreground="' ..beautiful.red_hover.. '">' ..icon.. '</span>'
+        else
+            icon = '<span foreground="' ..beautiful.red.. '">' ..icon.. '</span>'
+        end
+    else
+        if mouse_hover then
+            icon = '<span foreground="' ..beautiful.fg_normal_hover.. '">' ..icon.. '</span>'
+        end
     end
 
     return icon
+end
+
+local function get_text(mouse_hover)
+    local text = math.floor(proxy.Percentage).. "%"
+    if mouse_hover then
+        return '<span foreground="'..beautiful.fg_normal_hover..'">'..text..'</span>'
+    else
+        return text
+    end
 end
 
 local function get_title()
@@ -172,7 +193,7 @@ end
 local function update_widget()
     local icon = get_icon()
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(icon)
-    text_widget:get_children_by_id('text')[1]:set_markup_silently(math.floor(proxy.Percentage).. "%")
+    text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text())
 
     notification:set_markup(get_title(), get_message())
     notification:set_icon(icon)
@@ -181,8 +202,20 @@ end
 -- we update once so the widget is not empty at creation
 update_widget()
 
-battery_widget:connect_signal("mouse::enter", function() notification:show(true) end)
-battery_widget:connect_signal("mouse::leave", function() notification:hide() end)
+battery_widget:connect_signal("mouse::enter", function()
+    notification:show(true)
+
+    -- mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(true))
+    text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text(true))
+end)
+battery_widget:connect_signal("mouse::leave", function()
+    notification:hide()
+
+    -- no mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
+    text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text())
+end)
 
 proxy:on_properties_changed(function (p, changed, invalidated)
     assert(p == proxy)

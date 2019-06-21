@@ -65,11 +65,19 @@ if connection_path then
 )
 end
 
-local function get_icon()
+local function get_icon(mouse_hover)
     if manager_proxy.ActiveConnections[1] then
-        return icons[1]
+        if mouse_hover then
+            return '<span foreground="'..beautiful.fg_normal_hover..'">'..icons[1]..'</span>'
+        else
+            return icons[1]
+        end
     else
-        return icons[2]
+        if mouse_hover then
+            return '<span foreground="'..beautiful.white_alt_hover..'">'..icons[2]..'</span>'
+        else
+            return '<span foreground ="' ..beautiful.white_alt.. '">' ..icons[2].. '</span>'
+        end
     end
 end
 
@@ -81,12 +89,20 @@ local function get_message()
     return "En construction"
 end
 
+local function get_text(mouse_hover)
+    if mouse_hover then
+        return '<span foreground="'..beautiful.fg_normal_hover..'">'..connection_proxy.Id..'</span>'
+    else
+        return connection_proxy.Id
+    end
+end
+
 local function update_widget()
     local icon = get_icon()
-    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(icon)
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
     if manager_proxy.ActiveConnections[1] then
         text_widget.visible = true
-        text_widget:get_children_by_id('text')[1]:set_markup_silently(connection_proxy.Id)
+        text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text())
     else
         text_widget.visible = false
     end
@@ -108,12 +124,20 @@ local old_cursor, old_wibox
 network_widget:connect_signal("mouse::enter", function()
     notification:show(true)
 
+    -- mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(true))
+    text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text(true))
+
     local w = mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
     w.cursor = "hand1"
 end)
 network_widget:connect_signal("mouse::leave", function()
     notification:hide()
+
+    -- no mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
+    text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text())
 
     if old_wibox then
         old_wibox.cursor = old_cursor

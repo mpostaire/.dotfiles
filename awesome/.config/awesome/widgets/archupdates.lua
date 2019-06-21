@@ -51,6 +51,7 @@ local icon_widget = wibox.widget {
     widget = wibox.container.margin(_, beautiful.wibar_widgets_padding, beautiful.widgets_inner_padding, 0, 0)
 }
 
+local first_notification
 local text_widget, text_widget_timer = awful.widget.watch(
     cmd, 1800, -- 30 minutes
     function(widget, stdout)
@@ -79,6 +80,12 @@ local text_widget, text_widget_timer = awful.widget.watch(
 
         notification:set_markup(get_title(), get_message())
         widget:set_markup(text)
+
+        -- spawn notification on widget initialization only
+        if first_notification then
+            notification:show()
+            first_notification = false
+        end
     end
 )
 

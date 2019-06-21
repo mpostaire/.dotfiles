@@ -209,7 +209,7 @@ theme.awesome_icon = theme_assets.awesome_icon(
     theme.menu_height, theme.fg_focus, theme.bg_normal
 )
 
--- {{{ User defined variables (use search to find what they do)
+-- {{{ User defined variables (use search to figure out what they do)
 theme.border_width_single_client = dpi(0)
 theme.wibar_widgets_padding = dpi(8)
 theme.widgets_inner_padding = dpi(4)
@@ -219,6 +219,11 @@ theme.font_height = require("beautiful").get_font_height(theme.font)
 theme.awesome_icon_wibar = theme_assets.awesome_icon(
     theme.wibar_height - theme.wibar_bottom_border_width, theme.true_white, theme.red
 )
+
+theme.fg_normal_hover = color.lighten_by(theme.fg_normal, 0.5)
+theme.white_alt_hover = color.lighten_by(theme.white_alt, 0.25)
+theme.red_hover = color.lighten_by(theme.red, 0.25)
+theme.yellow_hover = color.lighten_by(theme.yellow, 0.25)
 -- }}}
 
 -- Define the icon theme for application icons. If not set then the icons

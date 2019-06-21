@@ -20,7 +20,8 @@ end
 
 local icon_widget = wibox.widget {
     {
-        text = icon,
+        markup = icon,
+        id = "icon",
         font = "Material Icons 12",
         widget = wibox.widget.textbox
     },
@@ -29,7 +30,8 @@ local icon_widget = wibox.widget {
 
 local text_widget = wibox.widget {
     {
-        text = "Musique - 00:00",
+        markup = "Musique - 00:00",
+        id = "text",
         widget = wibox.widget.textbox
     },
     widget = wibox.container.margin(_, 0, beautiful.wibar_widgets_padding, 0, 0)
@@ -41,9 +43,29 @@ local music_widget = wibox.widget {
     layout = wibox.layout.fixed.horizontal
 }
 
+local function get_icon(mouse_hover)
+    if mouse_hover then
+        return '<span foreground="'..beautiful.fg_normal_hover..'">'..icon..'</span>'
+    else
+        return icon
+    end
+end
+
+local function get_text(mouse_hover)
+    if mouse_hover then
+        return '<span foreground="'..beautiful.fg_normal_hover..'">Musique - 00:00</span>'
+    else
+        return "Musique - 00:00"
+    end
+end
+
 local old_cursor, old_wibox
 music_widget:connect_signal("mouse::enter", function()
     notification:show(true)
+
+    -- mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(true))
+    text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text(true))
 
     local w = mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
@@ -51,6 +73,10 @@ music_widget:connect_signal("mouse::enter", function()
 end)
 music_widget:connect_signal("mouse::leave", function()
     notification:hide()
+
+    -- no mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
+    text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text())
 
     if old_wibox then
         old_wibox.cursor = old_cursor

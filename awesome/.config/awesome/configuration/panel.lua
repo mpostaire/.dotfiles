@@ -48,7 +48,7 @@ awful.screen.connect_for_each_screen(function(s)
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
                 wibox.widget.systray(),
-                widgets.archupdates,
+                -- widgets.archupdates, -- commented to hide it for now (when I translate wigets in OOP, this will be prettier)
                 widgets.network,
                 widgets.brightness,
                 widgets.volume,

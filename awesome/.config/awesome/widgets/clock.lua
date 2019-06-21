@@ -9,7 +9,8 @@ local icon = ""
 
 local icon_widget = wibox.widget {
     {
-        text = icon,
+        id = 'icon',
+        markup = icon,
         font = "Material Icons 12",
         widget = wibox.widget.textbox
     },
@@ -18,6 +19,7 @@ local icon_widget = wibox.widget {
 
 local text_widget = wibox.widget {
     {
+        id = 'text',
         widget = wibox.widget.textclock("%H:%M")
     },
     widget = wibox.container.margin(_, 0, beautiful.wibar_widgets_padding, 0, 0)
@@ -31,11 +33,19 @@ local clock_widget = wibox.widget {
 
 local old_cursor, old_wibox
 clock_widget:connect_signal("mouse::enter", function()
+    -- mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icon..'</span>')
+    text_widget:get_children_by_id('text')[1].format = '<span foreground="'..beautiful.fg_normal_hover..'">%H:%M</span>'
+
     local w = mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
     w.cursor = "hand1"
 end)
 clock_widget:connect_signal("mouse::leave", function()
+    -- no mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(icon)
+    text_widget:get_children_by_id('text')[1].format = "%H:%M"
+
     if old_wibox then
         old_wibox.cursor = old_cursor
         old_wibox = nil

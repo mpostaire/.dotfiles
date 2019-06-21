@@ -89,6 +89,10 @@ local old_cursor, old_wibox
 brightness_widget:connect_signal("mouse::enter", function()
     notification:show(true)
 
+    -- mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icon..'</span>')
+    text_widget:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..tostring(percentage)..'%</span>')
+
     local w = mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
     w.cursor = "hand1"
@@ -96,6 +100,10 @@ end)
 
 brightness_widget:connect_signal("mouse::leave", function()
     notification:hide()
+
+    -- no mouse_hover color highlight
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(icon)
+    text_widget:set_markup_silently(tostring(percentage).."%")
 
     if old_wibox then
         old_wibox.cursor = old_cursor
