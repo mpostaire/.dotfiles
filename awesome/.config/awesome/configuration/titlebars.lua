@@ -2,19 +2,59 @@ local gears = require("gears")
 local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
+local popup_menu = require("util.popup_menu")
 
--- TODO: change this by my own implementation of a menu that can change
--- its icon dynamically and can interact with a specific client easily
+-- todo: make this have dynamic icons and text and implement tag switch
+-- make tag names icons be the icon of the layout
+
 local menu_target_client
-local right_click_menu = awful.menu(
+local function make_tag_menu()
+    local tags = awful.screen.focused().tags
+    local menu = {}
+    for k,v in ipairs(tags) do
+        menu[k] = {
+            text = v.name,
+            cmd = function() menu_target_client:move_to_tag(v) end
+        }
+    end
+    return menu
+end
+
+local right_click_menu = popup_menu:new(
     {
-        items = {
-            { "close", function() menu_target_client:kill() end, beautiful.titlebar_close_button_normal },
-            { "maximize", function() menu_target_client.maximized = not menu_target_client.maximized end, beautiful.titlebar_maximized_button_normal_inactive },
-            { "minimize", function() menu_target_client.minimized = not menu_target_client.minimized end, beautiful.titlebar_minimize_button_normal },
-            { "floating", function() menu_target_client.floating = not menu_target_client.floating end, beautiful.titlebar_floating_button_normal_inactive },
-            { "ontop", function() menu_target_client.ontop = not menu_target_client.ontop end, beautiful.titlebar_ontop_button_normal_inactive },
-            { "sticky", function() menu_target_client.sticky = not menu_target_client.sticky end, beautiful.titlebar_sticky_button_normal_inactive },
+        {
+            icon = beautiful.titlebar_close_button_normal,
+            text = "close",
+            cmd = function() menu_target_client:kill() end
+        },
+        {
+            icon = beautiful.titlebar_maximized_button_normal_inactive,
+            text = "maximize",
+            cmd = function() menu_target_client.maximized = not menu_target_client.maximized end
+        },
+        {
+            icon = beautiful.titlebar_minimize_button_normal,
+            text = "minimize",
+            cmd = function() menu_target_client.minimized = not menu_target_client.minimized end
+        },
+        {
+            icon = beautiful.titlebar_floating_button_normal_inactive,
+            text = "floating",
+            cmd = function() menu_target_client.floating = not menu_target_client.floating end
+        },
+        {
+            icon = beautiful.titlebar_ontop_button_normal_inactive,
+            text = "ontop",
+            cmd = function() menu_target_client.ontop = not menu_target_client.ontop end
+        },
+        {
+            icon = beautiful.titlebar_sticky_button_normal_inactive,
+            text = "sticky",
+            cmd = function() menu_target_client.sticky = not menu_target_client.sticky end
+        },
+        {
+            text = "move to tag",
+            cmd = make_tag_menu()
         }
     }
 )

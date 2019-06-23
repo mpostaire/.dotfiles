@@ -9,6 +9,7 @@ local dpi = xresources.apply_dpi
 local gears = require("gears")
 local naughty = require("naughty")
 local color = require("util.color")
+local beautiful = require("beautiful")
 
 local gfs = require("gears.filesystem")
 local themes_path = gfs.get_configuration_dir().."themes/"
@@ -215,10 +216,12 @@ theme.wibar_widgets_padding = dpi(8)
 theme.widgets_inner_padding = dpi(4)
 theme.wibar_bottom_border_width = theme.border_width
 theme.notification_offset = dpi(4)
-theme.font_height = require("beautiful").get_font_height(theme.font)
+theme.font_height = beautiful.get_font_height(theme.font)
 theme.awesome_icon_wibar = theme_assets.awesome_icon(
     theme.wibar_height - theme.wibar_bottom_border_width, theme.true_white, theme.red
 )
+
+theme.menu_item_margins = dpi(5)
 
 theme.fg_normal_hover = color.lighten_by(theme.fg_normal, 0.5)
 theme.white_alt_hover = color.lighten_by(theme.white_alt, 0.25)

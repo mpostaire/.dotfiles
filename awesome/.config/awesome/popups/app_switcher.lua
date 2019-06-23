@@ -1,6 +1,9 @@
 -- TODO: app switcher that can select clients between all tags
 -- currently only clients from selected tags are listed (useful for floating but not really for tiling)
 
+-- refaire avec client.get(mouse.screen.index) -> table of all clients in screen 1
+-- then swap dans l'ordre en les raisant et déminimisant
+
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
@@ -42,8 +45,20 @@ local app_switcher = awful.popup {
 
 awful.keygrabber {
     keybindings = {
-        {{'Mod1'         }, 'Tab', function() awful.client.focus.byidx(1) end},
-        {{'Mod1', 'Shift'}, 'Tab', function() awful.client.focus.byidx(-1) end},
+        {{'Mod1'         }, 'Tab', function()
+            awful.client.focus.byidx(1)
+            if client.focus then
+                client.focus.minimized = false
+                client.focus:raise()
+            end
+        end},
+        {{'Mod1', 'Shift'}, 'Tab', function()
+            awful.client.focus.byidx(-1)
+            if client.focus then
+                client.focus.minimized = false
+                client.focus:raise()
+            end
+        end},
     },
     -- Note that it is using the key name and not the modifier name.
     stop_key           = 'Mod1',
