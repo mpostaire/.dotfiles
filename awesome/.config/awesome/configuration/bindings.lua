@@ -98,10 +98,8 @@ globalkeys = gears.table.join(
     --           {description = "increase the number of columns", group = "layout"}),
     -- awful.key({ variables.modkey, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
     --           {description = "decrease the number of columns", group = "layout"}),
-    -- awful.key({ variables.modkey,           }, "space", function () awful.layout.inc( 1)                end,
-    --           {description = "select next", group = "layout"}),
-    -- awful.key({ variables.modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
-    --           {description = "select previous", group = "layout"}),
+    awful.key({ variables.modkey }, "Tab", function () awful.layout.inc(1)                end,
+              {description = "select next", group = "layout"}),
 
     awful.key({ variables.modkey, "Control" }, "n",
               function ()
@@ -141,8 +139,8 @@ globalkeys = gears.table.join(
     -- rofi launcher menu
     awful.key({ variables.modkey }, "space", function() rofi.launcher_menu("drun") end,
                 {description = "show the launcher menu", group = "launcher"}),
-    awful.key({ variables.modkey }, "Tab", function() rofi.launcher_menu("window") end,
-                {description = "show the window menu", group = "launcher"}),
+    -- awful.key({ variables.modkey }, "Tab", function() rofi.launcher_menu("window") end,
+    --             {description = "show the window menu", group = "launcher"}),
 
     -- laptop special keys
     awful.key({}, "XF86Calculator",
@@ -158,15 +156,15 @@ globalkeys = gears.table.join(
 )
 
 clientkeys = gears.table.join(
-    awful.key({ variables.modkey,           }, "f",
-        function (c)
-            c.fullscreen = not c.fullscreen
-            c:raise()
-        end,
-        {description = "toggle fullscreen", group = "client"}),
+    -- awful.key({ variables.modkey,           }, "f",
+    --     function (c)
+    --         c.fullscreen = not c.fullscreen
+    --         c:raise()
+    --     end,
+    --     {description = "toggle fullscreen", group = "client"}),
     awful.key({ variables.modkey }, "q",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
-    awful.key({ variables.modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
+    awful.key({ variables.modkey }, "f",  awful.client.floating.toggle                     ,
               {description = "toggle floating", group = "client"}),
     awful.key({ variables.modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
               {description = "move to master", group = "client"}),
@@ -266,7 +264,7 @@ clientbuttons = gears.table.join(
 )
 
 -- Set widgets keys if they have any
-for k,v in pairs(widgets) do
+for _,v in pairs(widgets) do
     if v.keys then
         globalkeys = gears.table.join(globalkeys, v.keys)
     end

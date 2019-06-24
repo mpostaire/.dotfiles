@@ -64,9 +64,9 @@ local function get_title()
     end
 end
 
-local function get_icon(mouse_hover)
+local function get_icon(hover)
     if status == "on" then
-        if mouse_hover then
+        if mouse_hover and not hover then
             return '<span foreground="'..beautiful.fg_normal_hover..'">'..icons[1]..'</span>'
         else
             return icons[1]
@@ -80,7 +80,7 @@ local function get_icon(mouse_hover)
     end
 end
 
-local function get_text(mouse_hover)
+local function get_text()
     if status == "on" then
         if mouse_hover then
             return '<span foreground="'..beautiful.fg_normal_hover..'">'..tostring(percentage)..'%</span>'
@@ -102,8 +102,8 @@ local function update(listener_stdout, show_notification)
         percentage = s:match("(%d+)%%")
         status = s:match("%[(%a+)%]$")
 
-        icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(mouse_hover))
-        text_widget:set_markup_silently(get_text(mouse_hover))
+        icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
+        text_widget:set_markup_silently(get_text())
 
         notification:set_markup(get_title(), get_message())
         notification:set_icon(get_icon(false))
@@ -144,8 +144,8 @@ volume_widget:connect_signal("mouse::enter", function()
 
     -- mouse_hover color highlight
     mouse_hover = true
-    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(mouse_hover))
-    text_widget:set_markup_silently(get_text(mouse_hover))
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
+    text_widget:set_markup_silently(get_text())
 
     local w = mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
@@ -157,8 +157,8 @@ volume_widget:connect_signal("mouse::leave", function()
 
     -- no mouse_hover color highlight
     mouse_hover = false
-    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(mouse_hover))
-    text_widget:set_markup_silently(get_text(mouse_hover))
+    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
+    text_widget:set_markup_silently(get_text())
 
     if old_wibox then
         old_wibox.cursor = old_cursor

@@ -5,6 +5,8 @@
 
 -- make this compatible with more widgets as items (like progressbar, slider, check button, etc)
 
+-- add support for dynamic items addition/removal
+
 -- maybe make the align layout wrapped inside a constraint container
 
 local awful = require("awful")
@@ -23,12 +25,17 @@ function popup_menu:make_item(item)
     icon_widget.forced_width = 16
     icon_widget.resize = true
 
-    local icon_normal, icon_focus
-    if item.icon then
-        icon_normal = gears.color.recolor_image(item.icon, beautiful.fg_normal)
-        icon_focus = gears.color.recolor_image(item.icon, beautiful.bg_normal)
+    local icons_normal, icons_focus, current_icon = {}, {}
 
-        icon_widget:set_image(icon_normal)
+    if item.icons then
+        for k,v in pairs(item.icons) do
+            icons_normal[k] = gears.color.recolor_image(v, beautiful.fg_normal)
+            icons_focus[k] = gears.color.recolor_image(v, beautiful.bg_normal)
+        end
+
+        current_icon = item.current_icon or next(icons_normal)
+
+        icon_widget:set_image(icons_normal[current_icon])
     end
     layout.first = wibox.container.margin(icon_widget, 0, beautiful.menu_item_margins, 0, 0)
 
@@ -63,14 +70,9 @@ function popup_menu:make_item(item)
 
     local index = self.items.length + 1
 
-    local function click()
-        self:select(index)
-        self:exec()
-    end
-
     background_widget:buttons(awful.util.table.join(
-		awful.button({}, 1, click),
-        awful.button({}, 3, click)
+		awful.button({}, 1, function() self:exec() end),
+        awful.button({}, 3, function() self:exec() end)
     ))
 
     background_widget:connect_signal("mouse::enter", function()
@@ -84,6 +86,10 @@ function popup_menu:make_item(item)
         end
     end)
 
+    if item.create_callback then
+        item.create_callback()
+    end
+
     table.insert(
         self.items,
         {
@@ -91,8 +97,9 @@ function popup_menu:make_item(item)
             icon_widget = icon_widget,
             text_widget = text_widget,
             submenu_widget = submenu_widget,
-            icon_normal = icon_normal,
-            icon_focus = icon_focus,
+            icons_normal = icons_normal,
+            icons_focus = icons_focus,
+            current_icon = current_icon,
             icon_submenu_normal = icon_submenu_normal,
             icon_submenu_focus = icon_submenu_focus,
             cmd = submenu or item.cmd
@@ -173,23 +180,34 @@ function popup_menu:new(items, parent)
     return pop_menu
 end
 
+function popup_menu:update_item(n, focused)
+    if n > self.items.length or n < 1 then
+        return
+    end
+
+    local item = self.items[n]
+    if focused then
+        item.background_widget.bg = beautiful.fg_normal
+        item.background_widget.fg = beautiful.bg_normal
+        item.icon_widget.image = item.icons_focus[item.current_icon]
+        item.submenu_widget.image = item.icon_submenu_focus
+    else
+        item.background_widget.bg = beautiful.bg_normal
+        item.background_widget.fg = beautiful.fg_normal
+        item.icon_widget.image = item.icons_normal[item.current_icon]
+        item.submenu_widget.image = item.icon_submenu_normal
+    end
+end
+
 function popup_menu:select(n)
     if n > self.items.length or n < 1 then
         self.selected = -1
         return
     end
 
-    if self.selected ~= -1 then
-        self.items[self.selected].background_widget.bg = beautiful.bg_normal
-        self.items[self.selected].background_widget.fg = beautiful.fg_normal
-        self.items[self.selected].icon_widget.image = self.items[self.selected].icon_normal
-        self.items[self.selected].submenu_widget.image = self.items[self.selected].icon_submenu_normal
-    end
+    self:update_item(self.selected, false)
     self.selected = n
-    self.items[n].background_widget.bg = beautiful.fg_normal
-    self.items[n].background_widget.fg = beautiful.bg_normal
-    self.items[self.selected].icon_widget.image = self.items[self.selected].icon_focus
-    self.items[self.selected].submenu_widget.image = self.items[self.selected].icon_submenu_focus
+    self:update_item(self.selected, true)
 end
 
 function popup_menu:select_up()
@@ -219,7 +237,7 @@ function popup_menu:exec()
     if not self.items[self.selected].cmd then return end
 
     if type(self.items[self.selected].cmd) == 'function' then
-        self.items[self.selected].cmd()
+        self.items[self.selected].cmd(self.items[self.selected])
         self:hide(true)
     else
         awful.keygrabber.stop(self.keygrabber)
@@ -235,19 +253,20 @@ function popup_menu:toggle()
     end
 end
 
-function popup_menu:show()
+function popup_menu:show(x, y)
     if self.popup.visible then return end
 
     awful.keygrabber.run(self.keygrabber)
 
+    local target_x, target_y
     local screen_geo = mouse.screen.geometry
 
     if self.parent then
-        local target_x = self.parent.popup.x + self.parent.popup.width - beautiful.border_width
+        target_x = self.parent.popup.x + self.parent.popup.width - beautiful.border_width
         if target_x + self.popup.width > screen_geo.width then
             target_x = self.parent.popup.x - (self.popup.width - beautiful.border_width)
         end
-        local target_y = self.parent.popup.y + (beautiful.font_height + 2 * beautiful.menu_item_margins) * (self.parent.selected - 1)
+        target_y = self.parent.popup.y + (beautiful.font_height + 2 * beautiful.menu_item_margins) * (self.parent.selected - 1)
         if target_y + self.popup.height > screen_geo.height then
             target_y = screen_geo.height - self.popup.height
         end
@@ -255,17 +274,24 @@ function popup_menu:show()
         self.popup.x = target_x
         self.popup.y = target_y
     else
-        local mouse_coords = mouse.coords()
+        if x and y then
+            target_x = x
+            target_y = y
+        else
+            local mouse_coords = mouse.coords()
+            target_x = mouse_coords.x
+            target_y = mouse_coords.y
+        end
 
-        if mouse_coords.x + self.popup.width > screen_geo.width then
+        if target_x + self.popup.width > screen_geo.width then
             self.popup.x = screen_geo.width - self.popup.width
         else
-            self.popup.x = mouse_coords.x
+            self.popup.x = target_x
         end
-        if mouse_coords.y + self.popup.width > screen_geo.height then
-            self.popup.y = screen_geo.height - self.popup.height + mouse_coords.y - screen_geo.height
+        if target_y + self.popup.width > screen_geo.height then
+            self.popup.y = screen_geo.height - self.popup.height + target_y - screen_geo.height
         else
-            self.popup.y = mouse_coords.y
+            self.popup.y = target_y
         end
     end
 
@@ -277,10 +303,7 @@ function popup_menu:hide(hide_parents)
 
     self.popup.visible = false
     if self.selected ~= -1 then
-        self.items[self.selected].background_widget.bg = beautiful.bg_normal
-        self.items[self.selected].background_widget.fg = beautiful.fg_normal
-        self.items[self.selected].icon_widget.image = self.items[self.selected].icon_normal
-        self.items[self.selected].submenu_widget.image = self.items[self.selected].icon_submenu_normal
+        self:update_item(self.selected, false)
         self.selected = -1
     end
 

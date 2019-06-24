@@ -59,7 +59,7 @@ local function handle_floating(client)
         client.border_width = beautiful.border_width
         -- resize client to its previous size minus titlebar size
         -- font_heigth * 1.5 is default titlebar height (-1 at the end because on my screen 1 pixel is missing)
-        if not client.floating then
+        if not client.floating and not client.fullscreen then
             client:relative_move(0, 0, 0, -(beautiful.font_height * 1.5) - 1)
         end
     end
@@ -131,7 +131,7 @@ client.connect_signal("property::floating", function(c)
         end
         -- resize client to its previous size minus titlebar size
         -- font_heigth * 1.5 is default titlebar height (-1 at the end because on my screen 1 pixel is missing)
-        if awful.layout.getname() ~= "floating" then
+        if awful.layout.getname() ~= "floating" and not c.fullscreen then
             c:relative_move(0, 0, 0, -(beautiful.font_height * 1.5) - 1)
         end
     else
