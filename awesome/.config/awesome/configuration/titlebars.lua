@@ -14,8 +14,7 @@ client.connect_signal("request::titlebars", function(c)
         end),
         awful.button({ }, 3, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})
-            client_menu.target_client = c
-            client_menu.show()
+            client_menu.show(c)
         end)
     )
 

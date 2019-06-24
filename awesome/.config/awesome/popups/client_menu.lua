@@ -89,8 +89,9 @@ function client_menu.hide()
     client_menu.menu:hide()
 end
 
-function client_menu.show()
+function client_menu.show(client)
     client_menu.menu:hide()
+    client_menu.target_client = client
     client_menu.update_items()
     client_menu.menu:show()
 end
