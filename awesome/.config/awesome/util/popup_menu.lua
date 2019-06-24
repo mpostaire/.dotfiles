@@ -9,6 +9,8 @@
 
 -- maybe make the align layout wrapped inside a constraint container
 
+-- see if using a wibox directly is better
+
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
