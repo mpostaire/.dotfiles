@@ -22,6 +22,14 @@ globalkeys = gears.table.join(
               {description="show help", group="awesome"}),
     awful.key({ variables.modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
+    awful.key({ variables.modkey, "Control" }, "Left", awful.tag.viewprev,
+              {description = "view next", group = "tag"}),
+    awful.key({ variables.modkey, "Control" }, "Right", awful.tag.viewnext,
+              {description = "view prev", group = "tag"}),
+    awful.key({ variables.modkey, "Control" }, "Down", awful.tag.viewprev,
+              {description = "view next", group = "tag"}),
+    awful.key({ variables.modkey, "Control" }, "Up", awful.tag.viewnext,
+              {description = "view prev", group = "tag"}),
 
     awful.key({ variables.modkey,           }, "Left",
         function ()
