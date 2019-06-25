@@ -6,9 +6,16 @@ local client_menu = {}
 
 client_menu.target_client = nil
 
-local function make_tag_menu()
+local function make_tag_menus()
     local tags = awful.screen.focused().tags
-    local menu = {}
+    local move_to_tag_menu = {
+        text = "move to tag",
+        cmd = {}
+    }
+    local enable_in_tag_menu = {
+        text = "enable in tag",
+        cmd = {}
+    }
 
     local layouts_icons = {}
     for _,v in ipairs(awful.layout.layouts) do
@@ -16,22 +23,35 @@ local function make_tag_menu()
     end
 
     for k,v in ipairs(tags) do
-        menu[k] = {
+        move_to_tag_menu.cmd[k] = {
             icons = layouts_icons,
             current_icon = v.layout.name,
             text = v.name,
-            cmd = function() client_menu.target_client:move_to_tag(v) end,
-            create_callback = function() end
+            cmd = function() client_menu.target_client:move_to_tag(v) end
+        }
+        enable_in_tag_menu.cmd[k] = {
+            icons = layouts_icons,
+            current_icon = v.layout.name,
+            text = v.name,
+            cmd = function() client_menu.target_client:toggle_tag(v) end
         }
     end
-    return menu
+
+
+    return move_to_tag_menu, enable_in_tag_menu
 end
+
+local move_to_tag_menu, enable_in_tag_menu = make_tag_menus()
 
 -- update tag layout icon in 'move to tag' submenu on tag layout change
 tag.connect_signal("property::layout", function(t)
-    local tagmenu = client_menu.menu.items[#client_menu.menu.items].cmd
-    tagmenu.items[t.index].current_icon = t.layout.name
-    tagmenu:update_item(t.index, false)
+    local items_length = #client_menu.menu.items
+    local move_to_tag_menu = client_menu.menu.items[items_length - 1].cmd
+    local enable_in_tag_menu = client_menu.menu.items[items_length].cmd
+    move_to_tag_menu.items[t.index].current_icon = t.layout.name
+    move_to_tag_menu:update_item(t.index, false)
+    enable_in_tag_menu.items[t.index].current_icon = t.layout.name
+    enable_in_tag_menu:update_item(t.index, false)
 end)
 
 client_menu.menu = popup_menu:new(
@@ -78,10 +98,8 @@ client_menu.menu = popup_menu:new(
             text = "sticky",
             cmd = function() client_menu.target_client.sticky = not client_menu.target_client.sticky end
         },
-        {
-            text = "move to tag",
-            cmd = make_tag_menu()
-        }
+        move_to_tag_menu,
+        enable_in_tag_menu
     }
 )
 

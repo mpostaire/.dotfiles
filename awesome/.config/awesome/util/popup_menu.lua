@@ -6,9 +6,7 @@
 
 -- maybe make the align layout wrapped inside a constraint container
 
--- see if using a wibox directly is better
-
--- bug only opens if mouse perfectyl still
+-- bug only opens if mouse perfectly still
 
 local awful = require("awful")
 local wibox = require("wibox")
@@ -77,11 +75,12 @@ function popup_menu:make_item(item)
 
     background_widget:connect_signal("mouse::enter", function()
         self:select(index)
-        if type(self.items[self.selected].cmd) == "table" then
-            self:exec()
-        elseif self.active_child then
+        if self.active_child then
             self.active_child:hide()
             self.active_child = nil
+        end
+        if type(self.items[self.selected].cmd) == "table" then
+            self:exec()
         end
     end)
 
