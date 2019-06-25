@@ -8,10 +8,13 @@
 
 -- see if using a wibox directly is better
 
+-- bug only opens if mouse perfectyl still
+
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local gears = require("gears")
+local spawn = require("awful.spawn")
 
 local popup_menu = {}
 popup_menu.__index = popup_menu
@@ -51,7 +54,7 @@ function popup_menu:make_item(item)
 
     local submenu, icon_submenu_normal, icon_submenu_focus
     if item.cmd then
-        if type(item.cmd) ~= "function" then
+        if type(item.cmd) == "table" then
             icon_submenu_normal = gears.color.recolor_image(beautiful.menu_submenu_icon, beautiful.fg_normal)
             icon_submenu_focus = gears.color.recolor_image(beautiful.menu_submenu_icon, beautiful.bg_normal)
             submenu_widget:set_image(icon_submenu_normal)
@@ -118,14 +121,7 @@ function popup_menu:make_popup(items)
 
     local popup = awful.popup {
         widget = {
-            {
-                {
-                    item_container,
-                    layout = wibox.layout.fixed.vertical
-                },
-                margins = 0,
-                widget  = wibox.container.margin
-            },
+            item_container,
             color = beautiful.border_normal,
             margins = beautiful.border_width,
             widget  = wibox.container.margin
@@ -162,7 +158,7 @@ function popup_menu:new(items, parent)
                 pop_menu:hide()
             end
         elseif key == 'Right' then -- open submenu if exists
-            if pop_menu.selected ~= -1 and type(pop_menu.items[pop_menu.selected].cmd) ~= 'function' then
+            if pop_menu.selected ~= -1 and type(pop_menu.items[pop_menu.selected].cmd) == 'table' then
                 pop_menu:exec()
             end
         elseif key == 'Return' then
@@ -174,7 +170,6 @@ function popup_menu:new(items, parent)
 
     pop_menu.mousegrabber = function(mouse)
         if pop_menu:is_mouse_in_menu(mouse) then
-            require('naughty').notify{text='coucou'}
             mousegrabber.stop()
             return false
         elseif mouse.buttons[1] or mouse.buttons[2] or mouse.buttons[3] then
@@ -267,14 +262,18 @@ function popup_menu:exec()
     if self.selected == -1 then return end
     if not self.items[self.selected].cmd then return end
 
-    if type(self.items[self.selected].cmd) == 'function' then
+    local type = type(self.items[self.selected].cmd)
+    if type == 'function' then
         self.items[self.selected].cmd(self.items[self.selected])
         self:hide(true)
-    else
+    elseif type == 'table' then
         awful.keygrabber.stop(self.keygrabber)
         self.active_child = self.items[self.selected].cmd
         self.active_child:select(1)
         self.active_child:show()
+    elseif type == 'string' then
+        spawn.easy_async(self.items[self.selected].cmd)
+        self:hide(true)
     end
 end
 
