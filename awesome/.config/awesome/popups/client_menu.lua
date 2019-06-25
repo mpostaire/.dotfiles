@@ -1,6 +1,7 @@
 local beautiful = require("beautiful")
 local awful = require("awful")
 local popup_menu = require("util.popup_menu")
+require("configuration.tags")
 
 local client_menu = {}
 
@@ -8,6 +9,7 @@ client_menu.target_client = nil
 
 local function make_tag_menus()
     local tags = awful.screen.focused().tags
+
     local move_to_tag_menu = {
         text = "move to tag",
         cmd = {}
@@ -107,11 +109,23 @@ function client_menu.hide()
     client_menu.menu:hide()
 end
 
-function client_menu.show(client)
+function client_menu.show(client, shortcut)
     client_menu.menu:hide()
     client_menu.target_client = client
     client_menu.update_items()
-    client_menu.menu:show()
+
+    if shortcut then
+        if client.titlebar_showed then
+            client_menu.menu:show(
+                client.x + client.border_width,
+                client.y + beautiful.font_height * 1.5 + client.border_width
+            )
+        else
+            client_menu.menu:show(client.x + client.border_width, client.y + client.border_width)
+        end
+    else
+        client_menu.menu:show()
+    end
 end
 
 function client_menu.update_items()

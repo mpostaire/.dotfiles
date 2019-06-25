@@ -7,6 +7,7 @@ require("awful.hotkeys_popup.keys")
 local variables = require("configuration.variables")
 local widgets = require("widgets.widgets")
 local rofi = require("util.rofi")
+local client_menu = require("popups.client_menu")
 
 -- {{{ Mouse bindings
 root.buttons(gears.table.join(
@@ -170,6 +171,8 @@ clientkeys = gears.table.join(
     --         c:raise()
     --     end,
     --     {description = "toggle fullscreen", group = "client"}),
+    awful.key({ variables.modkey, "Control" }, "c", function(c) client_menu.show(c, true) end,
+              {description = "open control menu", group = "client"}),
     awful.key({ variables.modkey }, "q",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
     awful.key({ variables.modkey }, "f",  awful.client.floating.toggle                     ,

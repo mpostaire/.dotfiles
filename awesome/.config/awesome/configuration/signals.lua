@@ -26,11 +26,13 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- }}}
 
 
--- {{{ No borders if tiled and is only one client, titlebar only in floating layout, clientdo not remember if was
+-- {{{ No borders if tiled and is only one client, titlebar only in floating layout, client do not remember if was
 --   maximized in floating layout when switching layout, no maximized state if tiled layout
 -- /!\ A client in a tag's floating layout is not floating. Floating is a special mode that ignores the tag's layout.
 --     In following comments floating and tiled client really mean its layout not the special mode.
 -- Big ugly piece of code but I think I got every corner case covered. It could be simpler but more performance consuming.
+-- /!\ With the following code, all clients have titlebars while floating and no titlebars otherwise regardeless
+-- of any rules
 
 local function handle_tiled(client)
     -- this if statement is new, if bugs related to maximized state, check there first
@@ -39,6 +41,7 @@ local function handle_tiled(client)
     -- end
     client.maximized = false
     awful.titlebar.hide(client)
+    client.titlebar_showed = false
     if #awful.screen.focused().tiled_clients == 1 and not beautiful.gap_single_client then
         client.border_width = beautiful.border_width_single_client
     else
@@ -56,6 +59,7 @@ local function handle_floating(client)
         --     client.was_maximized = false
         -- end
         awful.titlebar.show(client)
+        client.titlebar_showed = true
         client.border_width = beautiful.border_width
         -- resize client to its previous size minus titlebar size
         -- font_heigth * 1.5 is default titlebar height (-1 at the end because on my screen 1 pixel is missing)
@@ -88,11 +92,13 @@ client.connect_signal("manage", function(c)
     if c.floating or awful.layout.getname() == "floating" then
         -- show titlebar
         awful.titlebar.show(c)
+        c.titlebar_showed = true
         -- show borders
         c.border_width = beautiful.border_width -- maybe not needed
     else
         -- hide titlebar
         awful.titlebar.hide(c)
+        c.titlebar_showed = false
         -- show borders of tiled clients only if multiple clients
         if #shown_tiled_clients == 1 then
             c.border_width = beautiful.border_width_single_client
@@ -123,6 +129,7 @@ client.connect_signal("property::floating", function(c)
     if c.floating or awful.layout.getname() == "floating" then
         -- show titlebar
         awful.titlebar.show(c)
+        c.titlebar_showed = true
         -- show borders
         c.border_width = beautiful.border_width
         -- hide borders of other client if only tiled remaining and layout not floating
@@ -136,6 +143,7 @@ client.connect_signal("property::floating", function(c)
         end
     else
         awful.titlebar.hide(c)
+        c.titlebar_showed = false
         -- show borders of tiled clients only if multiple clients
         if #shown_tiled_clients == 1 then
             c.border_width = beautiful.border_width_single_client
