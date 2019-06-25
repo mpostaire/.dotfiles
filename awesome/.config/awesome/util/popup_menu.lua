@@ -1,8 +1,5 @@
 -- a popup based improved imitation of an awful menu
 
--- Rewrite make_item and make_popup fuction to make them object methods
--- try rewriting make_item to use more of widget declarative programming
-
 -- make this compatible with more widgets as items (like progressbar, slider, check button, etc)
 
 -- add support for dynamic items addition/removal
@@ -60,8 +57,6 @@ function popup_menu:make_item(item)
             submenu_widget:set_image(icon_submenu_normal)
 
             submenu = popup_menu:new(item.cmd, self)
-            table.insert(self.children, submenu)
-            self.children.length = self.children.length + 1
         end
     end
     layout.third = wibox.container.margin(submenu_widget, beautiful.menu_item_margins, 0, 0, 0)
@@ -81,10 +76,9 @@ function popup_menu:make_item(item)
         self:select(index)
         if type(self.items[self.selected].cmd) == "table" then
             self:exec()
-        else
-            for _,v in ipairs(self.children) do
-                v:hide()
-            end
+        elseif self.active_child then
+            self.active_child:hide()
+            self.active_child = nil
         end
     end)
 
@@ -150,11 +144,12 @@ function popup_menu:new(items, parent)
     pop_menu.items = { length = 0 }
     pop_menu.selected = -1
     pop_menu.parent = parent or nil
-    pop_menu.children = { length = 0 }
+    pop_menu.active_child = nil
     pop_menu.popup = pop_menu:make_popup(items)
     -- this line below combined with visible = true at popup declaration is a way to compute its height and width
     -- before using show() once (fixes case when if first show() of this popup, may spawn outside the screen)
     pop_menu.popup.visible = false
+
     pop_menu.keygrabber = function(mod, key, event)
         if event == "release" then return end
 
@@ -175,11 +170,45 @@ function popup_menu:new(items, parent)
         elseif key == 'Escape' then
             pop_menu:hide()
         end
-        -- ajout cas si clic gauche ou droit en dehors -> hide()
-        -- voir ça avec mousegrabber et mouse.is_****_mouse_button_pressed
     end
 
+    pop_menu.mousegrabber = function(mouse)
+        if pop_menu:is_mouse_in_menu(mouse) then
+            require('naughty').notify{text='coucou'}
+            mousegrabber.stop()
+            return false
+        elseif mouse.buttons[1] or mouse.buttons[2] or mouse.buttons[3] then
+            pop_menu:hide(true)
+            mousegrabber.stop()
+            return false
+        else
+            return true
+        end
+    end
+
+    pop_menu.popup.widget:connect_signal("mouse::leave", function()
+        if not mousegrabber.isrunning() and pop_menu.popup.visible then
+            mousegrabber.run(pop_menu.mousegrabber, "left_ptr")
+        end
+    end)
+
     return pop_menu
+end
+
+function popup_menu:is_mouse_in_menu(mouse, recursion_direction)
+    if mouse.x > self.popup.x and
+    mouse.x < self.popup.x + self.popup.width and
+    mouse.y > self.popup.y and
+    mouse.y < self.popup.y + self.popup.height
+    then
+        return true
+    elseif self.parent and recursion_direction ~= 'down' then
+        return self.parent:is_mouse_in_menu(mouse, 'up')
+    elseif self.active_child and recursion_direction ~= 'up' then
+        return self.active_child:is_mouse_in_menu(mouse, 'down')
+    else
+        return false
+    end
 end
 
 function popup_menu:update_item(n, focused)
@@ -243,7 +272,9 @@ function popup_menu:exec()
         self:hide(true)
     else
         awful.keygrabber.stop(self.keygrabber)
-        self.items[self.selected].cmd:show()
+        self.active_child = self.items[self.selected].cmd
+        self.active_child:select(1)
+        self.active_child:show()
     end
 end
 
@@ -259,6 +290,12 @@ function popup_menu:show(x, y)
     if self.popup.visible then return end
 
     awful.keygrabber.run(self.keygrabber)
+    -- we run mousegrabber now even if we didn't leave popup
+    -- this is because when a menu is showed at mouse coordinates it is not
+    -- exactly under the mouse so the mouse::leave signal is not fired
+    if not mousegrabber.isrunning() then
+        mousegrabber.run(self.mousegrabber, "left_ptr")
+    end
 
     local target_x, target_y
     local screen_geo = mouse.screen.geometry
@@ -310,9 +347,13 @@ function popup_menu:hide(hide_parents)
     end
 
     awful.keygrabber.stop(self.keygrabber)
+    if not self.parent then
+        mousegrabber.stop()
+    end
 
-    for _,v in ipairs(self.children) do
-        v:hide()
+    if self.active_child then
+        self.active_child:hide()
+        self.active_child = nil
     end
     if hide_parents and self.parent then
         self.parent:hide(hide_parents)
