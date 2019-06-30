@@ -1,6 +1,7 @@
 local gears = require("gears")
 local awful = require("awful")
 local spawn = require("awful.spawn")
+local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
 
 require("awful.hotkeys_popup.keys")
@@ -94,6 +95,17 @@ globalkeys = gears.table.join(
               {description = "reload awesome", group = "awesome"}),
     awful.key({ variables.modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
+    awful.key({ variables.modkey,           }, "g", function()
+                                                        local tags = awful.screen.focused().tags
+                                                        for _,v in pairs(tags) do
+                                                            if v.gap == 0 then
+                                                                v.gap = beautiful.useless_gap
+                                                            else
+                                                                v.gap = 0
+                                                            end
+                                                        end
+                                                    end,
+              {description = "toggle useless gaps", group = "awesome"}),
 
     -- awful.key({ variables.modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
     --           {description = "increase master width factor", group = "layout"}),

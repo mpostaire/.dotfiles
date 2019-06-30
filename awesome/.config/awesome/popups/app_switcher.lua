@@ -73,6 +73,7 @@ awful.keygrabber {
     end,
     root_keybindings = {
         {{'Mod1'}, 'Tab', function() end},
+        {{'Mod1', 'Shift'}, 'Tab', function() end},
     },
     -- export_keybindings = true,
 }
