@@ -36,3 +36,5 @@ TODO
 - make a powersaver mode to disable these animations
 
 - autoupdate script (with popups ?)
+
+- popup_menu uses a lot of cpu when updating an item

@@ -4,6 +4,7 @@ local menubar = require("menubar")
 local wibox = require("wibox")
 local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
+local client_menu = require("popups.client_menu")
 require("awful.hotkeys_popup.keys")
 
 local variables = require("configuration.variables")
@@ -55,8 +56,8 @@ widgets.tasklist_buttons = gears.table.join(
                                                   )
                                               end
                                           end),
-                     awful.button({ }, 3, function()
-                                              awful.menu.client_list({ theme = { width = 250 } })
+                     awful.button({ }, 3, function(c)
+                                              client_menu.show(c)
                                           end),
                      awful.button({ }, 4, function ()
                                               awful.client.focus.byidx(1)
