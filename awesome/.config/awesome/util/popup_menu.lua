@@ -144,6 +144,7 @@ function popup_menu:new(items, parent)
     -- this line below combined with visible = true at popup declaration is a way to compute its height and width
     -- before using show() once (fixes case when if first show() of this popup, may spawn outside the screen)
     pop_menu.popup.visible = false
+    pop_menu.just_launched = false
 
     pop_menu.keygrabber = function(mod, key, event)
         if event == "release" then return end
@@ -168,6 +169,12 @@ function popup_menu:new(items, parent)
     end
 
     pop_menu.mousegrabber = function(mouse)
+        if not mouse.buttons[3] then
+            pop_menu.just_launched = false
+        elseif mouse.buttons[3] and pop_menu.just_launched then
+            return true
+        end
+
         if pop_menu:is_mouse_in_menu(mouse) then
             mousegrabber.stop()
             return false
@@ -293,6 +300,7 @@ function popup_menu:show(x, y)
     -- exactly under the mouse so the mouse::leave signal is not fired
     if not mousegrabber.isrunning() then
         mousegrabber.run(self.mousegrabber, "left_ptr")
+        self.just_launched = true
     end
 
     local target_x, target_y
