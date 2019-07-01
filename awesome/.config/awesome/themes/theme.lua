@@ -99,8 +99,6 @@ naughty.config.defaults.margin = theme.notification_margin
 naughty.config.defaults.border_width = theme.border_width
 -- }}}
 
-theme.wibar_border_color = theme.black_alt
-
 -- {{{ hotkeys popup
 theme.hotkeys_modifiers_fg = theme.white_alt
 theme.hotkeys_border_color = theme.black_alt
@@ -217,6 +215,7 @@ theme.awesome_icon = theme_assets.awesome_icon(
 -- {{{ User defined variables (use search to figure out what they do)
 theme.border_width_single_client = dpi(0)
 theme.wibar_widgets_padding = dpi(8)
+theme.wibar_border_color = theme.black_alt
 theme.widgets_inner_padding = dpi(4)
 theme.wibar_bottom_border_width = theme.border_width
 theme.notification_offset = dpi(4)
