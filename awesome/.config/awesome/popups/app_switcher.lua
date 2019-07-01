@@ -1,8 +1,8 @@
 -- TODO: app switcher that can select clients between all tags
 -- currently only clients from selected tags are listed (useful for floating but not really for tiling)
 
--- refaire avec client.get(mouse.screen.index) -> table of all clients in screen 1
--- then swap dans l'ordre en les raisant et déminimisant
+-- look https://github.com/awesomeWM/awesome/blob/master/docs/90-FAQ.md#how-to-add-an-application-switcher
+-- make this without a tasklist anf get inspiration from awful menu clientlist
 
 local awful = require("awful")
 local wibox = require("wibox")
