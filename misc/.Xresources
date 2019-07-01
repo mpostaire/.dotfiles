@@ -79,7 +79,7 @@ URxvt.perl-ext-common: default,matcher
 ! xdg-open more portable but urls without http:// dont work
 !URxvt.url-launcher: /usr/bin/xdg-open
 URxvt.url-launcher: /usr/bin/firefox
-URxvt.matcher.button: 2
+URxvt.matcher.button: 3
 
 ! scroll in manpages, etc...
 URxvt.secondaryScreen: 1
