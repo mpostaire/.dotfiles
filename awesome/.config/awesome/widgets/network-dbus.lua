@@ -1,7 +1,5 @@
 -- this is an incomplete basic network widget
--- bug: after resuming from a suspend, if ssid is changed, it will not be detected and last one will show
---      this may be a symptom of a larger problem
--- quick fix: restart awesome (Super + r)
+-- ethernet support not tested, ethernet icon is a placeholder
 
 local wibox = require("wibox")
 local beautiful = require("beautiful")
@@ -15,8 +13,11 @@ local p = require("dbus_proxy")
 
 local icons = {
     "",
-    ""
+    "",
+    "E"
 }
+
+local state = 'off'
 
 local notification = popup_notification:new()
 
@@ -52,25 +53,33 @@ local manager_proxy = p.Proxy:new(
     }
 )
 
-local connection_path = manager_proxy.ActiveConnections[1]
 local connection_proxy
-if connection_path then
-    connection_proxy = p.Proxy:new(
-    {
-        bus = p.Bus.SYSTEM,
-        name = "org.freedesktop.NetworkManager",
-        interface = "org.freedesktop.NetworkManager.Connection.Active",
-        path = connection_path
-    }
-)
+local function set_connection_proxy(connection_path)
+    if connection_path then
+        connection_proxy = p.Proxy:new(
+        {
+            bus = p.Bus.SYSTEM,
+            name = "org.freedesktop.NetworkManager",
+            interface = "org.freedesktop.NetworkManager.Connection.Active",
+            path = connection_path
+        }
+    )
+    end
 end
+set_connection_proxy(manager_proxy.ActiveConnections[1])
 
 local function get_icon(mouse_hover)
-    if manager_proxy.ActiveConnections[1] then
+    if state == 'wifi' then
         if mouse_hover then
             return '<span foreground="'..beautiful.fg_normal_hover..'">'..icons[1]..'</span>'
         else
             return icons[1]
+        end
+    elseif state == 'eth' then
+        if mouse_hover then
+            return '<span foreground="'..beautiful.fg_normal_hover..'">'..icons[3]..'</span>'
+        else
+            return icons[3]
         end
     else
         if mouse_hover then
@@ -100,7 +109,7 @@ end
 local function update_widget()
     local icon = get_icon()
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
-    if manager_proxy.ActiveConnections[1] then
+    if state == 'wifi' or state == 'eth' then
         text_widget.visible = true
         text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text())
     else
@@ -150,7 +159,14 @@ manager_proxy:on_properties_changed(function (p, changed, invalidated)
     for k, v in pairs(changed) do
         if k == "ActiveConnections" then
             if manager_proxy.ActiveConnections[1] then
-                connection_proxy.path = manager_proxy.ActiveConnections[1]
+                set_connection_proxy(manager_proxy.ActiveConnections[1])
+                if string.match(connection_proxy.Type, "wireless") then
+                    state = 'wifi'
+                elseif string.match(connection_proxy.Type, "ethernet") then
+                    state = 'eth'
+                else
+                    state = 'off'
+                end
             end
             update_widget()
         end
