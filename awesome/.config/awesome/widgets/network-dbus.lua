@@ -12,9 +12,9 @@ local variables = require("configuration.variables")
 local p = require("dbus_proxy")
 
 local icons = {
-    "",
-    "",
-    "E"
+    wifi = "",
+    off = "",
+    eth = "E"
 }
 
 local state = 'off'
@@ -55,37 +55,49 @@ local manager_proxy = p.Proxy:new(
 
 local connection_proxy
 local function set_connection_proxy(connection_path)
-    if connection_path then
+    if manager_proxy.ActiveConnections[1] then
         connection_proxy = p.Proxy:new(
-        {
-            bus = p.Bus.SYSTEM,
-            name = "org.freedesktop.NetworkManager",
-            interface = "org.freedesktop.NetworkManager.Connection.Active",
-            path = connection_path
-        }
-    )
+            {
+                bus = p.Bus.SYSTEM,
+                name = "org.freedesktop.NetworkManager",
+                interface = "org.freedesktop.NetworkManager.Connection.Active",
+                path = connection_path
+            }
+        )
     end
 end
+
+local function set_state()
+    if manager_proxy.ActiveConnections[1] then
+        if string.match(connection_proxy.Type, "wireless") then
+            state = 'wifi'
+        elseif string.match(connection_proxy.Type, "ethernet") then
+            state = 'eth'
+        else
+            state = 'off'
+        end
+    else
+        state = 'off'
+    end
+end
+
+-- manager_proxy.ActiveConnections[1]: the first element of this array is usually the primary connection
+-- if bugs, we may use manager_proxy.PrimaryConnection
 set_connection_proxy(manager_proxy.ActiveConnections[1])
+set_state()
 
 local function get_icon(mouse_hover)
-    if state == 'wifi' then
+    if state == 'wifi' or state == 'eth' then
         if mouse_hover then
-            return '<span foreground="'..beautiful.fg_normal_hover..'">'..icons[1]..'</span>'
+            return '<span foreground="'..beautiful.fg_normal_hover..'">'..icons[state]..'</span>'
         else
-            return icons[1]
-        end
-    elseif state == 'eth' then
-        if mouse_hover then
-            return '<span foreground="'..beautiful.fg_normal_hover..'">'..icons[3]..'</span>'
-        else
-            return icons[3]
+            return icons[state]
         end
     else
         if mouse_hover then
-            return '<span foreground="'..beautiful.white_alt_hover..'">'..icons[2]..'</span>'
+            return '<span foreground="'..beautiful.white_alt_hover..'">'..icons[state]..'</span>'
         else
-            return '<span foreground ="' ..beautiful.white_alt.. '">' ..icons[2].. '</span>'
+            return '<span foreground ="' ..beautiful.white_alt.. '">' ..icons[state].. '</span>'
         end
     end
 end
@@ -99,6 +111,8 @@ local function get_message()
 end
 
 local function get_text(mouse_hover)
+    if state == 'off' then return "ERROR" end
+
     if mouse_hover then
         return '<span foreground="'..beautiful.fg_normal_hover..'">'..connection_proxy.Id..'</span>'
     else
@@ -160,14 +174,8 @@ manager_proxy:on_properties_changed(function (p, changed, invalidated)
         if k == "ActiveConnections" then
             if manager_proxy.ActiveConnections[1] then
                 set_connection_proxy(manager_proxy.ActiveConnections[1])
-                if string.match(connection_proxy.Type, "wireless") then
-                    state = 'wifi'
-                elseif string.match(connection_proxy.Type, "ethernet") then
-                    state = 'eth'
-                else
-                    state = 'off'
-                end
             end
+            set_state()
             update_widget()
         end
     end
