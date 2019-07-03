@@ -173,7 +173,23 @@ globalkeys = gears.table.join(
     function()
         spawn.easy_async("firefox", function() end)
     end,
-    {description = "launch web browser", group = "launcher"})
+    {description = "launch web browser", group = "launcher"}),
+
+    awful.key({ "Shift" }, "Print",
+    function()
+        spawn.easy_async("xfce4-screenshooter -r", function() end)
+    end,
+    {description = "take a screenshot of a region", group = "launcher"}),
+    awful.key({ "Control" }, "Print",
+    function()
+        spawn.easy_async("xfce4-screenshooter -w", function() end)
+    end,
+    {description = "take a screenshot of a window", group = "launcher"}),
+    awful.key({}, "Print",
+    function()
+        spawn.easy_async("xfce4-screenshooter -f", function() end)
+    end,
+    {description = "take a screenshot", group = "launcher"})
 )
 
 clientkeys = gears.table.join(
