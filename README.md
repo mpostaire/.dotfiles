@@ -38,3 +38,5 @@ TODO
 - autoupdate script (with popups ?)
 
 - popup_menu uses a lot of cpu when updating an item
+
+- widget popups onclick (currently onhover is cpu intesive)

@@ -10,11 +10,28 @@ local gears = require("gears")
 local naughty = require("naughty")
 local color = require("util.color")
 local beautiful = require("beautiful")
+local variables = require("configuration.variables")
 
 local gfs = require("gears.filesystem")
 local themes_path = gfs.get_configuration_dir().."themes/"
 
 local theme = {}
+
+-- {{{ Wallpaper
+local function set_wallpaper(wallpaper_path)
+    if string.sub(wallpaper_path, 1, 1) == "~" then
+        wallpaper_path = variables.home .. string.sub(wallpaper_path, 2)
+    end
+
+    if gfs.file_readable(wallpaper_path) then
+        theme.wallpaper = wallpaper_path
+    else
+        theme.wallpaper = gfs.get_themes_dir().."default/background.png"
+    end
+end
+
+set_wallpaper("~/Images/lunar_eclipse.jpg")
+-- }}}
 
 theme.black = xresources_theme["color0"]
 theme.black_alt = xresources_theme["color8"]
@@ -185,9 +202,6 @@ theme.titlebar_maximized_button_normal_inactive = themes_path.."icons/titlebar/m
 theme.titlebar_maximized_button_focus_inactive  = themes_path.."icons/titlebar/maximized_focus_inactive.png"
 theme.titlebar_maximized_button_normal_active = themes_path.."icons/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active  = themes_path.."icons/titlebar/maximized_focus_active.png"
-
--- Wallpaper
-theme.wallpaper = "~/Images/lunar_eclipse.jpg"
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = themes_path.."icons/layouts/fairhw.png"
