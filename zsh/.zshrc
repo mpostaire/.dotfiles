@@ -2,6 +2,8 @@
 #              (add support git ? + zsh auto highlight regler couleurs + autres ?)
 # setopt more and co
 
+export PATH=$PATH:$HOME"/.local/bin"
+
 ## Bindings (cause the first char of the keycode to be slow when typed in terminal)
 
 # Set Ctrl+Backspace to delete previous word

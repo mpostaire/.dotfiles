@@ -26,7 +26,8 @@ awful.rules.rules = {
             instance = {
                 "DTA", -- Firefox addon DownThemAll.
                 "copyq", -- Includes session name in class.
-                "pinentry"
+                "pinentry",
+                "Browser" -- Firefox about window
             },
             class = {
                 "Arandr",
