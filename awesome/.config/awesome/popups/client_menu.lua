@@ -50,10 +50,13 @@ tag.connect_signal("property::layout", function(t)
     local items_length = #client_menu.menu.items
     local move_to_tag_menu = client_menu.menu.items[items_length - 1].cmd
     local enable_in_tag_menu = client_menu.menu.items[items_length].cmd
-    move_to_tag_menu.items[t.index].current_icon = t.layout.name
-    move_to_tag_menu:update_item(t.index, false)
-    enable_in_tag_menu.items[t.index].current_icon = t.layout.name
-    enable_in_tag_menu:update_item(t.index, false)
+
+    if move_to_tag_menu.items[t.index] and enable_in_tag_menu.items[t.index] then
+        move_to_tag_menu.items[t.index].current_icon = t.layout.name
+        move_to_tag_menu:update_item(t.index, false)
+        enable_in_tag_menu.items[t.index].current_icon = t.layout.name
+        enable_in_tag_menu:update_item(t.index, false)
+    end
 end)
 
 client_menu.menu = popup_menu:new(

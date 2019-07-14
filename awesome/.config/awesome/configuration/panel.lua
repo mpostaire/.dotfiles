@@ -3,7 +3,7 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
 
-local widgets = require("widgets.widgets")
+local widgets = require("widgets")
 
 -- MOVE BELOW WALLPAPER BLOCK INTO ITS OWN FILE
 -- WALLPAPER

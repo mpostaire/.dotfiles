@@ -1,6 +1,7 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local awful = require("awful")
+local gears = require("gears")
 local popup_notification = require("util.popup_notification")
 
 local icon = ""
@@ -83,7 +84,7 @@ local text_widget, text_widget_timer = awful.widget.watch(
 
         -- spawn notification on widget initialization only
         if first_notification then
-            notification:show()
+            notification:show(true)
             first_notification = false
         end
     end
@@ -98,17 +99,21 @@ archupdates_widget = wibox.widget {
     layout = wibox.layout.fixed.horizontal
 }
 
+archupdates_widget:buttons(gears.table.join(
+    awful.button({}, 1, function() notification:toggle() end),
+    awful.button({}, 2, function()
+        notification:set_markup(get_title(), "Recherche en cours...")
+        text_widget_timer:emit_signal("timeout")
+    end)
+))
+
 local old_cursor, old_wibox
 archupdates_widget:connect_signal("mouse::enter", function()
-    notification:show(true)
-
     local w = mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
     w.cursor = "hand1"
 end)
 archupdates_widget:connect_signal("mouse::leave", function()
-    notification:hide()
-
     if old_wibox then
         old_wibox.cursor = old_cursor
         old_wibox = nil

@@ -71,34 +71,24 @@ local brightness_widget = wibox.widget {
     layout = wibox.layout.fixed.horizontal
 }
 
-brightness_widget:connect_signal("button::press", function(_, _, _, button)
-    if button == 4 then
+brightness_widget:buttons(gears.table.join(
+    awful.button({}, 1, function() notification:toggle() end),
+    awful.button({}, 4, function()
         spawn.easy_async_with_shell(cmds.inc, function()
             text_widget_timer:emit_signal("timeout")
+            notification:show(true)
         end)
-    elseif button == 5 then
+    end),
+    awful.button({}, 5, function()
         spawn.easy_async_with_shell(cmds.dec, function()
             text_widget_timer:emit_signal("timeout")
+            notification:show(true)
         end)
-    elseif button == 1 then
-        spawn.easy_async_with_shell(cmds.set25, function()
-            text_widget_timer:emit_signal("timeout")
-        end)
-    elseif button == 2 then
-        spawn.easy_async_with_shell(cmds.set50, function()
-            text_widget_timer:emit_signal("timeout")
-        end)
-    elseif button == 3 then
-        spawn.easy_async_with_shell(cmds.set75, function()
-            text_widget_timer:emit_signal("timeout")
-        end)
-    end
-end)
+    end)
+))
 
 local old_cursor, old_wibox
 brightness_widget:connect_signal("mouse::enter", function()
-    notification:show(true)
-
     -- mouse_hover color highlight
     mouse_hover = true
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icon..'</span>')
@@ -110,8 +100,6 @@ brightness_widget:connect_signal("mouse::enter", function()
 end)
 
 brightness_widget:connect_signal("mouse::leave", function()
-    notification:hide()
-
     -- no mouse_hover color highlight
     mouse_hover = false
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(icon)
@@ -127,14 +115,14 @@ brightness_widget.keys = gears.table.join(
     awful.key({}, "XF86MonBrightnessUp", function()
         spawn.easy_async_with_shell(cmds.inc, function()
             text_widget_timer:emit_signal("timeout")
-            notification:show()
+            notification:show(true)
         end)
     end,
     {description = "brightness up", group = "multimedia"}),
     awful.key({}, "XF86MonBrightnessDown", function()
         spawn.easy_async_with_shell(cmds.dec, function()
             text_widget_timer:emit_signal("timeout")
-            notification:show()
+            notification:show(true)
         end)
     end,
     {description = "brightness down", group = "multimedia"})

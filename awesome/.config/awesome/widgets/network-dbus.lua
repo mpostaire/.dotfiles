@@ -145,8 +145,6 @@ end)
 
 local old_cursor, old_wibox
 network_widget:connect_signal("mouse::enter", function()
-    notification:show(true)
-
     -- mouse_hover color highlight
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(true))
     text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text(true))
@@ -156,8 +154,6 @@ network_widget:connect_signal("mouse::enter", function()
     w.cursor = "hand1"
 end)
 network_widget:connect_signal("mouse::leave", function()
-    notification:hide()
-
     -- no mouse_hover color highlight
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
     text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text())

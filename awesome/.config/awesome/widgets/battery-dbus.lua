@@ -1,5 +1,7 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local gears = require("gears")
+local awful = require("awful")
 local popup_notification = require("util.popup_notification")
 
 local p = require("dbus_proxy")
@@ -202,19 +204,29 @@ end
 -- we update once so the widget is not empty at creation
 update_widget()
 
-battery_widget:connect_signal("mouse::enter", function()
-    notification:show(true)
+battery_widget:buttons(gears.table.join(
+    awful.button({}, 1, function() notification:toggle() end)
+))
 
+local old_cursor, old_wibox
+battery_widget:connect_signal("mouse::enter", function()
     -- mouse_hover color highlight
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon(true))
     text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text(true))
+
+    local w = mouse.current_wibox
+    old_cursor, old_wibox = w.cursor, w
+    w.cursor = "hand1"
 end)
 battery_widget:connect_signal("mouse::leave", function()
-    notification:hide()
-
     -- no mouse_hover color highlight
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
     text_widget:get_children_by_id('text')[1]:set_markup_silently(get_text())
+
+    if old_wibox then
+        old_wibox.cursor = old_cursor
+        old_wibox = nil
+    end
 end)
 
 proxy:on_properties_changed(function (p, changed, invalidated)

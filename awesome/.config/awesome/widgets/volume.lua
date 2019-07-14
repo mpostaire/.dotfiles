@@ -108,7 +108,7 @@ local function update(listener_stdout, show_notification)
         notification:set_markup(get_title(), get_message())
         notification:set_icon(get_icon(false))
         if show_notification == nil or show_notification then
-            notification:show()
+            notification:show(true)
         end
     end)
 end
@@ -128,20 +128,15 @@ local function start_listener()
 end
 start_listener()
 
-volume_widget:connect_signal("button::press", function(_, _, _, button)
-    if button == 4 then
-        spawn.easy_async(cmds.inc, function() end)
-    elseif button == 5 then
-        spawn.easy_async(cmds.dec, function() end)
-    elseif button == 1 then
-        spawn.easy_async(cmds.toggle, function() end)
-    end
-end)
+volume_widget:buttons(gears.table.join(
+    awful.button({}, 1, function() notification:toggle() end),
+    awful.button({}, 2, function() spawn.easy_async(cmds.toggle, function() end) end),
+    awful.button({}, 4, function() spawn.easy_async(cmds.inc, function() end) end),
+    awful.button({}, 5, function() spawn.easy_async(cmds.dec, function() end) end)
+))
 
 local old_cursor, old_wibox
 volume_widget:connect_signal("mouse::enter", function()
-    notification:show(true)
-
     -- mouse_hover color highlight
     mouse_hover = true
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())
@@ -153,8 +148,6 @@ volume_widget:connect_signal("mouse::enter", function()
 end)
 
 volume_widget:connect_signal("mouse::leave", function()
-    notification:hide()
-
     -- no mouse_hover color highlight
     mouse_hover = false
     icon_widget:get_children_by_id('icon')[1]:set_markup_silently(get_icon())

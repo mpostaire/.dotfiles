@@ -6,7 +6,7 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 
 require("awful.hotkeys_popup.keys")
 local variables = require("configuration.variables")
-local widgets = require("widgets.widgets")
+local widgets = require("widgets")
 local rofi = require("util.rofi")
 local client_menu = require("popups.client_menu")
 
