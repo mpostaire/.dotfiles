@@ -1,5 +1,6 @@
 -- a popup basic imitation of a naughty notification
--- TODO: hide when click outside
+-- TODO: hide when click outside (using mousegrabber as in client_menu or test mouse::enter in
+--       a transparent wibox that cover the screen but just behind the popup)
 
 local awful = require("awful")
 local wibox = require("wibox")

@@ -1,6 +1,8 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local rofi = require("util.rofi")
+local awful = require("awful")
+local gears = require("gears")
 
 local launcher_widget = wibox.widget {
     {
@@ -19,13 +21,10 @@ local launcher_widget = wibox.widget {
     widget = wibox.container.margin
 }
 
-launcher_widget:connect_signal("button::press", function(_, _, _, button)
-    if button == 1 then
-        rofi.launcher_menu("drun")
-    elseif button == 3 then
-        rofi.launcher_menu("window")
-    end
-end)
+launcher_widget:buttons(gears.table.join(
+    awful.button({}, 1, function() rofi.launcher_menu("drun") end),
+    awful.button({}, 3, function() rofi.launcher_menu("window") end)
+))
 
 local old_cursor, old_wibox
 launcher_widget:connect_signal("mouse::enter", function()

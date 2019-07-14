@@ -1,6 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-require("configuration.bindings") -- we apply here client keys so to activate theme we need to get the variable that set them
+require("config.bindings") -- we apply here client keys so to activate theme we need to get the variable that set them
 
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).

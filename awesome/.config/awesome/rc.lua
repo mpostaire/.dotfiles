@@ -3,39 +3,19 @@
 pcall(require, "luarocks.loader")
 
 require("awful.autofocus") -- when a client is closed, another client will be focused
--- Theme handling library
-local beautiful = require("beautiful")
 
 -- error handling
-require("configuration.error_handling")
+require("util.error_handling")
 
 -- Themes define colours, icons, font and wallpapers.
 -- do not place this line below
-beautiful.init(require("themes.theme"))
+require("beautiful").init(require("themes.onedark_red"))
 
--- tags
-require("configuration.tags")
-
--- rules
-require("configuration.rules")
-
--- bindings
-require("configuration.bindings")
-
--- panel
-require("configuration.panel")
-
--- signals
-require("configuration.signals")
-
--- titlebars
-require("configuration.titlebars")
+-- configuration
+require("config")
 
 -- app switcher (alt+tab)
 require("popups.app_switcher")
 
--- autostart
-require("configuration.autostart")
-
--- collision (TODO make my own)
+-- collision (TODO make my own simplified version)
 -- require("collision")()

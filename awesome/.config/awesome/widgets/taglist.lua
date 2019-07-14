@@ -2,7 +2,7 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
 local gears = require("gears")
-local variables = require("configuration.variables")
+local variables = require("config.variables")
 
 -- tags buttons widget mouse handling
 local taglist_buttons = gears.table.join(

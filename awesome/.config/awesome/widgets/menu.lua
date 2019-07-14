@@ -1,9 +1,9 @@
 local awful = require("awful")
-local variables = require("configuration.variables")
+local variables = require("config.variables")
 local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
-local popup_menu = require("util.popup_menu")
-local spawn = require("awful.spawn")
+-- local popup_menu = require("util.popup_menu")
+local gears = require("gears")
 
 local submenu = {
     { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
@@ -56,5 +56,7 @@ local mainmenu = awful.menu(
 --         }
 --     }
 -- )
+
+root.buttons(gears.table.join(root.buttons(), awful.button({ }, 3, function () mainmenu:toggle() end)))
 
 return mainmenu

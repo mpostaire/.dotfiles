@@ -5,14 +5,12 @@ local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
 
 require("awful.hotkeys_popup.keys")
-local variables = require("configuration.variables")
-local widgets = require("widgets")
+local variables = require("config.variables")
 local rofi = require("util.rofi")
 local client_menu = require("popups.client_menu")
 
 -- {{{ Mouse bindings
 root.buttons(gears.table.join(
-    awful.button({ }, 3, function () widgets.menu:toggle() end),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
@@ -301,13 +299,6 @@ clientbuttons = gears.table.join(
         awful.mouse.client.resize(c)
     end)
 )
-
--- Set widgets keys if they have any
-for _,v in pairs(widgets) do
-    if v.keys then
-        globalkeys = gears.table.join(globalkeys, v.keys)
-    end
-end
 
 -- Set keys
 root.keys(globalkeys)

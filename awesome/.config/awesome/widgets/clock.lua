@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local rofi = require("util.rofi")
 local awful = require("awful")
 local gears = require("gears")
-local variables = require("configuration.variables")
+local variables = require("config.variables")
 
 local icon = ""
 
@@ -58,9 +58,11 @@ clock_widget:connect_signal("button::press", function(_, _, _, button)
     end
 end)
 
-clock_widget.keys = gears.table.join(
+local widget_keys = gears.table.join(
     awful.key({ variables.modkey }, "c", rofi.calendar_menu,
     {description = "show the calendar menu", group = "launcher"})
 )
+
+root.keys(gears.table.join(root.keys(), widget_keys))
 
 return clock_widget

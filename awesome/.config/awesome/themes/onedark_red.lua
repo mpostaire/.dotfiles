@@ -10,7 +10,7 @@ local gears = require("gears")
 local naughty = require("naughty")
 local color = require("util.color")
 local beautiful = require("beautiful")
-local variables = require("configuration.variables")
+local variables = require("config.variables")
 
 local gfs = require("gears.filesystem")
 local themes_path = gfs.get_configuration_dir().."themes/"

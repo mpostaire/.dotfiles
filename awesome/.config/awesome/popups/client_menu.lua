@@ -1,7 +1,7 @@
 local beautiful = require("beautiful")
 local awful = require("awful")
 local popup_menu = require("util.popup_menu")
-require("configuration.tags")
+require("config.tags")
 
 local client_menu = {}
 

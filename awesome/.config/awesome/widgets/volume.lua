@@ -159,7 +159,7 @@ volume_widget:connect_signal("mouse::leave", function()
     end
 end)
 
-volume_widget.keys = gears.table.join(
+local widget_keys = gears.table.join(
     awful.key({}, "XF86AudioRaiseVolume", function()
         spawn.easy_async(cmds.inc, function() end)
     end,
@@ -173,5 +173,7 @@ volume_widget.keys = gears.table.join(
     end,
     {description = "volume down", group = "multimedia"})
 )
+
+root.keys(gears.table.join(root.keys(), widget_keys))
 
 return volume_widget

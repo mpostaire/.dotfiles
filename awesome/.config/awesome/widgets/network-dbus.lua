@@ -7,7 +7,7 @@ local popup_notification = require("util.popup_notification")
 local rofi = require("util.rofi")
 local awful = require("awful")
 local gears = require("gears")
-local variables = require("configuration.variables")
+local variables = require("config.variables")
 
 local p = require("dbus_proxy")
 
@@ -177,9 +177,11 @@ manager_proxy:on_properties_changed(function (p, changed, invalidated)
     end
 end)
 
-network_widget.keys = gears.table.join(
+local widget_keys = gears.table.join(
     awful.key({ variables.modkey }, "w", rofi.network_menu,
                 {description = "show the network menu", group = "launcher"})
 )
+
+root.keys(gears.table.join(root.keys(), widget_keys))
 
 return network_widget

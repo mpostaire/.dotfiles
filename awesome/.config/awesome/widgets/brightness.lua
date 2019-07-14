@@ -111,7 +111,7 @@ brightness_widget:connect_signal("mouse::leave", function()
     end
 end)
 
-brightness_widget.keys = gears.table.join(
+local widget_keys = gears.table.join(
     awful.key({}, "XF86MonBrightnessUp", function()
         spawn.easy_async_with_shell(cmds.inc, function()
             text_widget_timer:emit_signal("timeout")
@@ -127,5 +127,7 @@ brightness_widget.keys = gears.table.join(
     end,
     {description = "brightness down", group = "multimedia"})
 )
+
+root.keys(gears.table.join(root.keys(), widget_keys))
 
 return brightness_widget

@@ -2,7 +2,7 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local rofi = require("util.rofi")
 local awful = require("awful")
-local variables= require("configuration.variables")
+local variables= require("config.variables")
 local gears = require("gears")
 local spawn = require("awful.spawn")
 local popup_notification = require("util.popup_notification")
@@ -86,7 +86,7 @@ music_widget:connect_signal("button::press", function(_, _, _, button)
     end
 end)
 
-music_widget.keys = gears.table.join(
+local widget_keys = gears.table.join(
     awful.key({ variables.modkey }, "m", rofi.music_menu,
     {description = "show the music menu", group = "launcher"}),
     awful.key({ "Control" }, "KP_Divide",
@@ -110,5 +110,7 @@ music_widget.keys = gears.table.join(
     end,
     {description = "music player stop", group = "multimedia"})
 )
+
+root.keys(gears.table.join(root.keys(), widget_keys))
 
 return music_widget
