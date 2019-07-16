@@ -190,6 +190,7 @@ globalkeys = gears.table.join(
     {description = "take a screenshot", group = "launcher"})
 )
 
+-- this is used in rules.lua
 clientkeys = gears.table.join(
     -- awful.key({ variables.modkey,           }, "f",
     --     function (c)
@@ -286,6 +287,7 @@ for i = 1, 9 do
     )
 end
 
+-- this is used in rules.lua
 clientbuttons = gears.table.join(
     awful.button({ }, 1, function (c)
         c:emit_signal("request::activate", "mouse_click", {raise = true})

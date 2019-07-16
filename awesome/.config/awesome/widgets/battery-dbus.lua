@@ -1,3 +1,5 @@
+-- This widget supports only one battery. Unknown behaviour when more than one is used.
+
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local gears = require("gears")
