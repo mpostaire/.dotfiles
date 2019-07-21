@@ -1,4 +1,5 @@
 -- TODO: handle when proxy lose connection (also check this in all dbus based widgets)
+-- TODO: replace ascii progressbar with wibox.widget.progressbar (also do this in all widgets that uses one)
 
 local awful = require("awful")
 local wibox = require("wibox")

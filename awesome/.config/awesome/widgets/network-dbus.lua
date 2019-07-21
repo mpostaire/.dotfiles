@@ -17,8 +17,6 @@ local icons = {
     eth = "E"
 }
 
-local state = 'off'
-
 local notification = popup_notification:new()
 
 local icon_widget = wibox.widget {
@@ -53,38 +51,33 @@ local manager_proxy = p.Proxy:new(
     }
 )
 
-local connection_proxy
-local function set_connection_proxy(connection_path)
-    if manager_proxy.ActiveConnections[1] then
-        connection_proxy = p.Proxy:new(
-            {
-                bus = p.Bus.SYSTEM,
-                name = "org.freedesktop.NetworkManager",
-                interface = "org.freedesktop.NetworkManager.Connection.Active",
-                path = connection_path
-            }
-        )
+local function get_connection_proxy()
+    local path = manager_proxy.PrimaryConnection
+    if path == '/' then
+        return nil, 'off'
     end
-end
 
-local function set_state()
-    if manager_proxy.ActiveConnections[1] then
-        if string.match(connection_proxy.Type, "wireless") then
-            state = 'wifi'
-        elseif string.match(connection_proxy.Type, "ethernet") then
-            state = 'eth'
-        else
-            state = 'off'
-        end
+    local connection_proxy = p.Proxy:new(
+        {
+            bus = p.Bus.SYSTEM,
+            name = "org.freedesktop.NetworkManager",
+            interface = "org.freedesktop.NetworkManager.Connection.Active",
+            path = path
+        }
+    )
+
+    if not connection_proxy.Type then
+        return nil, 'off'
+    elseif string.match(connection_proxy.Type, "ethernet") then
+        return connection_proxy, 'eth'
+    elseif string.match(connection_proxy.Type, "wireless") then
+        return connection_proxy, 'wifi'
     else
-        state = 'off'
+        return nil, 'off'
     end
 end
 
--- manager_proxy.ActiveConnections[1]: the first element of this array is usually the primary connection
--- if bugs, we may use manager_proxy.PrimaryConnection
-set_connection_proxy(manager_proxy.ActiveConnections[1])
-set_state()
+local connection_proxy, state = get_connection_proxy()
 
 local function get_icon(mouse_hover)
     if state == 'wifi' or state == 'eth' then
@@ -167,11 +160,10 @@ end)
 manager_proxy:on_properties_changed(function (p, changed, invalidated)
     assert(p == manager_proxy)
     for k, v in pairs(changed) do
-        if k == "ActiveConnections" then
+        if k == "PrimaryConnection" then
             if manager_proxy.ActiveConnections[1] then
-                set_connection_proxy(manager_proxy.ActiveConnections[1])
+                connection_proxy, state = get_connection_proxy()
             end
-            set_state()
             update_widget()
         end
     end
