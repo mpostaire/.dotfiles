@@ -91,8 +91,6 @@ globalkeys = gears.table.join(
               {description = "open a terminal", group = "launcher"}),
     awful.key({ variables.modkey,           }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ variables.modkey, "Shift"   }, "q", awesome.quit,
-              {description = "quit awesome", group = "awesome"}),
     awful.key({ variables.modkey,           }, "g", function()
                                                         local tags = awful.screen.focused().tags
                                                         for _,v in pairs(tags) do
@@ -202,6 +200,12 @@ clientkeys = gears.table.join(
               {description = "open control menu", group = "client"}),
     awful.key({ variables.modkey }, "q",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
+    awful.key({ variables.modkey, "Shift"   }, "q", function(c)
+                    if c.pid then
+                        spawn.easy_async("kill -9 "..c.pid, function() end)
+                    end
+                end,
+              {description = "kill", group = "client"}),
     awful.key({ variables.modkey }, "f",  awful.client.floating.toggle                     ,
               {description = "toggle floating", group = "client"}),
     awful.key({ variables.modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
