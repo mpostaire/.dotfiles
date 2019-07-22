@@ -13,8 +13,8 @@ local proxy = p.Proxy:new(
     {
         bus = p.Bus.SESSION,
         name = "fr.mpostaire.Watcher",
-        interface = "fr.mpostaire.Watcher",
-        path = "/fr/mpostaire/Watcher"
+        interface = "fr.mpostaire.Watcher.Brightness",
+        path = "/fr/mpostaire/Watcher/Brightness"
     }
 )
 
