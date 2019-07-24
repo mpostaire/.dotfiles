@@ -50,9 +50,9 @@ end
 
 local function get_text()
     if mouse_hover then
-        return '<span foreground="'..beautiful.fg_normal_hover..'">'..tostring(math.floor(proxy.Percentage))..'%</span>'
+        return '<span foreground="'..beautiful.fg_normal_hover..'">'..math.floor(proxy.Percentage)..'%</span>'
     else
-        return '<span foreground ="' ..beautiful.fg_normal.. '">' ..tostring(math.floor(proxy.Percentage)).. '%</span>'
+        return '<span foreground ="' ..beautiful.fg_normal.. '">' ..math.floor(proxy.Percentage).. '%</span>'
     end
 end
 

@@ -8,6 +8,7 @@ return {
     clock = require("widgets.clock"),
     battery = require("widgets.battery-dbus"),
     archupdates = require("widgets.archupdates"),
+    -- volume = require("widgets.volume-dbus"),
     volume = require("widgets.volume"),
     -- brightness = require("widgets.brightness-dbus"),
     brightness = require("widgets.brightness"),
