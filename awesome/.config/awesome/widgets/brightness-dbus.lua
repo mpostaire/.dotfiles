@@ -88,6 +88,7 @@ proxy:on_properties_changed(function (p, changed, invalidated)
     for k, v in pairs(changed) do
         if k == "Percentage" then
             update_widget()
+            notification:show(true)
         end
     end
 end)
@@ -96,11 +97,9 @@ brightness_widget:buttons(gears.table.join(
     awful.button({}, 1, function() notification:toggle() end),
     awful.button({}, 4, function()
         proxy:IncBrightness(5)
-        notification:show(true)
     end),
     awful.button({}, 5, function()
         proxy:DecBrightness(5)
-        notification:show(true)
     end)
 ))
 
@@ -131,12 +130,10 @@ end)
 local widget_keys = gears.table.join(
     awful.key({}, "XF86MonBrightnessUp", function()
         proxy:IncBrightness(5)
-        notification:show(true)
     end,
     {description = "brightness up", group = "multimedia"}),
     awful.key({}, "XF86MonBrightnessDown", function()
         proxy:DecBrightness(5)
-        notification:show(true)
     end,
     {description = "brightness down", group = "multimedia"})
 )

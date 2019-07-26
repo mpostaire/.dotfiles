@@ -2,9 +2,10 @@ local spawn = require("awful.spawn")
 
 -- because easy_async_with_shell is used, the & char may be not necessary
 local cmds = {
+    "mpd", -- maybe put this in xinitrc instead
+    "awdctl", -- maybe put this in xinitrc instead
     "compton -b", -- maybe put this in xinitrc instead
-    "redshift -c ~/.config/redshift.conf &", -- maybe put this in xinitrc instead
-    "awdctl"
+    "redshift" -- maybe put this in xinitrc instead
 }
 
 local function autostart(cmd)

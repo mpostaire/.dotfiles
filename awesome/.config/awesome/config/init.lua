@@ -1,3 +1,6 @@
+-- autostart
+require("config.autostart")
+
 -- tags
 require("config.tags")
 
@@ -15,6 +18,3 @@ require("config.signals")
 
 -- titlebars
 require("config.titlebars")
-
--- autostart
-require("config.autostart")

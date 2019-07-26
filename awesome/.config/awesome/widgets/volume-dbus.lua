@@ -120,6 +120,7 @@ proxy:on_properties_changed(function (p, changed, invalidated)
     for k, v in pairs(changed) do
         if k == "Percentage" or k == "Muted" then
             update_widget()
+            notification:show(true)
         end
     end
 end)
@@ -128,21 +129,18 @@ volume_widget:buttons(gears.table.join(
     awful.button({}, 1, function() notification:toggle() end),
     awful.button({}, 2, function()
         proxy:ToggleVolume()
-        notification:show(true)
     end),
     awful.button({}, 4, function()
         if proxy.Muted then
             proxy:ToggleVolume()
         end
         proxy:IncVolume(5)
-        notification:show(true)
     end),
     awful.button({}, 5, function()
         if proxy.Muted then
             proxy:ToggleVolume()
         end
         proxy:DecVolume(5)
-        notification:show(true)
     end)
 ))
 
@@ -176,12 +174,10 @@ local widget_keys = gears.table.join(
             proxy:ToggleVolume()
         end
         proxy:IncVolume(5)
-        notification:show(true)
     end,
     {description = "volume up", group = "multimedia"}),
     awful.key({}, "XF86AudioMute", function()
         proxy:ToggleVolume()
-        notification:show(true)
     end,
     {description = "toggle mute volume", group = "multimedia"}),
     awful.key({}, "XF86AudioLowerVolume", function()
@@ -189,7 +185,6 @@ local widget_keys = gears.table.join(
             proxy:ToggleVolume()
         end
         proxy:DecVolume(5)
-        notification:show(true)
     end,
     {description = "volume down", group = "multimedia"})
 )
