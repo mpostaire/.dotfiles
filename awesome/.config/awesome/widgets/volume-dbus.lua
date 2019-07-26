@@ -1,6 +1,5 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local spawn = require("awful.spawn")
 local awful = require("awful")
 local gears = require("gears")
 local popup_notification = require("util.popup_notification")
@@ -10,9 +9,9 @@ local p = require("dbus_proxy")
 local proxy = p.Proxy:new(
     {
         bus = p.Bus.SESSION,
-        name = "fr.mpostaire.Watcher",
-        interface = "fr.mpostaire.Watcher.Volume",
-        path = "/fr/mpostaire/Watcher/Volume"
+        name = "fr.mpostaire.awdctl",
+        interface = "fr.mpostaire.awdctl.Volume",
+        path = "/fr/mpostaire/awdctl/Volume"
     }
 )
 
@@ -127,18 +126,23 @@ end)
 
 volume_widget:buttons(gears.table.join(
     awful.button({}, 1, function() notification:toggle() end),
-    awful.button({}, 2, function() proxy:ToggleVolume() end),
+    awful.button({}, 2, function()
+        proxy:ToggleVolume()
+        notification:show(true)
+    end),
     awful.button({}, 4, function()
         if proxy.Muted then
             proxy:ToggleVolume()
         end
         proxy:IncVolume(5)
+        notification:show(true)
     end),
     awful.button({}, 5, function()
         if proxy.Muted then
             proxy:ToggleVolume()
         end
         proxy:DecVolume(5)
+        notification:show(true)
     end)
 ))
 
@@ -172,15 +176,20 @@ local widget_keys = gears.table.join(
             proxy:ToggleVolume()
         end
         proxy:IncVolume(5)
+        notification:show(true)
     end,
     {description = "volume up", group = "multimedia"}),
-    awful.key({}, "XF86AudioMute", function() proxy:ToggleVolume() end,
+    awful.key({}, "XF86AudioMute", function()
+        proxy:ToggleVolume()
+        notification:show(true)
+    end,
     {description = "toggle mute volume", group = "multimedia"}),
     awful.key({}, "XF86AudioLowerVolume", function()
         if proxy.Muted then
             proxy:ToggleVolume()
         end
         proxy:DecVolume(5)
+        notification:show(true)
     end,
     {description = "volume down", group = "multimedia"})
 )

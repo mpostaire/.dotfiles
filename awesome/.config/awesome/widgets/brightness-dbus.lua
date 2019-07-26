@@ -12,9 +12,9 @@ local p = require("dbus_proxy")
 local proxy = p.Proxy:new(
     {
         bus = p.Bus.SESSION,
-        name = "fr.mpostaire.Watcher",
-        interface = "fr.mpostaire.Watcher.Brightness",
-        path = "/fr/mpostaire/Watcher/Brightness"
+        name = "fr.mpostaire.awdctl",
+        interface = "fr.mpostaire.awdctl.Brightness",
+        path = "/fr/mpostaire/awdctl/Brightness"
     }
 )
 
