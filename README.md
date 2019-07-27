@@ -32,7 +32,7 @@ TODO
 
 - replace client borders by titlebars (not necessary but titlebar can have widgets)
 
-- try making animations like https://www.reddit.com/r/unixporn/comments/bz2qof/awesomewm_a_lua_console_for_awesome/
+- try making animations like [this](https://www.reddit.com/r/unixporn/comments/bz2qof/awesomewm_a_lua_console_for_awesome/)
 - make a powersaver mode to disable these animations
 
 - autoupdate script (with popups ?)
@@ -40,3 +40,5 @@ TODO
 - popup_menu uses a lot of cpu when updating an item
 
 - widget popups onclick (currently onhover is cpu intesive)
+
+- script that git pull zsh plugins when necessary (take inspiration from this [link](https://github.com/TamCore/autoupdate-oh-my-zsh-plugins/blob/master/autoupdate.plugin.zsh))

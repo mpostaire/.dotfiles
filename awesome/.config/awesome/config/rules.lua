@@ -82,6 +82,10 @@ awful.rules.rules = {
     {
         rule = {class = "firefox"},
         properties = {screen = 1, tag = "2"}
+    },
+    {
+        rule = {class = "Steam"},
+        properties = {tag = "6"}
     }
 }
 -- }}}
