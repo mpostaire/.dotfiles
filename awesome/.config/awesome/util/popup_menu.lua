@@ -278,7 +278,7 @@ function popup_menu:exec()
         self.active_child:select(1)
         self.active_child:show()
     elseif type == 'string' then
-        spawn.easy_async(self.items[self.selected].cmd)
+        spawn.easy_async(self.items[self.selected].cmd, function() end)
         self:hide(true)
     end
 end

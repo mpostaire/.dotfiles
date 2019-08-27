@@ -12,7 +12,7 @@ window {
     location: northeast;
     y-offset: 30px;
     border: 0 0 2px 2px;
-    height: 116px;
+    height: 112px;
     width: 40ch;
 }
 

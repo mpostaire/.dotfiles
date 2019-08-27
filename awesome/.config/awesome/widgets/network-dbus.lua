@@ -14,7 +14,7 @@ local p = require("dbus_proxy")
 local icons = {
     wifi = "",
     off = "",
-    eth = "E"
+    eth = ""
 }
 
 local notification = popup_notification:new()

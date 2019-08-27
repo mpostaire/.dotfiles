@@ -9,7 +9,7 @@ require("util.error_handling")
 
 -- Themes define colours, icons, font and wallpapers.
 -- do not place this line below
-require("beautiful").init(require("themes.onedark_red"))
+require("beautiful").init(require("themes.xresources-red"))
 
 -- configuration
 require("config")

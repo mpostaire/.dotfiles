@@ -95,8 +95,8 @@ autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
-bindkey "$terminfo[kcuu1]" up-line-or-beginning-search
-bindkey "$terminfo[kcud1]" down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
 
 # Easy url support (fix globbing in urls)
 autoload -Uz bracketed-paste-magic
@@ -105,7 +105,7 @@ autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
 # fish-like autosuggestions (a bit slow)
-#ZSH_AUTOSUGGEST_USE_ASYNC=1 # seems to have no impact on performances but incompatibility with up-line-or-beginning-search and down-line-or-beginning-search (there might be a fix by looking into zsh-autosuggestions code)
+ZSH_AUTOSUGGEST_USE_ASYNC=1
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ## PROMPT
@@ -207,7 +207,6 @@ _format_lines() {
     fi
 }
 # Encapsulate variables used for prompt creation
-# if _git_info was not colored it would be easy to wrap it with _format_lines
 _createprompt() {
     local current_path=$(_format_lines $(print -P %~))
     local ret_status="%(?:%F{green}%(#:#:$):%F{red}%(#:#:$))"

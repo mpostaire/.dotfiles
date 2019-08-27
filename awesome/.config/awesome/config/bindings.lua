@@ -147,10 +147,10 @@ globalkeys = gears.table.join(
     -- lock screen
     awful.key({ variables.modkey }, "l",
         function()
-            spawn.with_shell("~/.scripts/lock.sh")
+            spawn.with_shell("~/.scripts/lock.sh", function() end)
         end,
     {description = "raise lock screen", group = "launcher"}),
-    awful.key({ "Control", "Mod1" }, "Delete", function() spawn.easy_async(variables.terminal.." -e htop") end,
+    awful.key({ "Control", "Mod1" }, "Delete", function() spawn.easy_async(variables.terminal.." -e htop", function() end) end,
     {description = "htop", group = "launcher"}),
 
     -- rofi power menu

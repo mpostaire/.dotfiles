@@ -33,6 +33,9 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- Big ugly piece of code but I think I got every corner case covered. It could be simpler but more performance consuming.
 -- /!\ With the following code, all clients have titlebars while floating and no titlebars otherwise regardeless
 -- of any rules
+-- TODO: make a table of managed clients using client.window as keys storing properties useful for:
+--       - save/restore maximized state when switching floating/tile layouts
+--       - save/restore position when switching floating/tile layouts --> I'm not sure if I want this yet
 
 local function handle_tiled(client)
     -- this if statement is new, if bugs related to maximized state, check there first

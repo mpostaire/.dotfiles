@@ -18,7 +18,7 @@ function rofi.power_menu()
         function(stdout)
             local output = string.sub(stdout, 5, -2)
             if output == "Verrouiller" then
-                spawn.easy_async_with_shell("~/.scripts/lock.sh")
+                spawn.easy_async_with_shell("~/.scripts/lock.sh", function() end)
             elseif output == "Déconnexion" then
                 awesome.quit()
             elseif output == "Mettre en veille" then
