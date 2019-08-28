@@ -20,7 +20,13 @@ bindkey '^[[3~' delete-char
 exit_zsh() { exit }
 zle -N exit_zsh
 bindkey '^D' exit_zsh
-
+# Enable Shift+Tab to go to previous entry in completion menu
+zmodload zsh/complist
+bindkey -M menuselect '^[[Z' reverse-menu-complete
+# Disable Shift+Tab strange behaviour outside completion menu
+none() {}
+zle -N none
+bindkey '^[[Z' none
 
 ## SETTINGS
 
