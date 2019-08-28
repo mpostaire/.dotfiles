@@ -184,7 +184,7 @@ local popup = awful.popup {
 }
 
 -- {{{ Buttons
-local selected = -1
+local selected = 2
 local function update_item(n, focused)
     if n > 3 or n < 1 then
         return
@@ -227,6 +227,8 @@ local function select_item(n)
     update_item(selected, true)
 end
 
+update_item(selected, true)
+
 prev_widget:connect_signal("mouse::enter", function() select_item(1) end)
 playpause_widget:connect_signal("mouse::enter", function() select_item(2) end)
 next_widget:connect_signal("mouse::enter", function() select_item(3) end)
@@ -249,7 +251,8 @@ local function keygrabber(mod, key, event)
     elseif key == 'Escape' then
         popup.visible = false
         update_item(selected, false)
-        selected = -1
+        selected = 2
+        update_item(selected, true)
         awful.keygrabber.stop(keygrabber)
     elseif mod[1] == 'Control' and key == '/' then
         proxy:PlayPause()
@@ -360,7 +363,8 @@ music_widget:buttons(gears.table.join(
         if popup.visible then
             popup.visible = false
             update_item(selected, false)
-            selected = -1
+            selected = 2
+            update_item(selected, true)
             awful.keygrabber.stop(keygrabber)
         else
             popup.visible = true
@@ -390,7 +394,8 @@ local widget_keys = gears.table.join(
         if popup.visible then
             popup.visible = false
             update_item(selected, false)
-            selected = -1
+            selected = 2
+            update_item(selected, true)
             awful.keygrabber.stop(keygrabber)
         else
             popup.visible = true
