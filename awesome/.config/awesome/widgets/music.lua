@@ -3,7 +3,6 @@ local beautiful = require("beautiful")
 local awful = require("awful")
 local variables= require("config.variables")
 local gears = require("gears")
-local popup_notification = require("util.popup_notification")
 local p = require("dbus_proxy")
 local naughty = require("naughty")
 
@@ -84,32 +83,44 @@ local title_widget = wibox.widget {
     forced_height = beautiful.font_height,
     widget = wibox.widget.textbox
 }
-local playpause_widget = wibox.widget {
-    {
-        id = 'icon',
-        markup = icons.play,
-        widget = wibox.widget.textbox
-    },
-    margins = 5,
-    widget = wibox.container.margin
-}
 local prev_widget = wibox.widget {
     {
-        id = 'icon',
-        markup = icons.prev,
-        widget = wibox.widget.textbox
+        {
+            id = 'icon',
+            align  = 'center',
+            markup = icons.prev,
+            widget = wibox.widget.textbox
+        },
+        margins = 5,
+        widget = wibox.container.margin
     },
-    margins = 5,
-    widget = wibox.container.margin
+    widget = wibox.container.background
+}
+local playpause_widget = wibox.widget {
+    {
+        {
+            id = 'icon',
+            align  = 'center',
+            markup = icons.play,
+            widget = wibox.widget.textbox
+        },
+        margins = 5,
+        widget = wibox.container.margin
+    },
+    widget = wibox.container.background
 }
 local next_widget = wibox.widget {
     {
-        id = 'icon',
-        markup = icons.next,
-        widget = wibox.widget.textbox
+        {
+            id = 'icon',
+            align  = 'center',
+            markup = icons.next,
+            widget = wibox.widget.textbox
+        },
+        margins = 5,
+        widget = wibox.container.margin
     },
-    margins = 5,
-    widget = wibox.container.margin
+    widget = wibox.container.background
 }
 -- local progressbar_widget = wibox.widget {
 --     bar_shape = gears.shape.rounded_rect,
@@ -168,18 +179,89 @@ local popup = awful.popup {
     placement = awful.placement.top_left + awful.placement.no_overlap,
     -- minimum_width = 250,
     -- maximum_width = 250,
-    visible = true,
+    visible = false,
     ontop = true
 }
 
-local notification = popup_notification:new()
-notification:set_icon(icons.note)
-notification:set_markup("<b>Musique</b>", "En construction")
-notification.popup.placement = function(d, args)
-    awful.placement.top_left(d, args)
-    notification.popup.y = notification.popup.y + beautiful.wibar_height + beautiful.notification_offset
-    notification.popup.x = notification.popup.x + beautiful.notification_offset
+-- {{{ Buttons
+local selected = -1
+local function update_item(n, focused)
+    if n > 3 or n < 1 then
+        return
+    end
+
+    if focused then
+        if selected == 1 then
+            prev_widget.bg = beautiful.fg_normal
+            prev_widget.fg = beautiful.bg_normal
+        elseif selected == 2 then
+            playpause_widget.bg = beautiful.fg_normal
+            playpause_widget.fg = beautiful.bg_normal
+        elseif selected == 3 then
+            next_widget.bg = beautiful.fg_normal
+            next_widget.fg = beautiful.bg_normal
+        end
+    else
+        if selected == 1 then
+            prev_widget.bg = beautiful.bg_normal
+            prev_widget.fg = beautiful.fg_normal
+        elseif selected == 2 then
+            playpause_widget.bg = beautiful.bg_normal
+            playpause_widget.fg = beautiful.fg_normal
+        elseif selected == 3 then
+            next_widget.bg = beautiful.bg_normal
+            next_widget.fg = beautiful.fg_normal
+        end
+    end
 end
+
+local function select_item(n)
+    if n > 3 then
+        n = 3
+    elseif n < 1 then
+        n = 1
+    end
+
+    update_item(selected, false)
+    selected = n
+    update_item(selected, true)
+end
+
+prev_widget:connect_signal("mouse::enter", function() select_item(1) end)
+playpause_widget:connect_signal("mouse::enter", function() select_item(2) end)
+next_widget:connect_signal("mouse::enter", function() select_item(3) end)
+
+local function keygrabber(mod, key, event)
+    if event == "release" then return end
+
+    if key == 'Up' or key == 'Right' then
+        select_item(selected + 1)
+    elseif key == 'Down' or key == 'Left' then
+        select_item(selected - 1)
+    elseif key == 'Return' then
+        if selected == 1 then
+            proxy:Previous()
+        elseif selected == 2 then
+            proxy:PlayPause()
+        elseif selected == 3 then
+            proxy:Next()
+        end
+    elseif key == 'Escape' then
+        popup.visible = false
+        update_item(selected, false)
+        selected = -1
+        awful.keygrabber.stop(keygrabber)
+    elseif mod[1] == 'Control' and key == '/' then
+        proxy:PlayPause()
+    elseif mod[1] == 'Control' and key == 'KP_Right' then
+        proxy:Next()
+    elseif mod[1] == 'Control' and key == 'KP_Left' then
+        proxy:Previous()
+    elseif mod[1] == 'Control' and key == 'KP_Begin' then
+        proxy:Stop()
+    end
+end
+-- }}}
 
 local icon_widget = wibox.widget {
     {
@@ -241,10 +323,15 @@ local function update_widget()
 end
 update_widget()
 
+local notification_id
 proxy:on_properties_changed(function (p, changed, invalidated)
     assert(p == proxy)
     update_widget()
-    naughty.notify{title="Musique", text=p.Metadata["xesam:title"]}
+    if notification_id then
+        naughty.notify{title="Musique", text=p.Metadata["xesam:title"], replaces_id = notification_id}
+    else
+        notification_id = naughty.notify{title="Musique", text=p.Metadata["xesam:title"]}
+    end
 end)
 
 local old_cursor, old_wibox
@@ -269,7 +356,17 @@ music_widget:connect_signal("mouse::leave", function()
 end)
 
 music_widget:buttons(gears.table.join(
-    awful.button({}, 1, function() popup.visible = not popup.visible end)
+    awful.button({}, 1, function()
+        if popup.visible then
+            popup.visible = false
+            update_item(selected, false)
+            selected = -1
+            awful.keygrabber.stop(keygrabber)
+        else
+            popup.visible = true
+            awful.keygrabber.run(keygrabber)
+        end
+    end)
 ))
 playpause_widget:buttons(gears.table.join(
     awful.button({}, 1, function()
@@ -289,7 +386,17 @@ next_widget:buttons(gears.table.join(
 ))
 
 local widget_keys = gears.table.join(
-    awful.key({ variables.modkey }, "m", function() popup.visible = not popup.visible end,
+    awful.key({ variables.modkey }, "m", function()
+        if popup.visible then
+            popup.visible = false
+            update_item(selected, false)
+            selected = -1
+            awful.keygrabber.stop(keygrabber)
+        else
+            popup.visible = true
+            awful.keygrabber.run(keygrabber)
+        end
+    end,
     {description = "show the music menu", group = "launcher"}),
     awful.key({ "Control" }, "KP_Divide", function() proxy:PlayPause() end,
     {description = "music player pause", group = "multimedia"}),
