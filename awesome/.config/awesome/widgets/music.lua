@@ -233,8 +233,7 @@ prev_widget:connect_signal("mouse::enter", function() select_item(1) end)
 playpause_widget:connect_signal("mouse::enter", function() select_item(2) end)
 next_widget:connect_signal("mouse::enter", function() select_item(3) end)
 
-local show_menu
-
+local toggle_menu
 local function keygrabber(mod, key, event)
     if event == "release" then return end
 
@@ -265,11 +264,11 @@ local function keygrabber(mod, key, event)
     elseif mod[1] == 'Control' and key == 'KP_Begin' then
         proxy:Stop()
     elseif mod[2] == variables.modkey and key == 'm' then
-        show_menu()
+        toggle_menu()
     end
 end
 
-show_menu = function()
+toggle_menu = function()
     if popup.visible then
         popup.visible = false
         update_item(selected, false)
@@ -376,7 +375,7 @@ music_widget:connect_signal("mouse::leave", function()
 end)
 
 music_widget:buttons(gears.table.join(
-    awful.button({}, 1, show_menu)
+    awful.button({}, 1, toggle_menu)
 ))
 playpause_widget:buttons(gears.table.join(
     awful.button({}, 1, function()
@@ -396,7 +395,7 @@ next_widget:buttons(gears.table.join(
 ))
 
 local widget_keys = gears.table.join(
-    awful.key({ variables.modkey }, "m", show_menu,
+    awful.key({ variables.modkey }, "m", toggle_menu,
     {description = "show the music menu", group = "launcher"}),
     awful.key({ "Control" }, "KP_Divide", function() proxy:PlayPause() end,
     {description = "music player pause", group = "multimedia"}),
