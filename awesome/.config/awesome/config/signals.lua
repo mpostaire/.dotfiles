@@ -190,6 +190,7 @@ client.connect_signal("property::minimized", function(c)
     else
         if c.floating or awful.layout.getname() == "floating" then
             c.border_width = beautiful.border_width
+            awful.titlebar.show(c)
         else
             -- show borders of tiled clients only if multiple clients
             if #shown_tiled_clients == 1 then
@@ -200,6 +201,7 @@ client.connect_signal("property::minimized", function(c)
             else -- all previous clients already have their borders now
                 c.border_width = beautiful.border_width -- maybe not needed
             end
+            awful.titlebar.hide(c)
         end
     end
 end)
