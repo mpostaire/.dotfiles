@@ -9,34 +9,60 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local dpi = require("beautiful.xresources").apply_dpi
 local gears = require("gears")
+local variables = require("config.variables")
+local capi = {client = client, mouse = mouse}
+
+-- check if client 'c' is in selected tags
+local function current_tag_filter(c)
+    for _,v in pairs(awful.screen.focused().selected_tags) do
+        if c.first_tag == v then
+            return true
+        end
+    end
+    return false
+end
+
+local function focus_next_client()
+    local iterator = awful.client.iterate(current_tag_filter)
+    iterator()
+    local c = iterator()
+    if c then
+        c:emit_signal(
+            "request::activate",
+            "tasklist",
+            {raise = true}
+        )
+    end
+end
+
+local function focus_prev_client()
+    for c in awful.client.iterate(current_tag_filter) do
+        c:emit_signal(
+            "request::activate",
+            "tasklist",
+            {raise = true}
+        )
+    end
+end
 
 -- launched programs widget mouse handling
 local tasklist_buttons = gears.table.join(
-    -- awful.button({ }, 1, function (c)
-    --     if c == client.focus then
-    --         c.minimized = true
-    --     else
-    --         c:emit_signal(
-    --             "request::activate",
-    --             "tasklist",
-    --             {raise = true}
-    --         )
-    --     end
-    -- end),
-    -- awful.button({ }, 3, function(c)
-    --     client_menu.show(c)
-    -- end),
-    -- awful.button({ }, 4, function ()
-    --     awful.client.focus.byidx(1)
-    -- end),
-    -- awful.button({ }, 5, function ()
-    --     awful.client.focus.byidx(-1)
-    -- end)
+    awful.button({variables.altkey}, 1, function (c)
+        if c ~= capi.client.focus then
+            c:emit_signal(
+                "request::activate",
+                "tasklist",
+                {raise = true}
+            )
+        end
+    end),
+    awful.button({ }, 4, focus_next_client),
+    awful.button({ }, 5, focus_prev_client)
 )
 
 local app_switcher = awful.popup {
     widget = awful.widget.tasklist {
-        screen   = mouse.screen,
+        screen   = capi.mouse.screen,
         filter   = awful.widget.tasklist.filter.currenttags,
         buttons  = tasklist_buttons,
         layout   = {
@@ -82,37 +108,24 @@ local app_switcher = awful.popup {
 
 awful.keygrabber {
     keybindings = {
-        {{'Mod1'         }, 'Tab', function()
-            awful.client.focus.byidx(1)
-            if client.focus then
-                client.focus.minimized = false
-                client.focus:raise()
-            end
-        end},
-        {{'Mod1', 'Shift'}, 'Tab', function()
-            awful.client.focus.byidx(-1)
-            if client.focus then
-                client.focus.minimized = false
-                client.focus:raise()
-            end
-        end},
+        {{variables.altkey}, 'Tab', focus_next_client},
+        {{variables.altkey, 'Shift'}, 'Tab', focus_prev_client},
     },
     -- Note that it is using the key name and not the modifier name.
-    stop_key           = 'Mod1',
-    stop_event         = 'release',
-    start_callback     = function()
+    stop_key = variables.altkey,
+    stop_event = 'release',
+    start_callback = function()
         app_switcher.visible = true
         awful.client.focus.history.disable_tracking()
     end,
-    stop_callback      = function()
+    stop_callback = function()
         app_switcher.visible = false
         awful.client.focus.history.enable_tracking()
     end,
     root_keybindings = {
-        {{'Mod1'}, 'Tab', function() end,},
-        {{'Mod1', 'Shift'}, 'Tab', function() end,},
+        {{variables.altkey}, 'Tab', focus_next_client, nil, {description = 'app switcher', group = 'client'}},
+        {{variables.altkey, 'Shift'}, 'Tab', focus_prev_client, nil, {description = 'reverse app switcher', group = 'client'}},
     },
-    -- export_keybindings = true,
 }
 
 return app_switcher
