@@ -13,4 +13,6 @@ variables.home = os.getenv("HOME") .. "/"
 -- However, you can use another modifier like Mod1, but it may interact with others.
 variables.modkey = "Mod4"
 
+variables.altkey = "Mod1"
+
 return variables
