@@ -7,10 +7,36 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local dpi = require("beautiful.xresources").apply_dpi
+local gears = require("gears")
+
+-- launched programs widget mouse handling
+local tasklist_buttons = gears.table.join(
+    -- awful.button({ }, 1, function (c)
+    --     if c == client.focus then
+    --         c.minimized = true
+    --     else
+    --         c:emit_signal(
+    --             "request::activate",
+    --             "tasklist",
+    --             {raise = true}
+    --         )
+    --     end
+    -- end),
+    -- awful.button({ }, 3, function(c)
+    --     client_menu.show(c)
+    -- end),
+    -- awful.button({ }, 4, function ()
+    --     awful.client.focus.byidx(1)
+    -- end),
+    -- awful.button({ }, 5, function ()
+    --     awful.client.focus.byidx(-1)
+    -- end)
+)
 
 local app_switcher = awful.popup {
     widget = awful.widget.tasklist {
-        screen   = screen[1],
+        screen   = mouse.screen,
         filter   = awful.widget.tasklist.filter.currenttags,
         buttons  = tasklist_buttons,
         layout   = {
@@ -21,25 +47,36 @@ local app_switcher = awful.popup {
         widget_template = {
             {
                 {
-                    id     = 'clienticon',
-                    widget = awful.widget.clienticon,
+                    {
+                        {
+                            id = 'icon_role',
+                            forced_height = dpi(110),
+                            forced_width = dpi(110),
+                            widget = wibox.widget.imagebox,
+                        },
+                        halign = 'center',
+                        widget = wibox.container.place
+                    },
+                    nil,
+                    {
+                        id = 'text_role',
+                        widget = wibox.widget.textbox,
+                    },
+                    forced_height = dpi(128),
+                    forced_width = dpi(128),
+                    layout = wibox.layout.align.vertical
                 },
-                margins = 4,
+                margins = dpi(4),
                 widget  = wibox.container.margin,
             },
-            id              = 'background_role',
-            forced_width    = 96,
-            forced_height   = 96,
-            widget          = wibox.container.background,
-            create_callback = function(self, c, index, objects) --luacheck: no unused
-                self:get_children_by_id('clienticon')[1].client = c
-            end,
+            id = 'background_role',
+            widget = wibox.container.background,
         },
     },
     border_color = beautiful.border_normal,
     border_width = beautiful.border_width,
-    ontop        = true,
-    placement    = awful.placement.centered,
+    ontop = true,
+    placement = awful.placement.centered,
     visible = false
 }
 
@@ -72,8 +109,8 @@ awful.keygrabber {
         awful.client.focus.history.enable_tracking()
     end,
     root_keybindings = {
-        {{'Mod1'}, 'Tab', function() end},
-        {{'Mod1', 'Shift'}, 'Tab', function() end},
+        {{'Mod1'}, 'Tab', function() end,},
+        {{'Mod1', 'Shift'}, 'Tab', function() end,},
     },
     -- export_keybindings = true,
 }
