@@ -311,7 +311,7 @@ function popup_menu:show(x, y)
         if target_x + self.popup.width > screen_geo.width then
             target_x = self.parent.popup.x - (self.popup.width - beautiful.border_width)
         end
-        target_y = self.parent.popup.y + (beautiful.font_height + 2 * beautiful.menu_item_margins) * (self.parent.selected - 1)
+        target_y = (self.parent.popup.y + (beautiful.font_height + 2 * beautiful.menu_item_margins) + 1) * (self.parent.selected - 1)
         if target_y + self.popup.height > screen_geo.height then
             target_y = screen_geo.height - self.popup.height
         end
