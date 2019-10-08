@@ -22,13 +22,10 @@ fi
 # kill rofi to prevent locking failure
 killall rofi
 
-# suspend dunst notifications
-killall -SIGUSR1 dunst
-
 # pause music
 mpc pause
 
-i3lock -mn -e $background              \
+i3lock -mn -e $background             \
 --insidevercolor=${blue}22            \
 --ringvercolor=${blue_alt}88          \
 \
@@ -62,6 +59,3 @@ i3lock -mn -e $background              \
 --date-font="DejaVu Sans Mono"        \
 --verif-font="DejaVu Sans Mono"       \
 --wrong-font="DejaVu Sans Mono"
-
-# resume dunst notifications
-killall -SIGUSR2 dunst
