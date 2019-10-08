@@ -49,7 +49,6 @@ xss-lock -- $HOME/.scripts/lock.sh &
 
 numlockx
 mpd $HOME/.config/mpd/mpd.conf
+redshift -c $HOME/.config/redshift.conf &
 # $HOME/.scripts/lock.sh
-# sxhkd &
-# exec bspwm
 exec awesome
