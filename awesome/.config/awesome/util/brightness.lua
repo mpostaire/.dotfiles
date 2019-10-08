@@ -1,12 +1,51 @@
-local p = require("dbus_proxy")
+local dbus = require("dbus_proxy")
 
-local proxy = p.Proxy:new(
+local brightness = {}
+
+local proxy = dbus.Proxy:new(
     {
-        bus = p.Bus.SESSION,
+        bus = dbus.Bus.SESSION,
         name = "fr.mpostaire.awdctl",
         interface = "fr.mpostaire.awdctl.Brightness",
         path = "/fr/mpostaire/awdctl/Brightness"
     }
 )
 
-return proxy
+local on_properties_changed_callbacks = {}
+
+proxy:on_properties_changed(function (p, changed, invalidated)
+    assert(p == proxy)
+    local call_callback = false
+    for k,v in pairs(changed) do
+        if k == "Percentage" then
+            brightness.brightness = v
+            call_callback = true
+        end
+    end
+
+    if call_callback then
+        for _,v in pairs(on_properties_changed_callbacks) do
+            v()
+        end
+    end
+end)
+
+brightness.brightness = proxy.Percentage
+
+function brightness.set_brightness(value)
+    proxy:SetBrightness(value)
+end
+
+function brightness.inc_brightness(value)
+    proxy:IncBrightness(value)
+end
+
+function brightness.dec_brightness(value)
+    proxy:DecBrightness(value)
+end
+
+function brightness.on_properties_changed(func)
+    table.insert(on_properties_changed_callbacks, func)
+end
+
+return brightness

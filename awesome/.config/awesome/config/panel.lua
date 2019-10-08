@@ -2,8 +2,8 @@ local awful = require("awful")
 local gears = require("gears")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
-
 local widgets = require("widgets")
+local capi = {screen = screen}
 
 -- MOVE BELOW WALLPAPER BLOCK INTO ITS OWN FILE
 -- WALLPAPER
@@ -26,7 +26,7 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 end)
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-screen.connect_signal("property::geometry", set_wallpaper)
+capi.screen.connect_signal("property::geometry", set_wallpaper)
 -- WALLPAPER END
 
 awful.screen.connect_for_each_screen(function(s)
@@ -41,7 +41,6 @@ awful.screen.connect_for_each_screen(function(s)
                 layout = wibox.layout.fixed.horizontal,
                 widgets.launcher,
                 s.mytaglist,
-                widgets.music,
                 s.mypromptbox,
             },
             s.mytasklist, -- Middle widget
@@ -50,8 +49,7 @@ awful.screen.connect_for_each_screen(function(s)
                 wibox.widget.systray(),
                 -- widgets.archupdates, -- commented to hide it for now (when I translate wigets in OOP, this will be prettier)
                 widgets.network,
-                widgets.brightness,
-                widgets.volume,
+                widgets.group:new({widgets.brightness, widgets.volume, widgets.player}),
                 widgets.battery,
                 widgets.clock,
                 s.mylayoutbox,

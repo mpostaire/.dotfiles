@@ -1,38 +1,15 @@
+local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local awful = require("awful")
 local gears = require("gears")
 local variables = require("config.variables")
 local dpi = require("beautiful.xresources").apply_dpi
 
+local calendar = {}
+
 local icons = {
-    clock = "",
     prev = "",
     next = ""
-}
-
-local icon_widget = wibox.widget {
-    {
-        id = 'icon',
-        markup = icons.clock,
-        font = "Material Icons 12",
-        widget = wibox.widget.textbox
-    },
-    widget = wibox.container.margin(_, beautiful.wibar_widgets_padding, beautiful.widgets_inner_padding, 0, 0)
-}
-
-local text_widget = wibox.widget {
-    {
-        id = 'text',
-        widget = wibox.widget.textclock("%H:%M")
-    },
-    widget = wibox.container.margin(_, 0, beautiful.wibar_widgets_padding, 0, 0)
-}
-
-local clock_widget = wibox.widget {
-    icon_widget,
-    text_widget,
-    layout = wibox.layout.fixed.horizontal
 }
 
 local prev_widget = wibox.widget {
@@ -48,7 +25,7 @@ local next_widget = wibox.widget {
     widget = wibox.widget.textbox
 }
 
-local calendar = wibox.widget {
+local calendar_widget = wibox.widget {
     homogeneous = true,
     spacing = dpi(6),
     forced_num_cols = 7,
@@ -139,7 +116,7 @@ local function generate_days(widgets, month, year)
         if k < first_day then
             local num = prev_month_num_days - (first_day - k) + 1
             if date.month == month - 1 and date.year == year and num == date.day then
-                v.markup = '<span weight="bold" foreground="'..beautiful.blue..'">'..num..'</span>'
+                v.markup = '<span foreground="'..beautiful.blue..'">'..num..'</span>'
             else
                 v.markup = '<span foreground="'..beautiful.black_alt..'">'..num..'</span>'
             end
@@ -154,8 +131,8 @@ local function generate_days(widgets, month, year)
             end
         else
             local num = k - num_days - first_day + 1
-            if date.month == month - 1 and date.year == year and num == date.day then
-                v.markup = '<span weight="bold" foreground="'..beautiful.blue..'">'..num..'</span>'
+            if date.month == month + 1 and date.year == year and num == date.day then
+                v.markup = '<span foreground="'..beautiful.blue..'">'..num..'</span>'
             else
                 v.markup = '<span foreground="'..beautiful.black_alt..'">'..num..'</span>'
             end
@@ -163,9 +140,9 @@ local function generate_days(widgets, month, year)
     end
 end
 
-local month_widget = generate_header_widget(calendar)
-generate_day_names_row(calendar)
-local day_widgets = generate_day_widgets(calendar)
+local month_widget = generate_header_widget(calendar_widget)
+generate_day_names_row(calendar_widget)
+local day_widgets = generate_day_widgets(calendar_widget)
 local month, year
 
 local function calendar_prev_month()
@@ -196,7 +173,7 @@ prev_widget:buttons(gears.table.join(
 next_widget:buttons(gears.table.join(
     awful.button({}, 1, calendar_next_month)
 ))
-calendar:buttons(gears.table.join(
+calendar_widget:buttons(gears.table.join(
     awful.button({}, 5, calendar_prev_month),
     awful.button({}, 4, calendar_next_month)
 ))
@@ -204,7 +181,7 @@ calendar:buttons(gears.table.join(
 local popup = awful.popup {
     widget = {
         {
-            calendar,
+            calendar_widget,
             margins = beautiful.notification_margin,
             widget = wibox.container.margin
         },
@@ -223,7 +200,7 @@ local popup = awful.popup {
 
 local keygrabber
 
-local function show_calendar()
+function calendar.show_calendar()
     local date = os.date("*t")
     month, year = date.month, date.year
     generate_header(month_widget, month, year)
@@ -232,16 +209,16 @@ local function show_calendar()
     awful.keygrabber.run(keygrabber)
 end
 
-local function hide_calendar()
+function calendar.hide_calendar()
     popup.visible = false
     awful.keygrabber.stop(keygrabber)
 end
 
-local function toggle_calendar()
+function calendar.toggle_calendar()
     if popup.visible then
-        hide_calendar()
+        calendar.hide_calendar()
     else
-        show_calendar()
+        calendar.show_calendar()
     end
 end
 
@@ -253,33 +230,13 @@ keygrabber = function(mod, key, event)
     elseif key == 'Down' or key == 'Left' then
         calendar_prev_month()
     elseif key == 'Escape' then
-        toggle_calendar()
+        calendar.toggle_calendar()
     elseif mod[2] == variables.modkey and key == 'c' then
-        toggle_calendar()
+        calendar.toggle_calendar()
     end
 end
 
 local old_cursor, old_wibox
-clock_widget:connect_signal("mouse::enter", function()
-    -- mouse_hover color highlight
-    icon_widget:get_children_by_id('icon')[1]:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icons.clock..'</span>')
-    text_widget:get_children_by_id('text')[1].format = '<span foreground="'..beautiful.fg_normal_hover..'">%H:%M</span>'
-
-    local w = mouse.current_wibox
-    old_cursor, old_wibox = w.cursor, w
-    w.cursor = "hand1"
-end)
-clock_widget:connect_signal("mouse::leave", function()
-    -- no mouse_hover color highlight
-    icon_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.clock)
-    text_widget:get_children_by_id('text')[1].format = "%H:%M"
-
-    if old_wibox then
-        old_wibox.cursor = old_cursor
-        old_wibox = nil
-    end
-end)
-
 next_widget:connect_signal("mouse::enter", function()
     next_widget:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icons.next..'</span>')
 
@@ -311,16 +268,4 @@ prev_widget:connect_signal("mouse::leave", function()
     end
 end)
 
-
-clock_widget:buttons(gears.table.join(
-    awful.button({}, 1, toggle_calendar)
-))
-
-local widget_keys = gears.table.join(
-    awful.key({ variables.modkey }, "c", toggle_calendar,
-    {description = "show the calendar menu", group = "launcher"})
-)
-
-root.keys(gears.table.join(root.keys(), widget_keys))
-
-return clock_widget
+return calendar

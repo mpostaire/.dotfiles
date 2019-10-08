@@ -32,16 +32,6 @@ function rofi.power_menu()
     )
 end
 
--- TODO: replace with a popup widget ? (if not, rewrite script to remove lines used for polybar)
-function rofi.calendar_menu()
-    spawn.easy_async_with_shell("~/.config/polybar/modules/calendarmenu.sh", function() end)
-end
-
--- TODO: replace with a popup widget ? (if not, rewrite script to remove lines used for polybar)
-function rofi.music_menu()
-    spawn.easy_async_with_shell("~/.config/polybar/modules/musicmenu.sh", function() end)
-end
-
 -- TODO: replace with a popup widget ? (may be complicated)
 function rofi.network_menu()
     spawn.easy_async("networkmanager_dmenu", function() end)

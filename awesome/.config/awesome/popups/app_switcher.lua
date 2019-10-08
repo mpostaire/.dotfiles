@@ -1,8 +1,10 @@
--- TODO: app switcher that can select clients between all tags
--- currently only clients from selected tags are listed (useful for floating but not really for tiling)
-
--- look https://github.com/awesomeWM/awesome/blob/master/docs/90-FAQ.md#how-to-add-an-application-switcher
--- make this without a tasklist anf get inspiration from awful menu clientlist
+-- TODO: make this app switcher work for all tags of one screen
+-- replace tasklist by a custom widget because we want to highlight a client before selecting it
+--  --> we want to focus the selected client only when app switcher is closed, when keys are released
+-- we want to use history so when we use app switcher, the first client to be selected will be the next, then
+-- when we reopen app switcher, the first client to be selected will be the one precedently selected
+-- (check with gnome how it works)
+-- we want to prevent popup from being visible when there is 0 clients to show
 
 local awful = require("awful")
 local wibox = require("wibox")
@@ -22,26 +24,27 @@ local function current_tag_filter(c)
     return false
 end
 
+local function focus_client(c)
+    c:emit_signal(
+        "request::activate",
+        "tasklist",
+        {raise = true}
+    )
+    -- c.first_tag:view_only()
+end
+
 local function focus_next_client()
     local iterator = awful.client.iterate(current_tag_filter)
     iterator()
     local c = iterator()
     if c then
-        c:emit_signal(
-            "request::activate",
-            "tasklist",
-            {raise = true}
-        )
+        focus_client(c)
     end
 end
 
 local function focus_prev_client()
     for c in awful.client.iterate(current_tag_filter) do
-        c:emit_signal(
-            "request::activate",
-            "tasklist",
-            {raise = true}
-        )
+        focus_client(c)
     end
 end
 
@@ -49,11 +52,7 @@ end
 local tasklist_buttons = gears.table.join(
     awful.button({variables.altkey}, 1, function (c)
         if c ~= capi.client.focus then
-            c:emit_signal(
-                "request::activate",
-                "tasklist",
-                {raise = true}
-            )
+            focus_client(c)
         end
     end),
     awful.button({ }, 4, focus_next_client),
@@ -62,10 +61,10 @@ local tasklist_buttons = gears.table.join(
 
 local app_switcher = awful.popup {
     widget = awful.widget.tasklist {
-        screen   = capi.mouse.screen,
-        filter   = awful.widget.tasklist.filter.currenttags,
-        buttons  = tasklist_buttons,
-        layout   = {
+        screen = capi.mouse.screen,
+        filter = awful.widget.tasklist.filter.currenttags,
+        buttons = tasklist_buttons,
+        layout = {
             -- spacing = 5,
             -- forced_num_rows = 2,
             layout = wibox.layout.grid.horizontal
@@ -85,8 +84,12 @@ local app_switcher = awful.popup {
                     },
                     nil,
                     {
-                        id = 'text_role',
-                        widget = wibox.widget.textbox,
+                        {
+                            id = 'text_role',
+                            widget = wibox.widget.textbox,
+                        },
+                        halign = 'center',
+                        widget = wibox.container.place
                     },
                     forced_height = dpi(128),
                     forced_width = dpi(128),

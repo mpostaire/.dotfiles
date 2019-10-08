@@ -1,7 +1,3 @@
----------------------------
--- Default awesome theme --
----------------------------
-
 local theme_assets = require("beautiful.theme_assets")
 local xresources = require("beautiful.xresources")
 local xresources_theme = xresources.get_current_theme()
