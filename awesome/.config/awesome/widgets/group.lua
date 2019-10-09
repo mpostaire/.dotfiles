@@ -10,6 +10,8 @@ group.__index = group
 -- TODO: faire que tous les widgets qui ont un control_widget et non présent dans un group puissent
 -- faire apparaître un popup contenant leur control widget.
 -- Du coup quand ils sont dans un group désactiver leur capacité à faire apparaître leur popup
+-- TODO: allow un widget spécifique pour le label (voir textclock) et dans ce cas ne pas l'update et proposer
+-- les fonctions d'update a utiliser à la place
 
 function group:new(children)
     local g = wibox.layout.fixed.horizontal()
@@ -25,25 +27,26 @@ function group:new(children)
         end
     end
 
-    g.popup_widgets = wibox.layout.fixed.vertical()
+    g.control_widgets = wibox.layout.fixed.vertical()
+    g.control_widgets.spacing = 8
 
     for _,v in ipairs(panel_children) do
-        v:set_label_visible(false)
+        v:set_popup_enabled(false)
         v:enable_mouse_hover_effects(true, false)
         g:add(v)
-        if v.popup_widget then
-            g.popup_widgets:add(v.popup_widget)
+        if v.control_widget then
+            g.control_widgets:add(v.control_widget)
         end
     end
 
     for _,v in ipairs(control_children) do
-        g.popup_widgets:add(v)
+        g.control_widgets:add(v)
     end
 
     g.popup = awful.popup {
         widget = {
             {
-                g.popup_widgets,
+                g.control_widgets,
                 margins = beautiful.notification_margin,
                 widget = wibox.container.margin
             },

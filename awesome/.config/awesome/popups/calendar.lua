@@ -4,6 +4,7 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local variables = require("config.variables")
 local dpi = require("beautiful.xresources").apply_dpi
+local capi = {mouse = mouse}
 
 local calendar = {}
 
@@ -15,13 +16,13 @@ local icons = {
 local prev_widget = wibox.widget {
     markup = icons.prev,
     font = 'Material Icons 16',
-    align = 'right',
+    align = 'center',
     widget = wibox.widget.textbox
 }
 local next_widget = wibox.widget {
     markup = icons.next,
     font = 'Material Icons 16',
-    align = 'right',
+    align = 'center',
     widget = wibox.widget.textbox
 }
 
@@ -67,7 +68,7 @@ local function generate_day_names_row(cal)
     for _,v in ipairs(day_names) do
         cal:add(wibox.widget {
             markup = '<span weight="bold" foreground="'..beautiful.white_alt..'">'..v..'</span>',
-            align = "right",
+            align = "center",
             widget = wibox.widget.textbox
         })
     end
@@ -93,7 +94,7 @@ local function generate_day_widgets(cal)
     local day_widgets = {}
     for i = 1, 42 do
         table.insert(day_widgets, wibox.widget {
-            align = 'right',
+            align = 'center',
             widget = wibox.widget.textbox
         })
         cal:add(day_widgets[i])
@@ -240,7 +241,7 @@ local old_cursor, old_wibox
 next_widget:connect_signal("mouse::enter", function()
     next_widget:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icons.next..'</span>')
 
-    local w = mouse.current_wibox
+    local w = capi.mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
     w.cursor = "hand1"
 end)
@@ -255,7 +256,7 @@ end)
 prev_widget:connect_signal("mouse::enter", function()
     prev_widget:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icons.prev..'</span>')
 
-    local w = mouse.current_wibox
+    local w = capi.mouse.current_wibox
     old_cursor, old_wibox = w.cursor, w
     w.cursor = "hand1"
 end)

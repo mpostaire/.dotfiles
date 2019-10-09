@@ -139,7 +139,7 @@ icon:buttons(gears.table.join(
     end)
 ))
 
-volume_widget.popup_widget = wibox.widget {
+volume_widget.control_widget = wibox.widget {
     icon,
     slider,
     spacing = 8,
