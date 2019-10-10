@@ -49,7 +49,7 @@ awful.screen.connect_for_each_screen(function(s)
                 wibox.widget.systray(),
                 -- widgets.archupdates, -- commented to hide it for now (when I translate wigets in OOP, this will be prettier)
                 widgets.network,
-                widgets.group:new({widgets.brightness:new(false), widgets.volume, widgets.player}),
+                widgets.group:new({widgets.brightness:new(false), widgets.volume:new(false), widgets.player}),
                 widgets.battery,
                 widgets.clock,
                 s.mylayoutbox,

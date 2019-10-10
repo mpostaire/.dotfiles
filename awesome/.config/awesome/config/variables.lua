@@ -6,7 +6,7 @@ variables.editor = os.getenv("EDITOR") or "nano"
 variables.editor_cmd = variables.terminal .. " -e " .. variables.editor
 variables.home = os.getenv("HOME") .. "/"
 variables.gui_editor = "code"
-variables.browser = os.getenv("BROWSER")
+variables.browser = os.getenv("BROWSER") or "firefox"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.

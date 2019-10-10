@@ -69,4 +69,8 @@ function volume_popup.show()
     end
 end
 
+alsa.on_properties_changed(function()
+    volume_popup.show()
+end)
+
 return volume_popup

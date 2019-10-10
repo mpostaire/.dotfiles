@@ -81,6 +81,7 @@ function base_panel_widget:new(icon, label, control_widget, style)
     widget._private.highlight = false
     widget.icon_widget = icon_widget
     widget.text_widget = text_widget
+    -- TODO: using crush() here may be a mistake: investigate
     widget._private.style = gears.table.crush(style, default_style)
     widget.control_widget = control_widget
 

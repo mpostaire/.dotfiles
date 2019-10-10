@@ -59,4 +59,8 @@ function brightness_popup.show()
     progressbar.value = brightness.brightness
 end
 
+brightness.on_properties_changed(function()
+    brightness_popup.show()
+end)
+
 return brightness_popup

@@ -1,18 +1,18 @@
+require("popups.brightness") -- show popup
 local awful = require("awful")
 local gears = require("gears")
 local brightness = require("util.brightness")
-local brightness_popup = require("popups.brightness")
-local base_widget_panel = require("widgets.panel.base")
+local base_panel_widget = require("widgets.panel.base")
 local brightness_control_widget = require("widgets.controls.brightness")
 local capi = {root = root}
 
-local brightness_widget = setmetatable({}, {__index = base_widget_panel})
+local brightness_widget = setmetatable({}, {__index = base_panel_widget})
 brightness_widget.__index = brightness_widget
 
 local icon = ""
 
 function brightness_widget:new(show_label)
-    local widget = base_widget_panel:new(_, _, brightness_control_widget:new())
+    local widget = base_panel_widget:new(_, _, brightness_control_widget:new())
     setmetatable(widget, brightness_widget)
 
     -- if nothing specified, we show the label
@@ -37,12 +37,10 @@ function brightness_widget:new(show_label)
     local widget_keys = gears.table.join(
         awful.key({}, "XF86MonBrightnessUp", function()
             brightness.inc_brightness(5)
-            brightness_popup.show()
         end,
         {description = "brightness up", group = "other"}),
         awful.key({}, "XF86MonBrightnessDown", function()
             brightness.dec_brightness(5)
-            brightness_popup.show()
         end,
         {description = "brightness down", group = "other"})
     )
@@ -51,7 +49,6 @@ function brightness_widget:new(show_label)
 
     brightness.on_properties_changed(function()
         widget:update(icon, math.floor(brightness.brightness) .. "%")
-        brightness_popup.show()
     end)
 
     return widget
