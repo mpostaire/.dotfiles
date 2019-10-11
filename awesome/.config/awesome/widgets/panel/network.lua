@@ -29,8 +29,11 @@ local function get_icon()
 end
 
 local function get_text()
-    if network.state == 'off' then return "disconnected" end
-    return network.ssid
+    if network.state == 'off' then
+        return "disconnected"
+    else
+        return network.ssid
+    end
 end
 
 local function update_widget()
@@ -38,7 +41,7 @@ local function update_widget()
     if network.state == 'wifi' or network.state == 'eth' then
         network_widget:update(icon, get_text())
     else
-        network_widget:update_icon(icon)
+        network_widget:update(icon, get_text())
     end
 end
 

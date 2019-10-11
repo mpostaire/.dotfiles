@@ -7,12 +7,6 @@ local beautiful = require("beautiful")
 local group = {}
 group.__index = group
 
--- TODO: faire que tous les widgets qui ont un control_widget et non présent dans un group puissent
--- faire apparaître un popup contenant leur control widget.
--- Du coup quand ils sont dans un group désactiver leur capacité à faire apparaître leur popup
--- TODO: allow un widget spécifique pour le label (voir textclock) et dans ce cas ne pas l'update et proposer
--- les fonctions d'update a utiliser à la place
-
 function group:new(children)
     local g = wibox.layout.fixed.horizontal()
     setmetatable(g, group)

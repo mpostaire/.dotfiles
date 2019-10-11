@@ -27,15 +27,6 @@ if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
 
-# start some nice programs
-
-if [ -d /etc/X11/xinit/xinitrc.d ] ; then
-    for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
-        [ -x "$f" ] && . "$f"
-    done
-    unset f
-fi
-
 # set the cursor
 xsetroot -cursor_name left_ptr
 
@@ -47,8 +38,19 @@ xss-lock -- $HOME/.scripts/lock.sh &
 #xset s 20 10
 #xss-lock -n /usr/share/doc/xss-lock/dim-screen.sh -- ~/.scripts/lock.sh
 
-numlockx
-mpd $HOME/.config/mpd/mpd.conf
-redshift -c $HOME/.config/redshift.conf &
-# $HOME/.scripts/lock.sh
+# start some nice programs
+
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+    for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+        [ -x "$f" ] && . "$f"
+    done
+    unset f
+fi
+
+command -v numlockx > /dev/null && numlockx
+mpdconf=$HOME/.config/mpd/mpd.conf
+command -v mpd > /dev/null && [ -f $mpdconf ] && mpd $mpdconf
+redshiftconf=$HOME/.config/redshift.conf
+command -v redshift > /dev/null && [ -f $redshiftconf ] && redshift -c $redshiftconf &
+
 exec awesome

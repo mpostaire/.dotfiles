@@ -97,6 +97,15 @@ function volume_widget:new(width)
         end)
     ))
 
+    slider:buttons(gears.table.join(
+        awful.button({}, 4, function()
+            alsa.inc_volume(5)
+        end),
+        awful.button({}, 5, function()
+            alsa.dec_volume(5)
+        end)
+    ))
+
     widget.type = "control_widget"
 
     return widget

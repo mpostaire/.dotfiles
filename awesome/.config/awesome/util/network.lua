@@ -29,7 +29,7 @@ local function set_active_connection_properties()
     elseif string.match(connection_proxy.Type, "wireless") then
         network.state = 'wifi'
     else
-        network.state = nil
+        network.state = 'off'
     end
     network.ssid = connection_proxy.Id
     network.strength = access_point_proxy.Strength

@@ -17,7 +17,6 @@ local icons = {
 -- notification.popup.widget:get_children_by_id("icon")[1].font = "DejaVuSansMono Nerd Font 16"
 
 local battery_widget = base_panel_widget:new(_, _, _, {icon_font = "DejaVuSansMono Nerd Font 10"})
-battery_widget:enable_mouse_hover_effects(true, true)
 
 local function get_icon()
     local icon = icons[5]

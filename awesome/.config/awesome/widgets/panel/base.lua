@@ -52,12 +52,17 @@ function base_panel_widget:new(icon, label, control_widget, style)
         widget = wibox.widget.textbox
     }
 
-    local text_widget = wibox.widget {
-        markup = label,
-        id = "text",
-        font = style.label_font or default_style.label_font,
-        widget = wibox.widget.textbox
-    }
+    local text_widget
+    if type(label) == 'table' and label.widget_name and label.widget_name == 'wibox.widget.textbox' then
+        text_widget = label
+    else
+        text_widget = wibox.widget {
+            markup = label,
+            id = "text",
+            font = style.label_font or default_style.label_font,
+            widget = wibox.widget.textbox
+        }
+    end
 
     local widget = wibox.widget {
         {
@@ -81,6 +86,7 @@ function base_panel_widget:new(icon, label, control_widget, style)
     widget._private.highlight = false
     widget.icon_widget = icon_widget
     widget.text_widget = text_widget
+    widget._private.format = text_widget.format
     -- TODO: using crush() here may be a mistake: investigate
     widget._private.style = gears.table.crush(style, default_style)
     widget.control_widget = control_widget
@@ -103,13 +109,8 @@ function base_panel_widget:new(icon, label, control_widget, style)
 end
 
 function base_panel_widget:update(icon, label)
-    if self._private.highlight then
-        self.icon_widget:set_markup_silently('<span foreground="'..color.lighten_by(self._private.style.icon_color, 0.5)..'">'..icon..'</span>')
-        self.text_widget:set_markup_silently('<span foreground="'..color.lighten_by(self._private.style.label_color, 0.5)..'">'..label..'</span>')
-    else
-        self.icon_widget:set_markup_silently('<span foreground="'..self._private.style.icon_color..'">'..icon..'</span>')
-        self.text_widget:set_markup_silently('<span foreground="'..self._private.style.label_color..'">'..label..'</span>')
-    end
+    self:update_icon(icon)
+    self:update_label(label)
 end
 
 function base_panel_widget:update_icon(icon)
@@ -122,16 +123,28 @@ end
 
 function base_panel_widget:update_label(label)
     if self._private.highlight then
-        self.text_widget:set_markup_silently('<span foreground="'..color.lighten_by(self._private.style.label_color, 0.5)..'">'..label..'</span>')
+        if self._private.format then
+            self.text_widget.format = '<span foreground="'..color.lighten_by(self._private.style.label_color, 0.5)..'">'..label..'</span>'
+        else
+            self.text_widget:set_markup_silently('<span foreground="'..color.lighten_by(self._private.style.label_color, 0.5)..'">'..label..'</span>')
+        end
     else
-        self.text_widget:set_markup_silently('<span foreground="'..self._private.style.label_color..'">'..label..'</span>')
+        if self._private.format then
+            self.text_widget.format = label
+        else
+            self.text_widget:set_markup_silently('<span foreground="'..self._private.style.label_color..'">'..label..'</span>')
+        end
     end
 end
 
 function base_panel_widget:highlight(highlight)
     self._private.highlight = highlight
     if self.text_widget.visible then
-        self:update(self.icon_widget.text, self.text_widget.text)
+        if self._private.format then
+            self:update(self.icon_widget.text, self._private.format)
+        else
+            self:update(self.icon_widget.text, self.text_widget.text)
+        end
     else
         self:update_icon(self.icon_widget.text)
     end
@@ -158,7 +171,11 @@ end
 
 function base_panel_widget:set_label_color(label_color)
     self._private.style.label_color = label_color
-    self:update_label(self.text_widget.text)
+    if self._private.format then
+        self:update_label(self._private.format)
+    else
+        self:update_label(self.text_widget.text)
+    end
 end
 
 function base_panel_widget:set_icon_color(icon_color)

@@ -1,4 +1,5 @@
 local gears = require("gears")
+local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local brightness = require("util.brightness")
@@ -76,6 +77,15 @@ function brightness_widget:new(width)
         widget._private.brightness_updating_value = true
         slider.value = ((brightness.brightness - 10) / 90) * 100
     end)
+
+    slider:buttons(gears.table.join(
+        awful.button({}, 4, function()
+            brightness.inc_brightness(5)
+        end),
+        awful.button({}, 5, function()
+            brightness.dec_brightness(5)
+        end)
+    ))
 
     widget.type = "control_widget"
 

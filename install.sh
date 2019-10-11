@@ -7,4 +7,4 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosugges
 yay -S networkmanager-dmenu-git #bibata-cursor-theme
 
 # see https://wiki.archlinux.org/index.php/acpid
-systemctl start acpid.service
+# systemctl start acpid.service

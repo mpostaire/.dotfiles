@@ -63,32 +63,6 @@ local next_widget = wibox.widget {
     },
     widget = wibox.container.background
 }
--- local progressbar_widget = wibox.widget {
---     bar_shape = gears.shape.rounded_rect,
---     bar_height = 2,
---     bar_color = gears.color.create_pattern({
---         type = "linear",
---         from = { -1, 0 },
---         to = { 0, 0 },
---         stops = { { 1, beautiful.fg_normal }, { 1, beautiful.bg_focus } }
---     }),
---     handle_color = beautiful.fg_normal,
---     handle_shape = gears.shape.circle,
---     handle_border_color = beautiful.border_color,
---     handle_border_width = 1,
---     value = 0,
---     forced_width = 150,
---     forced_height = 10,
---     widget = wibox.widget.slider,
--- }
--- progressbar_widget:connect_signal("property::value", function()
---     progressbar_widget.bar_color = gears.color.create_pattern({
---         type = "linear",
---         from = { -1, 0 },
---         to = { progressbar_widget.value * (progressbar_widget.forced_width / 100), 0 },
---         stops = { { 1, beautiful.fg_normal }, { 1, beautiful.bg_focus } }
---     })
--- end)
 
 local player_widget = wibox.widget {
     {
@@ -138,15 +112,21 @@ playpause_widget:connect_signal("mouse::leave", function()
     playpause_widget.fg = beautiful.fg_normal
 end)
 
-local function update()
-    local metadata = mpris.Metadata
+local function update_widget()
+    local metadata = mpris.metadata
+    if not metadata then
+        player_widget.visible = false
+        return
+    end
 
-    if mpris.PlaybackStatus == "Playing" then
+    player_widget.visible = true
+
+    if mpris.playback_status == "Playing" then
         playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.pause)
 
         title_widget.text = metadata["xesam:title"]
         artist_widget.text = metadata["xesam:artist"]
-    elseif  mpris.PlaybackStatus == "Paused" then
+    elseif  mpris.playback_status == "Paused" then
         playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
 
         title_widget.text = metadata["xesam:title"]
@@ -157,20 +137,15 @@ local function update()
         title_widget.text = "Titre inconnu"
         artist_widget.text = "Artiste inconnu"
     end
-
-    -- progressbar_widget.value = (mpris.Position / tonumber(metadata["mpris:length"])) * 100
 end
-update()
+update_widget()
 
-mpris:on_properties_changed(function (p, changed, invalidated)
-    assert(p == mpris)
-    update()
-end)
+mpris.on_properties_changed(update_widget)
 
 playpause_widget:buttons(gears.table.join(
     awful.button({}, 1, function()
-        mpris:PlayPause()
-        if mpris.PlaybackStatus == "Playing" then
+        mpris.play_pause()
+        if mpris.playback_status == "Playing" then
             playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.pause)
         else
             playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
@@ -178,12 +153,12 @@ playpause_widget:buttons(gears.table.join(
     end)
 ))
 prev_widget:buttons(gears.table.join(
-    awful.button({}, 1, function() mpris:Previous() end)
+    awful.button({}, 1, function() mpris.previous() end)
 ))
 next_widget:buttons(gears.table.join(
-    awful.button({}, 1, function() mpris:Next() end)
+    awful.button({}, 1, function() mpris.next() end)
 ))
 
-player_widget.type = "control_widget" -- temporary
+player_widget.type = "control_widget"
 
 return player_widget

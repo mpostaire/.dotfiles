@@ -25,7 +25,7 @@ TODO
 
 - clipboard so when a program is closed the content copied inside it is still useable
 
-- only one popup instance for each widget having a popup
+- only one popup instance for each widget having a popup (make another group widget but with only this condition ?)
 
 - make a popup subclass wich make clicking outside hide itself
 - --> place all widgets inside a container widget. if its width is too high, collapse (windows xp or windows 10 style) or make widgets without labels / with toggleable labels, or instead of width, show only x widgets and all n > x widgets are hidden tray icons count for 1 widget, then move music widget to the right area of the wibar
