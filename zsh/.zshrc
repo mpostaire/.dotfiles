@@ -72,6 +72,9 @@ fix() {
 # auto ls when cd (chpwd function is executed each time zsh changes directory)
 chpwd() { ls }
 
+# download audio from youtube
+audio-dl() { youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s' $1 }
+
 # Enable tab completion menu-based
 zstyle ':completion:*' menu select
 # Default colors for listings.
