@@ -15,10 +15,12 @@ awful.screen.connect_for_each_screen(function(s)
                 layout = wibox.layout.fixed.horizontal,
                 widgets.launcher(),
                 s.mytaglist,
+                wibox.container.margin(_, 4)
             },
             s.mytasklist, -- Middle widget
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
+                wibox.container.margin(_, 4),
                 wibox.widget.systray(),
                 -- widgets.archupdates, -- commented to hide it for now (when I translate wigets in OOP, this will be prettier)
                 widgets.network(),
@@ -30,11 +32,12 @@ awful.screen.connect_for_each_screen(function(s)
                     widgets.battery(),
                     widgets.power()
                 }),
+                wibox.container.margin(_, 4),
                 s.mylayoutbox
             },
         },
         bottom = beautiful.wibar_bottom_border_width,
         color = beautiful.wibar_border_color,
-        widget = wibox.container.margin,
+        widget = wibox.container.margin
     }
 end)

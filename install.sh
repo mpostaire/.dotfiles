@@ -8,3 +8,6 @@ yay -S networkmanager-dmenu-git #bibata-cursor-theme
 
 # see https://wiki.archlinux.org/index.php/acpid
 # systemctl start acpid.service
+
+# systemctl --user enable redshift.service
+# systemctl --user enable mpd.service

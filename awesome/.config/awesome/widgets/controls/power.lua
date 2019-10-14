@@ -102,7 +102,12 @@ return function()
         end)
     ))
 
-    disconnect:buttons(gears.table.join(awful.button({}, 1, capi.awesome.quit)))
+    disconnect:buttons(gears.table.join(
+        awful.button({}, 1, function()
+            capi.awesome.quit()
+            widget.parent.control_popup.visible = false
+        end)
+    ))
 
     suspend:buttons(gears.table.join(
         awful.button({}, 1, function()

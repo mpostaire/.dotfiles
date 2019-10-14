@@ -83,6 +83,7 @@ return function()
                 next_widget,
                 layout = wibox.layout.flex.horizontal
             },
+            spacing = 2,
             layout = wibox.layout.fixed.vertical,
         },
         layout = wibox.layout.fixed.horizontal

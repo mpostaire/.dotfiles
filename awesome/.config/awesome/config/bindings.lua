@@ -50,7 +50,7 @@ local globalkeys = gears.table.join(
     awful.key({ variables.modkey,           }, "Up",
     function ()
         awful.client.focus.bydirection("up")
-        if capi.client.focus then capi.clientclient.focus:raise() end
+        if capi.client.focus then capi.client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
