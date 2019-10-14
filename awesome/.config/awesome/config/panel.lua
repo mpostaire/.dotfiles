@@ -1,33 +1,7 @@
 local awful = require("awful")
-local gears = require("gears")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
 local widgets = require("widgets")
-local capi = {screen = screen}
-
--- MOVE BELOW WALLPAPER BLOCK INTO ITS OWN FILE
--- WALLPAPER
-
--- {{{ Wibar
-local function set_wallpaper(s)
-    -- Wallpaper
-    if beautiful.wallpaper then
-        local wallpaper = beautiful.wallpaper
-        -- If wallpaper is a function, call it with the screen
-        if type(wallpaper) == "function" then
-            wallpaper = wallpaper(s)
-        end
-        gears.wallpaper.maximized(wallpaper, s, true)
-    end
-end
--- sets it for each screen
-awful.screen.connect_for_each_screen(function(s)
-    -- Wallpaper
-    set_wallpaper(s)
-end)
--- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-capi.screen.connect_signal("property::geometry", set_wallpaper)
--- WALLPAPER END
 
 awful.screen.connect_for_each_screen(function(s)
     -- Create the wibox
@@ -39,19 +13,24 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.align.horizontal,
             { -- Left widgets
                 layout = wibox.layout.fixed.horizontal,
-                widgets.launcher,
+                widgets.launcher(),
                 s.mytaglist,
-                s.mypromptbox,
             },
             s.mytasklist, -- Middle widget
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
                 wibox.widget.systray(),
                 -- widgets.archupdates, -- commented to hide it for now (when I translate wigets in OOP, this will be prettier)
-                widgets.network,
-                widgets.timedate:new("%H:%M"),
-                widgets.group:new({widgets.brightness:new(false), widgets.volume:new(false), widgets.player, widgets.battery}),
-                s.mylayoutbox,
+                widgets.network(),
+                widgets.timedate("%H:%M"),
+                widgets.group({
+                    widgets.brightness(false),
+                    widgets.volume(false),
+                    widgets.player(),
+                    widgets.battery(),
+                    widgets.power()
+                }),
+                s.mylayoutbox
             },
         },
         bottom = beautiful.wibar_bottom_border_width,
@@ -59,4 +38,3 @@ awful.screen.connect_for_each_screen(function(s)
         widget = wibox.container.margin,
     }
 end)
--- }}}

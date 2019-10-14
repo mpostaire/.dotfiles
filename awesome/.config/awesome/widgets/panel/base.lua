@@ -38,7 +38,7 @@ function base_panel_widget:new(icon, label, control_widget, style)
         label_color = beautiful.fg_normal,
         icon_color = beautiful.fg_normal,
         label_font = beautiful.font,
-        icon_font = "Material Icons 12"
+        icon_font = beautiful.icon_font
     }
 
     if not style then
@@ -93,6 +93,7 @@ function base_panel_widget:new(icon, label, control_widget, style)
 
     if control_widget then
         widget._private.popup_enabled = true
+        control_widget.parent = widget
         widget.control_popup = make_popup(control_widget)
         widget:buttons(gears.table.join(
             awful.button({}, 1, function()
@@ -104,6 +105,26 @@ function base_panel_widget:new(icon, label, control_widget, style)
     else
         widget._private.popup_enabled = false
     end
+
+    widget._private.old_cursor, widget._private.old_wibox = nil, nil
+    widget._private.mouse_enter_effect = function()
+        widget:highlight(true)
+
+        local w = capi.mouse.current_wibox
+        widget._private.old_cursor, widget._private.old_wibox = w.cursor, w
+        w.cursor = "hand1"
+    end
+
+    widget._private.mouse_leave_effect = function()
+        widget:highlight(false)
+
+        if widget._private.old_wibox then
+            widget._private.old_wibox.cursor = widget._private.old_cursor
+            widget._private.old_wibox = nil
+        end
+    end
+
+    widget:set_mouse_effects(true)
 
     return widget
 end
@@ -150,7 +171,7 @@ function base_panel_widget:highlight(highlight)
     end
 end
 
-function base_panel_widget:set_label_visible(visible)
+function base_panel_widget:show_label(visible)
     if visible then
         self:get_children_by_id('icon_margins')[1].right = self._private.style.spacing
     else
@@ -162,10 +183,8 @@ end
 function base_panel_widget:set_popup_enabled(popup_enabled)
     self._private.popup_enabled = popup_enabled
 
-    if popup_enabled then
+    if popup_enabled and not self.control_popup then
         self.control_popup = make_popup(self.control_widget)
-    else
-        self.control_popup = nil
     end
 end
 
@@ -183,36 +202,16 @@ function base_panel_widget:set_icon_color(icon_color)
     self:update_icon(self.icon_widget.text)
 end
 
-function base_panel_widget:enable_mouse_hover_effects(on_click, on_hover)
-    if not on_click and not on_hover then
-        on_click, on_hover = true, true
+function base_panel_widget:set_mouse_effects(val)
+    if val then
+        self._private.old_cursor, self._private.old_wibox = nil, nil
+        self:connect_signal("mouse::enter", self._private.mouse_enter_effect)
+        self:connect_signal("mouse::leave", self._private.mouse_leave_effect)
+    else
+        self._private.old_cursor, self._private.old_wibox = nil, nil
+        self:disconnect_signal("mouse::enter", self._private.mouse_enter_effect)
+        self:disconnect_signal("mouse::leave", self._private.mouse_leave_effect)
     end
-
-    self._private.old_cursor, self._private.old_wibox = nil, nil
-    self:connect_signal("mouse::enter", function()
-        if on_hover then
-            self:highlight(true)
-        end
-
-        if on_click then
-            local w = capi.mouse.current_wibox
-            self._private.old_cursor, self._private.old_wibox = w.cursor, w
-            w.cursor = "hand1"
-        end
-    end)
-
-    self:connect_signal("mouse::leave", function()
-        if on_hover then
-            self:highlight(false)
-        end
-
-        if on_click then
-            if self._private.old_wibox then
-                self._private.old_wibox.cursor = self._private.old_cursor
-                self._private.old_wibox = nil
-            end
-        end
-    end)
 end
 
 return base_panel_widget

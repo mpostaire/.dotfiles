@@ -1,6 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-require("config.bindings") -- we apply here client keys so to activate theme we need to get the variable that set them
+local bindings = require("config.bindings")
 
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
@@ -13,8 +13,8 @@ awful.rules.rules = {
             border_color = beautiful.border_normal,
             focus = awful.client.focus.filter,
             raise = true,
-            keys = clientkeys,
-            buttons = clientbuttons,
+            keys = bindings.clientkeys,
+            buttons = bindings.clientbuttons,
             screen = awful.screen.preferred,
             placement = awful.placement.no_overlap + awful.placement.no_offscreen,
             size_hints_honor = false -- fixe urxvt size but some apps may not like this (may cause flickering)
@@ -72,8 +72,8 @@ awful.rules.rules = {
             callback = function(c) awful.placement.centered(c) end
         }
     },
-    -- -- Vscode no titlebar (because it has a client side one). bug: its titlebar cannot be used to move window in awesomewm
-    -- -- and its maximize/minimize button only works for maximizing 
+    -- -- Vscode no titlebar (because it has a CSD). bug: its titlebar cannot be used to move window in awesomewm
+    -- -- and its maximize/minimize button only works for maximizing
     -- {
     --     rule = {class = "Code"},
     --     properties = {titlebars_enabled = false}

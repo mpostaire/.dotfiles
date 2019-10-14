@@ -3,21 +3,23 @@ local awful = require("awful")
 local spawn = require("awful.spawn")
 local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
-
 require("awful.hotkeys_popup.keys")
 local variables = require("config.variables")
 local rofi = require("util.rofi")
 local client_menu = require("popups.client_menu")
+local capi = {root = root, client = client, awesome = awesome, }
+
+local bindings = {}
 
 -- {{{ Mouse bindings
-root.buttons(gears.table.join(
+capi.root.buttons(gears.table.join(
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
 -- }}}
 
 -- {{{ Key bindings
-globalkeys = gears.table.join(
+local globalkeys = gears.table.join(
     awful.key({ variables.modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
     awful.key({ variables.modkey,           }, "Escape", awful.tag.history.restore,
@@ -34,33 +36,31 @@ globalkeys = gears.table.join(
     awful.key({ variables.modkey,           }, "Left",
         function ()
             awful.client.focus.bydirection("left")
-            if client.focus then client.focus:raise() end
+            if capi.client.focus then capi.client.focus:raise() end
         end,
         {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Right",
     function ()
         awful.client.focus.bydirection("right")
-        if client.focus then client.focus:raise() end
+        if capi.client.focus then capi.client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Up",
     function ()
         awful.client.focus.bydirection("up")
-        if client.focus then client.focus:raise() end
+        if capi.client.focus then capi.clientclient.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Down",
     function ()
         awful.client.focus.bydirection("down")
-        if client.focus then client.focus:raise() end
+        if capi.client.focus then capi.client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
-    -- awful.key({ variables.modkey,           }, "w", function () widgets.menu:show() end,
-    --           {description = "show main menu", group = "awesome"}),
 
     -- Layout manipulation
     awful.key({ variables.modkey, "Shift"   }, "Left", function () awful.client.swap.bydirection("left")    end,
@@ -89,7 +89,7 @@ globalkeys = gears.table.join(
     -- Standard program
     awful.key({ variables.modkey,           }, "Return", function () awful.spawn(variables.terminal) end,
               {description = "open a terminal", group = "launcher"}),
-    awful.key({ variables.modkey,           }, "r", awesome.restart,
+    awful.key({ variables.modkey,           }, "r", capi.awesome.restart,
               {description = "reload awesome", group = "awesome"}),
     awful.key({ variables.modkey,           }, "g", function()
                                                         local tags = awful.screen.focused().tags
@@ -132,27 +132,15 @@ globalkeys = gears.table.join(
               end,
               {description = "restore minimized", group = "client"}),
 
-    -- Prompt
-    -- awful.key({ variables.modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
-    --           {description = "run prompt", group = "launcher"}),
-
-    -- awful.key({ variables.modkey }, "x",
-    --             function ()
-    --                 awful.prompt.run {
-    --                     prompt       = "Run Lua code: ",
-    --                     textbox      = awful.screen.focused().mypromptbox.widget,
-    --                     exe_callback = awful.util.eval,
-    --                     history_path = awful.util.get_cache_dir() .. "/history_eval"
-    --                 }
-    --             end,
-    --             {description = "lua execute prompt", group = "awesome"}),
     -- lock screen
     awful.key({ variables.modkey }, "l",
         function()
             spawn.with_shell("~/.scripts/lock.sh", function() end)
         end,
     {description = "raise lock screen", group = "launcher"}),
-    awful.key({ "Control", "Mod1" }, "Delete", function() spawn.easy_async(variables.terminal.." -e htop", function() end) end,
+    awful.key({ "Control", "Mod1" }, "Delete", function()
+        spawn.easy_async(variables.terminal.." -e htop", function() end)
+    end,
     {description = "htop", group = "launcher"}),
 
     -- rofi power menu
@@ -161,8 +149,6 @@ globalkeys = gears.table.join(
     -- rofi launcher menu
     awful.key({ variables.modkey }, "space", function() rofi.launcher_menu("drun") end,
                 {description = "show the launcher menu", group = "launcher"}),
-    -- awful.key({ variables.modkey }, "Tab", function() rofi.launcher_menu("window") end,
-    --             {description = "show the window menu", group = "launcher"}),
 
     -- laptop special keys
     awful.key({}, "XF86Calculator",
@@ -194,7 +180,7 @@ globalkeys = gears.table.join(
 )
 
 -- this is used in rules.lua
-clientkeys = gears.table.join(
+bindings.clientkeys = gears.table.join(
     -- awful.key({ variables.modkey,           }, "f",
     --     function (c)
     --         c.fullscreen = not c.fullscreen
@@ -274,10 +260,10 @@ for i = 1, 9 do
         -- Move client to tag.
         awful.key({ variables.modkey, "Shift" }, "#" .. i + 9,
                   function ()
-                      if client.focus then
-                          local tag = client.focus.screen.tags[i]
+                      if capi.client.focus then
+                          local tag = capi.client.focus.screen.tags[i]
                           if tag then
-                              client.focus:move_to_tag(tag)
+                            capi.client.focus:move_to_tag(tag)
                           end
                      end
                   end,
@@ -285,10 +271,10 @@ for i = 1, 9 do
         -- Toggle tag on focused client.
         awful.key({ variables.modkey, "Control", "Shift" }, "#" .. i + 9,
                   function ()
-                      if client.focus then
-                          local tag = client.focus.screen.tags[i]
+                      if capi.client.focus then
+                          local tag = capi.client.focus.screen.tags[i]
                           if tag then
-                              client.focus:toggle_tag(tag)
+                            capi.client.focus:toggle_tag(tag)
                           end
                       end
                   end,
@@ -297,7 +283,7 @@ for i = 1, 9 do
 end
 
 -- this is used in rules.lua
-clientbuttons = gears.table.join(
+bindings.clientbuttons = gears.table.join(
     awful.button({ }, 1, function (c)
         c:emit_signal("request::activate", "mouse_click", {raise = true})
     end),
@@ -312,5 +298,7 @@ clientbuttons = gears.table.join(
 )
 
 -- Set keys
-root.keys(globalkeys)
+capi.root.keys(globalkeys)
 -- }}}
+
+return bindings

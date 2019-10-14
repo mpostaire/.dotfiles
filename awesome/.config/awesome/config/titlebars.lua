@@ -2,9 +2,12 @@ local gears = require("gears")
 local wibox = require("wibox")
 local awful = require("awful")
 local client_menu = require("popups.client_menu")
+local capi = {client = client}
+
+awful.titlebar.enable_tooltip = false
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
-client.connect_signal("request::titlebars", function(c)
+capi.client.connect_signal("request::titlebars", function(c)
     -- buttons for the titlebar
     local buttons = gears.table.join(
         awful.button({ }, 1, function()

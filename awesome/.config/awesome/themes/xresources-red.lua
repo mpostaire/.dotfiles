@@ -4,11 +4,12 @@ local xresources_theme = xresources.get_current_theme()
 local dpi = xresources.apply_dpi
 local gears = require("gears")
 local naughty = require("naughty")
+local awful = require("awful")
 local color = require("util.color")
 local beautiful = require("beautiful")
 local variables = require("config.variables")
-
 local gfs = require("gears.filesystem")
+local capi = {screen = screen}
 local themes_path = gfs.get_configuration_dir().."themes/"
 
 local theme = {}
@@ -24,10 +25,26 @@ local function set_wallpaper(wallpaper_path)
     else
         theme.wallpaper = gfs.get_themes_dir().."default/background.png"
     end
+
+    -- sets it for each screen
+    awful.screen.connect_for_each_screen(function(s)
+        if theme.wallpaper then
+            local wallpaper = theme.wallpaper
+            -- If wallpaper is a function, call it with the screen
+            if type(wallpaper) == "function" then
+                wallpaper = wallpaper(s)
+            end
+            gears.wallpaper.maximized(wallpaper, s, true)
+        end
+    end)
 end
 
 set_wallpaper("~/Images/lunar_eclipse.jpg")
 -- }}}
+
+-- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
+capi.screen.connect_signal("property::geometry", set_wallpaper)
+
 
 theme.black = xresources_theme["color0"]
 theme.black_alt = xresources_theme["color8"]
@@ -56,6 +73,7 @@ theme.white_alt = xresources_theme["color15"]
 theme.true_white = "#FFFFFF"
 
 theme.font          = "DejaVu Sans Mono 10"
+theme.icon_font     = "Suru-Icons 12"
 
 theme.bg_normal     = theme.black
 theme.bg_focus      = theme.black_alt

@@ -9,19 +9,19 @@ local capi = {mouse = mouse}
 local calendar = {}
 
 local icons = {
-    prev = "",
-    next = ""
+    prev = "",
+    next = ""
 }
 
 local prev_widget = wibox.widget {
     markup = icons.prev,
-    font = 'Material Icons 16',
+    font = string.gsub(beautiful.icon_font, "%d+", "14"),
     align = 'center',
     widget = wibox.widget.textbox
 }
 local next_widget = wibox.widget {
     markup = icons.next,
-    font = 'Material Icons 16',
+    font = string.gsub(beautiful.icon_font, "%d+", "14"),
     align = 'center',
     widget = wibox.widget.textbox
 }

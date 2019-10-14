@@ -7,9 +7,25 @@ local alsa = require("util.alsa")
 local volume_popup = {}
 
 local icons = {
-    normal = "",
-    muted = ""
+    low = "",
+    medium = "",
+    high = "",
+    muted = "" -- TODO: make a muted_low, muted_medium, muted_high
 }
+
+local function get_icon()
+    if alsa.muted then
+        return '<span foreground="'..beautiful.white_alt..'">'..icons.muted..'</span>'
+    else
+        if alsa.volume < 33 then
+            return icons.low
+        elseif alsa.volume < 66 then
+            return icons.medium
+        else
+            return icons.high
+        end
+    end
+end
 
 local progressbar = wibox.widget {
     max_value = 100,
@@ -22,8 +38,8 @@ local progressbar = wibox.widget {
 }
 
 local icon_widget = wibox.widget {
-    markup = icons.normal,
-    font = "Material Icons 128",
+    markup = get_icon(),
+    font = string.gsub(beautiful.icon_font, "%d+", "128"),
     widget = wibox.widget.textbox
 }
 
@@ -32,6 +48,7 @@ local popup = awful.popup {
         {
             icon_widget,
             progressbar,
+            spacing = 8,
             layout = wibox.layout.fixed.vertical
         },
         margins = beautiful.notification_margin,
@@ -61,10 +78,10 @@ function volume_popup.show()
     end
     progressbar.value = alsa.volume
     if alsa.muted then
-        icon_widget:set_markup_silently('<span foreground="'..beautiful.white_alt..'">'..icons.muted..'</span>')
+        icon_widget:set_markup_silently('<span foreground="'..beautiful.white_alt..'">'..get_icon()..'</span>')
         progressbar.color = beautiful.white_alt
     else
-        icon_widget:set_markup_silently(icons.normal)
+        icon_widget:set_markup_silently(get_icon())
         progressbar.color = beautiful.fg_normal
     end
 end

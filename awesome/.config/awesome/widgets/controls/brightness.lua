@@ -4,7 +4,7 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local brightness = require("util.brightness")
 
-local icon = ""
+local icon = ""
 
 local brightness_widget = {}
 brightness_widget.__index = brightness_widget
@@ -42,7 +42,7 @@ function brightness_widget:new(width)
 
     local icon_widget = wibox.widget {
         markup = icon,
-        font = 'Material Icons 16',
+        font = string.gsub(beautiful.icon_font, "%d+", "16"),
         widget = wibox.widget.textbox
     }
     local widget = wibox.widget {

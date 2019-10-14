@@ -1,4 +1,7 @@
+local gears = require("gears")
+local awful = require("awful")
 local dbus = require("dbus_proxy")
+local capi = {root = root}
 
 local alsa = {}
 
@@ -63,5 +66,22 @@ end
 function alsa.on_properties_changed(func)
     table.insert(on_properties_changed_callbacks, func)
 end
+
+local keys = gears.table.join(
+    awful.key({}, "XF86AudioRaiseVolume", function()
+        alsa.inc_volume(5)
+    end,
+    {description = "volume up", group = "multimedia"}),
+    awful.key({}, "XF86AudioMute", function()
+        alsa.toggle_volume()
+    end,
+    {description = "toggle mute volume", group = "multimedia"}),
+    awful.key({}, "XF86AudioLowerVolume", function()
+        alsa.dec_volume(5)
+    end,
+    {description = "volume down", group = "multimedia"})
+)
+
+capi.root.keys(gears.table.join(capi.root.keys(), keys))
 
 return alsa

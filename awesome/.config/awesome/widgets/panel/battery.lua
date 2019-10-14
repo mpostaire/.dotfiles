@@ -1,74 +1,78 @@
 local beautiful = require("beautiful")
-local gears = require("gears")
-local awful = require("awful")
-local popup_notification = require("util.popup_notification")
 local base_panel_widget = require("widgets.panel.base")
 local battery = require("util.battery")
 
 local icons = {
-    "",
-    "",
-    "",
-    "",
-    ""
+    charging = {
+        "",
+        "",
+        "",
+        "",
+        ""
+    },
+    discharging = {
+        "",
+        "",
+        "",
+        "",
+        ""
+    },
+    full = ""
 }
+
+return function()
+    local widget = base_panel_widget:new()
+
+    local function get_icon()
+        local icon
+        if battery.percentage >= 0 and battery.percentage < 20 then
+            icon = icons[battery.state][1]
+        elseif battery.percentage >= 20 and battery.percentage < 40 then
+            icon = icons[battery.state][2]
+        elseif battery.percentage >= 40 and battery.percentage < 60 then
+            icon = icons[battery.state][3]
+        elseif battery.percentage >= 60 and battery.percentage < 80 then
+            icon = icons[battery.state][4]
+        elseif battery.percentage >= 80 and battery.percentage < 100 then
+            icon = icons[battery.state][5]
+        else
+            icon = icons.full
+        end
+
+        if battery.state == "charging" then
+            widget:set_icon_color(beautiful.yellow)
+        elseif battery.state == "discharging" and battery.percentage <= 15 then
+            widget:set_icon_color(beautiful.red)
+        else
+            widget:set_icon_color(beautiful.fg_normal)
+        end
+
+        return icon
+    end
+
+    local function get_text()
+        return math.floor(battery.percentage).. "%"
+    end
+
+    -- we update once so the widget is not empty at creation
+    widget:update(get_icon(), get_text())
+
+    battery.on_properties_changed(function()
+        widget:update(get_icon(), get_text())
+    end)
+
+    return widget
+end
+
+-- MOVE notification code elsewhere
 
 -- local notification = popup_notification:new()
 -- notification.popup.widget:get_children_by_id("icon")[1].font = "DejaVuSansMono Nerd Font 16"
-
-local battery_widget = base_panel_widget:new(_, _, _, {icon_font = "DejaVuSansMono Nerd Font 10"})
-
-local function get_icon()
-    local icon = icons[5]
-    if battery.percentage >= 0 and battery.percentage < 20 then
-        icon = icons[1]
-    elseif battery.percentage >= 20 and battery.percentage < 40 then
-        icon = icons[2]
-    elseif battery.percentage >= 40 and battery.percentage < 60 then
-        icon = icons[3]
-    elseif battery.percentage >= 60 and battery.percentage < 80 then
-        icon = icons[4]
-    elseif battery.percentage >= 80 and battery.percentage <= 100 then
-        icon = icons[5]
-    end
-
-    if battery.state == "charging" then
-        battery_widget:set_icon_color(beautiful.yellow)
-    elseif battery.state == "discharging" and battery.percentage <= 15 then
-        battery_widget:set_icon_color(beautiful.red)
-    else
-        battery_widget:set_icon_color(beautiful.fg_normal)
-    end
-
-    return icon
-end
-
-local function get_text()
-    return math.floor(battery.percentage).. "%"
-end
-
-local function update_widget()
-    local icon = get_icon()
-    battery_widget:update(icon, get_text())
-
-    -- notification:set_markup(get_title(), get_message())
-    -- notification:set_icon(icon)
-end
-
--- we update once so the widget is not empty at creation
-update_widget()
-
-battery.on_properties_changed(function()
-    update_widget()
-end)
 
 -- battery_widget:buttons(gears.table.join(
 --     awful.button({}, 1, function() notification:toggle() end)
 -- ))
 
-return battery_widget
-
--- MOVE notification code elsewhere
 -- local function get_title()
 --     if battery.state == states.full then
 --         return "<b>Batterie chargée</b>"

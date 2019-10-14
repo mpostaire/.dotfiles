@@ -6,7 +6,7 @@ local brightness = require("util.brightness")
 
 local brightness_popup = {}
 
-local icon = ""
+local icon = ""
 
 local progressbar = wibox.widget {
     max_value     = 100,
@@ -20,7 +20,7 @@ local progressbar = wibox.widget {
 
 local icon_widget = wibox.widget {
     markup = icon,
-    font = "Material Icons 128",
+    font = string.gsub(beautiful.icon_font, "%d+", "128"),
     widget = wibox.widget.textbox
 }
 
@@ -29,6 +29,7 @@ local popup = awful.popup {
         {
             icon_widget,
             progressbar,
+            spacing = 8,
             layout = wibox.layout.fixed.vertical
         },
         margins = beautiful.notification_margin,

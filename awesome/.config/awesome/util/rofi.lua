@@ -10,6 +10,7 @@ function rofi.launcher_menu(mode)
     spawn.easy_async(cmd, function() end)
 end
 
+-- deprecated
 function rofi.power_menu()
     local opts = " Verrouiller\n Déconnexion\n Mettre en veille\n Redémarrer\n Éteindre"
     local cmd = "echo -e \"" ..opts.. "\" | rofi -dmenu -i -theme powermenu -p 'Système'"

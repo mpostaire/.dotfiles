@@ -1,4 +1,7 @@
+local awful = require("awful")
+local gears = require("gears")
 local dbus = require("dbus_proxy")
+local capi = {root = root}
 
 local brightness = {}
 
@@ -47,5 +50,18 @@ end
 function brightness.on_properties_changed(func)
     table.insert(on_properties_changed_callbacks, func)
 end
+
+local keys = gears.table.join(
+    awful.key({}, "XF86MonBrightnessUp", function()
+        brightness.inc_brightness(5)
+    end,
+    {description = "brightness up", group = "other"}),
+    awful.key({}, "XF86MonBrightnessDown", function()
+        brightness.dec_brightness(5)
+    end,
+    {description = "brightness down", group = "other"})
+)
+
+capi.root.keys(gears.table.join(capi.root.keys(), keys))
 
 return brightness

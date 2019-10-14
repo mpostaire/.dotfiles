@@ -1,6 +1,16 @@
+local awful = require("awful")
+local gears = require("gears")
 local dbus = require("dbus_proxy")
+local capi = {root = root}
 
 local mpris = {}
+
+-- BUG: play() with rhythmbox only freezes awesome for 25 seconds! This is due to the notification being unable to find
+-- covert art (rhythmbox file not found) a fix is to disable notifications in rhythmbox interface
+-- BUG: vlc when next/prev is used, proxy.PlaybackStatus show 'Stopped' but should be 'Playing' (proxy is not updated)
+-- BUG: when playlist is empty no player is visible.
+--      when playlist just got empty player displays old metadata and disappear next update
+--      when playlist is then filled the player don't show itself
 
 local manager_proxy = dbus.Proxy:new(
     {
@@ -121,5 +131,18 @@ end
 function mpris.on_properties_changed(func)
     table.insert(on_properties_changed_callbacks, func)
 end
+
+local keys = gears.table.join(
+    awful.key({ "Control" }, "KP_Divide", function() mpris.play_pause() end,
+    {description = "music player pause", group = "multimedia"}),
+    awful.key({ "Control" }, "KP_Right", function() mpris.next() end,
+    {description = "music player next song", group = "multimedia"}),
+    awful.key({ "Control" }, "KP_Left", function() mpris.previous() end,
+    {description = "music player previous song", group = "multimedia"}),
+    awful.key({ "Control" }, "KP_Begin", function() mpris.stop() end,
+    {description = "music player stop", group = "multimedia"})
+)
+
+capi.root.keys(gears.table.join(capi.root.keys(), keys))
 
 return mpris

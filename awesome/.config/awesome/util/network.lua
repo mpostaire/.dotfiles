@@ -20,7 +20,7 @@ local connection_proxy, access_point_proxy
 
 local function set_active_connection_properties()
     if not connection_proxy then
-        network.state, network.ssid = 'off', nil
+        network.state, network.ssid, network.strength = 'off', 'none', 0
         return
     end
 

@@ -8,15 +8,23 @@ local volume_widget = {}
 volume_widget.__index = volume_widget
 
 local icons = {
-    normal = "",
-    muted = ""
+    low = "",
+    medium = "",
+    high = "",
+    muted = ""
 }
 
 local function get_icon()
     if alsa.muted then
         return '<span foreground="'..beautiful.white_alt..'">'..icons.muted..'</span>'
     else
-        return icons.normal
+        if alsa.volume < 33 then
+            return icons.low
+        elseif alsa.volume < 66 then
+            return icons.medium
+        else
+            return icons.high
+        end
     end
 end
 
@@ -53,7 +61,7 @@ function volume_widget:new(width)
 
     local icon_widget = wibox.widget {
         markup = get_icon(),
-        font = 'Material Icons 16',
+        font = string.gsub(beautiful.icon_font, "%d+", "16"),
         widget = wibox.widget.textbox
     }
     local widget = wibox.widget {

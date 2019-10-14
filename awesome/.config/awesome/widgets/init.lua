@@ -12,11 +12,12 @@ return {
     network = require("widgets.panel.network"),
     music = require("widgets.panel.music"),
     launcher = require("widgets.panel.launcher"),
+    power = require("widgets.panel.power"),
 
     -- control widgets
     player = require("widgets.controls.player"),
 
     -- other widgets
     menu = require("widgets.menu"),
-    group = require("widgets.group"),
+    group = require("widgets.group")
 }
