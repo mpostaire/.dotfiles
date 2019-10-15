@@ -11,6 +11,7 @@ local mpris = {}
 -- BUG: when playlist is empty no player is visible.
 --      when playlist just got empty player displays old metadata and disappear next update
 --      when playlist is then filled the player don't show itself
+-- MEMLEAK ~ 5 Kb/s but I don't know why
 
 local manager_proxy = dbus.Proxy:new(
     {

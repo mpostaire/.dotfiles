@@ -13,6 +13,7 @@ local capi = {root = root}
 
 local icons = {
     wifi = {
+        [0] = "", --TODO: see networkmanager api, get active connection device. State property is the state of the connection
         "",
         "",
         "",

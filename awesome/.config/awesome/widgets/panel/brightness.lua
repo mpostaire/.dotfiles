@@ -8,7 +8,7 @@ local brightness_control_widget = require("widgets.controls.brightness")
 local icon = ""
 
 return function(show_label)
-    local widget = base_panel_widget:new(_, _, brightness_control_widget:new())
+    local widget = base_panel_widget:new(icon, _, brightness_control_widget:new())
 
     -- if nothing specified, we show the label
     if show_label == nil then
@@ -17,10 +17,10 @@ return function(show_label)
         widget:show_label(show_label)
     end
 
-    widget:update(icon, math.floor(brightness.brightness) .. "%")
+    widget:update_label(math.floor(brightness.brightness) .. "%")
 
     brightness.on_properties_changed(function()
-        widget:update(icon, math.floor(brightness.brightness) .. "%")
+        widget:update_label(math.floor(brightness.brightness) .. "%")
     end)
 
     widget:buttons(gears.table.join(

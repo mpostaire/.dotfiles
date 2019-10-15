@@ -4,13 +4,15 @@ local gears = require("gears")
 local color = require("util.color")
 local awful = require("awful")
 local dpi = require("beautiful.xresources").apply_dpi
+local helpers = require("util.helpers")
+local autoclose_popup = require("popups.autoclose_popup")
 local capi = {mouse = mouse}
 
 local base_panel_widget = {}
 base_panel_widget.__index = base_panel_widget
 
 local function make_popup(control_widget)
-    return awful.popup {
+    return autoclose_popup({
         widget = {
             {
                 control_widget,
@@ -19,16 +21,12 @@ local function make_popup(control_widget)
             },
             color = beautiful.border_normal,
             left = beautiful.border_width,
+            right = beautiful.border_width,
             bottom = beautiful.border_width,
             widget = wibox.container.margin
         },
-        placement = function(d, args)
-            awful.placement.top_right(d, args)
-            d.y = d.y + beautiful.wibar_height - beautiful.border_width
-        end,
-        visible = false,
         ontop = true
-    }
+    })
 end
 
 function base_panel_widget:new(icon, label, control_widget, style)
@@ -67,14 +65,14 @@ function base_panel_widget:new(icon, label, control_widget, style)
     local widget = wibox.widget {
         {
             icon_widget,
-            id = "icon_margins",
+            id = "icon_margin",
             left = style.padding or default_style.padding,
             right = style.spacing or default_style.spacing,
             widget = wibox.container.margin
         },
         {
             text_widget,
-            id = "text_margins",
+            id = "text_margin",
             right = style.padding or default_style.padding,
             widget = wibox.container.margin
         },
@@ -92,15 +90,41 @@ function base_panel_widget:new(icon, label, control_widget, style)
     widget.control_widget = control_widget
 
     if control_widget then
+        local function show_popup()
+            if widget._private.popup_enabled then
+                local geo = helpers.get_widget_geometry(widget)
+                local screen_geo = awful.screen.focused().geometry
+
+                if geo.x + widget.control_popup.width > screen_geo.width then
+                    geo.x = screen_geo.width - widget.control_popup.width + beautiful.border_width
+                end
+
+                widget.control_popup.x = geo.x
+                widget.control_popup.y = geo.y + beautiful.wibar_height - beautiful.border_width
+
+                if widget.control_widget.show_callback then
+                    widget.control_widget.show_callback()
+                end
+
+                widget.control_popup.visible = true
+            end
+        end
+
+        local function toggle_popup()
+            if widget.control_popup.visible then
+                widget.control_popup.visible = false
+            else
+                show_popup()
+            end
+        end
+
         widget._private.popup_enabled = true
         control_widget.parent = widget
         widget.control_popup = make_popup(control_widget)
+        -- we hide it this way because we want it to be visible by default to calculate its position
+        widget.control_popup.visible = false
         widget:buttons(gears.table.join(
-            awful.button({}, 1, function()
-                if widget._private.popup_enabled then
-                    widget.control_popup.visible = not widget.control_popup.visible
-                end
-            end)
+            awful.button({}, 1, toggle_popup)
         ))
     else
         widget._private.popup_enabled = false
@@ -173,11 +197,37 @@ end
 
 function base_panel_widget:show_label(visible)
     if visible then
-        self:get_children_by_id('icon_margins')[1].right = self._private.style.spacing
+        self:get_children_by_id('icon_margin')[1].right = self._private.style.spacing
     else
-        self:get_children_by_id('icon_margins')[1].right = 0
+        self:get_children_by_id('icon_margin')[1].right = 0
     end
     self.text_widget.visible = visible
+end
+
+function base_panel_widget:show_icon(visible)
+    if visible then
+        self:get_children_by_id('text_margin')[1].right = self._private.style.padding
+        self:get_children_by_id('icon_margin')[1].left = self._private.style.padding
+    else
+        self:get_children_by_id('text_margin')[1].right = 0
+    end
+    self.icon_widget.visible = visible
+end
+
+function base_panel_widget:show(visible)
+    local text_margin = self:get_children_by_id('text_margin')[1]
+    local icon_margin = self:get_children_by_id('icon_margin')[1]
+
+    if visible then
+        text_margin.right = self._private.style.padding
+        icon_margin.left = self._private.style.padding
+        icon_margin.right = self._private.style.spacing
+    else
+        text_margin.margins = 0
+        icon_margin.margins = 0
+    end
+    self:show_label(visible)
+    self:show_icon(visible)
 end
 
 function base_panel_widget:set_popup_enabled(popup_enabled)
@@ -185,6 +235,8 @@ function base_panel_widget:set_popup_enabled(popup_enabled)
 
     if popup_enabled and not self.control_popup then
         self.control_popup = make_popup(self.control_widget)
+    elseif not popup_enabled and self.control_popup then
+        self.control_popup.visible = false
     end
 end
 

@@ -3,6 +3,7 @@ local wibox = require("wibox")
 local gears = require("gears")
 local awful = require("awful")
 local beautiful = require("beautiful")
+local helpers = require("util.helpers")
 local capi = {mouse = mouse}
 
 return function(children)
@@ -21,14 +22,16 @@ return function(children)
             g:add(v)
             if v.control_widget then
                 g.control_widgets:add(v.control_widget)
+                control_children[#control_children + 1] = v.control_widget
+                v.control_widget.parent = g
             end
         elseif v.type == "control_widget" then
-            control_children[#control_children + 1] = v
+            control_children[#control_children + 1] = v.control_widget
             g.control_widgets:add(v)
         end
     end
 
-    g.popup = awful.popup {
+    g.control_popup = awful.popup {
         widget = {
             {
                 g.control_widgets,
@@ -37,14 +40,10 @@ return function(children)
             },
             color = beautiful.border_normal,
             left = beautiful.border_width,
+            right = beautiful.border_width,
             bottom = beautiful.border_width,
             widget = wibox.container.margin
         },
-        placement = function(d, args)
-            awful.placement.top_right(d, args)
-            d.y = d.y + beautiful.wibar_height - beautiful.border_width
-        end,
-        visible = false,
         ontop = true
     }
 
@@ -71,9 +70,40 @@ return function(children)
         end
     end)
 
+    function g.show_popup()
+        local geo = helpers.get_widget_geometry(g)
+        local screen_geo = awful.screen.focused().geometry
+
+        if geo.x + g.control_popup.width > screen_geo.width then
+            geo.x = screen_geo.width - g.control_popup.width + beautiful.border_width
+        end
+
+        g.control_popup.x = geo.x
+        g.control_popup.y = geo.y + beautiful.wibar_height - beautiful.border_width
+
+        for _,v in pairs(control_children) do
+            if v.show_callback then
+                v.show_callback()
+            end
+        end
+
+        g.control_popup.visible = true
+    end
+
+    function g.toggle_popup()
+        if g.control_popup.visible then
+            g.control_popup.visible = not g.control_popup.visible
+        else
+            g.show_popup()
+        end
+    end
+
     g:buttons(gears.table.join(
-        awful.button({}, 1, function() g.popup.visible = not g.popup.visible end)
+        awful.button({}, 1, g.toggle_popup)
     ))
+
+    -- we hide it this way because we want it to be visible by default to calculate its position
+    g.control_popup.visible = false
 
     return g
 end

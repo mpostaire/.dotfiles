@@ -15,6 +15,10 @@ TODO
 ## TODO
 
 ### high priority
+- weather inside calendar
+
+- toggle show popup controls and keygrabber inside control_widgets except if it is in a group
+
 - icon theme handler that can handle both svg icons and icon fonts
 
 - find a way to make sliders in group menu have an adaptative length
@@ -31,8 +35,9 @@ TODO
 
 - only one popup instance for each widget having a popup (make another group widget but with only this condition ?)
 
-- make a popup subclass wich make clicking outside hide itself
-- --> place all widgets inside a container widget. if its width is too high, collapse (windows xp or windows 10 style) or make widgets without labels / with toggleable labels, or instead of width, show only x widgets and all n > x widgets are hidden tray icons count for 1 widget, then move music widget to the right area of the wibar
+--> make a popup subclass wich make clicking outside hide itself
+
+- place all right widgets inside a container widget. if its width is too high, collapse (windows xp/10 style)
 
 ### low priority
 
@@ -53,5 +58,3 @@ TODO
 - popup_menu uses a lot of cpu when updating an item
 
 - script that git pull zsh plugins when necessary (take inspiration from this [link](https://github.com/TamCore/autoupdate-oh-my-zsh-plugins/blob/master/autoupdate.plugin.zsh))
-
-- remove dbus_proxy, awdctl and mpdbus dependencies if possible.

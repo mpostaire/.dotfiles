@@ -2,13 +2,13 @@ local awful = require("awful")
 local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
 local wibox = require("wibox")
-
 local client_menu = require("popups.client_menu")
+local capi = {client = client}
 
 -- launched programs widget mouse handling
 local tasklist_buttons = gears.table.join(
     awful.button({ }, 1, function (c)
-        if c == client.focus then
+        if c == capi.client.focus then
             c.minimized = true
         else
             c:emit_signal(

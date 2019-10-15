@@ -13,11 +13,11 @@ return {
     music = require("widgets.panel.music"),
     launcher = require("widgets.panel.launcher"),
     power = require("widgets.panel.power"),
+    group = require("widgets.panel.group"),
 
     -- control widgets
     player = require("widgets.controls.player"),
 
     -- other widgets
-    menu = require("widgets.menu"),
-    group = require("widgets.group")
+    menu = require("widgets.menu")
 }
