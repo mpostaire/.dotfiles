@@ -25,7 +25,9 @@ return function()
 
     local function get_icon()
         local icon
-        if battery.percentage >= 0 and battery.percentage < 20 then
+        if battery.state == "full" then
+            icon = icons.full
+        elseif battery.percentage >= 0 and battery.percentage < 20 then
             icon = icons[battery.state][1]
         elseif battery.percentage >= 20 and battery.percentage < 40 then
             icon = icons[battery.state][2]
@@ -33,16 +35,16 @@ return function()
             icon = icons[battery.state][3]
         elseif battery.percentage >= 60 and battery.percentage < 80 then
             icon = icons[battery.state][4]
-        elseif battery.percentage >= 80 and battery.percentage < 100 then
+        elseif battery.percentage >= 80 and battery.percentage <= 100 then
             icon = icons[battery.state][5]
-        else
-            icon = icons.full
         end
 
         if battery.state == "charging" then
             widget:set_icon_color(beautiful.yellow)
         elseif battery.state == "discharging" and battery.percentage <= 15 then
             widget:set_icon_color(beautiful.red)
+        elseif battery.state == "full" then
+            widget:set_icon_color(beautiful.green)
         else
             widget:set_icon_color(beautiful.fg_normal)
         end

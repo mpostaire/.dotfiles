@@ -46,7 +46,7 @@ TODO
 - Better install script.
 - theming system
 - make calendar days clickable + linked to a calendar app (maybe: make calendar widget side panel with events for the day + notifs like gnome calendar)
-
+- alternative autoclose_popup (see TODO in util/autoclose_popup.lua)
 - music player: find cover in folder first, then find it from the file (the latter cost more performances)
 
 - bluetooth widget

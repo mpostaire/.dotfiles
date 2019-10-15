@@ -4,7 +4,10 @@ local gears = require("gears")
 local awful = require("awful")
 local beautiful = require("beautiful")
 local helpers = require("util.helpers")
+local autoclose_popup = require("util.autoclose_popup")
 local capi = {mouse = mouse}
+
+local popup_spawn_button = 1
 
 return function(children)
     local g = wibox.layout.fixed.horizontal()
@@ -31,7 +34,7 @@ return function(children)
         end
     end
 
-    g.control_popup = awful.popup {
+    g.control_popup = autoclose_popup {
         widget = {
             {
                 g.control_widgets,
@@ -44,7 +47,8 @@ return function(children)
             bottom = beautiful.border_width,
             widget = wibox.container.margin
         },
-        ontop = true
+        ontop = true,
+        spawn_button = popup_spawn_button
     }
 
     local old_cursor, old_wibox = nil, nil
@@ -99,7 +103,7 @@ return function(children)
     end
 
     g:buttons(gears.table.join(
-        awful.button({}, 1, g.toggle_popup)
+        awful.button({}, popup_spawn_button, g.toggle_popup)
     ))
 
     -- we hide it this way because we want it to be visible by default to calculate its position
