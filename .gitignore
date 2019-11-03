@@ -4,6 +4,7 @@ icons
 themes
 !awesome/.config/awesome/themes
 zsh-autosuggestions
+zsh/.zsh/cache/DEBS-avail
 mpd/.config/mpd/pid
 mpd/.config/mpd/state
 mpd/.config/mpd/database

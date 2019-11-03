@@ -15,6 +15,7 @@ TODO
 ## TODO
 
 ### high priority
+- each reload, floating clients lose height equivalent to their title bar height
 - weather inside calendar
 
 - toggle show popup controls and keygrabber inside control_widgets except if it is in a group

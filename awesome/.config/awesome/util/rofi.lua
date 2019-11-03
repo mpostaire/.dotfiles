@@ -1,6 +1,7 @@
 -- replace this by an awesome implementation using popups later
 
 local spawn = require("awful.spawn")
+local capi = {mouse = mouse, awesome = awesome}
 
 local rofi = {}
 
@@ -21,7 +22,7 @@ function rofi.power_menu()
             if output == "Verrouiller" then
                 spawn.easy_async_with_shell("~/.scripts/lock.sh", function() end)
             elseif output == "Déconnexion" then
-                awesome.quit()
+                capi.awesome.quit()
             elseif output == "Mettre en veille" then
                 spawn.easy_async_with_shell("systemctl suspend", function() end)
             elseif output == "Redémarrer" then

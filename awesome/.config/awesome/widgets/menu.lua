@@ -1,9 +1,10 @@
 local awful = require("awful")
+local wibox = require("wibox")
 local variables = require("config.variables")
 local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
 local gears = require("gears")
-local capi = {awesome = awesome, root = root}
+local capi = {awesome = awesome, root = root, mouse = mouse}
 
 -- TODO: close when click outside
 
@@ -31,6 +32,29 @@ local mainmenu = awful.menu(
     }
 )
 
-capi.root.buttons(gears.table.join(capi.root.buttons(), awful.button({ }, 3, function () mainmenu:toggle() end)))
+local background = wibox {
+    x = 0,
+    y = 0,
+    width = capi.mouse.screen.geometry.width,
+    height = capi.mouse.screen.geometry.height,
+    opacity = 0,
+    visible = false,
+    ontop = true,
+    type = 'normal'
+}
+
+background:connect_signal("button::press", function()
+    background.visible = false
+    mainmenu:toggle()
+end)
+
+mainmenu:get_root().wibox:connect_signal("property::visible", function()
+    background.visible = mainmenu:get_root().wibox.visible
+end)
+
+capi.root.buttons(gears.table.join(capi.root.buttons(), awful.button({ }, 3, function()
+    background.visible = not background.visible
+    mainmenu:toggle()
+end)))
 
 return mainmenu

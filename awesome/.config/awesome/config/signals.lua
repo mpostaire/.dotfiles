@@ -38,13 +38,25 @@ capi.client.connect_signal("unfocus", function(c) c.border_color = beautiful.bor
 --       - save/restore maximized state when switching floating/tile layouts
 --       - save/restore position when switching floating/tile layouts --> I'm not sure if I want this yet
 
+local function show_titlebar(client)
+    for _,v in pairs({"top", "right", "left", "bottom"}) do
+        awful.titlebar.show(client, v)
+    end
+end
+
+local function hide_titlebar(client)
+    for _,v in pairs({"top", "right", "left", "bottom"}) do
+        awful.titlebar.hide(client, v)
+    end
+end
+
 local function handle_tiled(client)
     -- this if statement is new, if bugs related to maximized state, check there first
     -- if client.maximized then
     --     client.was_maximized = true
     -- end
     client.maximized = false
-    awful.titlebar.hide(client)
+    hide_titlebar(client)
     client.titlebar_showed = false
     if #awful.screen.focused().tiled_clients == 1 and not beautiful.gap_single_client then
         client.border_width = beautiful.border_width_single_client
@@ -62,13 +74,13 @@ local function handle_floating(client)
         --     client.maximized = true
         --     client.was_maximized = false
         -- end
-        awful.titlebar.show(client)
+        show_titlebar(client)
         client.titlebar_showed = true
-        client.border_width = beautiful.border_width
+        client.border_width = 0
         -- resize client to its previous size minus titlebar size
-        -- font_heigth * 1.5 is default titlebar height (-1 at the end because on my screen 1 pixel is missing)
+        -- font_heigth * 1.5 is default titlebar height
         if not client.floating and not client.fullscreen then
-            client:relative_move(0, 0, 0, -(beautiful.font_height * 1.5))
+            client:relative_move(0, 0, 0, -(beautiful.font_height * 1.5) + beautiful.border_width)
         end
     end
 end
@@ -95,13 +107,13 @@ capi.client.connect_signal("manage", function(c)
 
     if c.floating or awful.layout.getname() == "floating" then
         -- show titlebar
-        awful.titlebar.show(c)
+        show_titlebar(c)
         c.titlebar_showed = true
         -- show borders
-        c.border_width = beautiful.border_width -- maybe not needed
+        c.border_width = 0 -- maybe not needed
     else
         -- hide titlebar
-        awful.titlebar.hide(c)
+        hide_titlebar(c)
         c.titlebar_showed = false
         -- show borders of tiled clients only if multiple clients
         if #shown_tiled_clients == 1 then
@@ -132,21 +144,22 @@ capi.client.connect_signal("property::floating", function(c)
 
     if c.floating or awful.layout.getname() == "floating" then
         -- show titlebar
-        awful.titlebar.show(c)
+        show_titlebar(c)
         c.titlebar_showed = true
         -- show borders
-        c.border_width = beautiful.border_width
+        c.border_width = 0
         -- hide borders of other client if only tiled remaining and layout not floating
         if #shown_tiled_clients == 1 and awful.layout.getname() ~= "floating" then
             shown_tiled_clients[1].border_width = beautiful.border_width_single_client
         end
         -- resize client to its previous size minus titlebar size
-        -- font_heigth * 1.5 is default titlebar height (-1 at the end because on my screen 1 pixel is missing)
+        -- font_heigth * 1.5 is default titlebar height
+        -- FIXME when awesome is restarded and a client is set floating this is applied and the client shrinks each time
         if awful.layout.getname() ~= "floating" and not c.fullscreen then
-            c:relative_move(0, 0, 0, -(beautiful.font_height * 1.5))
+            c:relative_move(0, 0, 0, -(beautiful.font_height * 1.5) + beautiful.border_width)
         end
     else
-        awful.titlebar.hide(c)
+        hide_titlebar(c)
         c.titlebar_showed = false
         -- show borders of tiled clients only if multiple clients
         if #shown_tiled_clients == 1 then
@@ -190,8 +203,8 @@ capi.client.connect_signal("property::minimized", function(c)
         end
     else
         if c.floating or awful.layout.getname() == "floating" then
-            c.border_width = beautiful.border_width
-            awful.titlebar.show(c)
+            c.border_width = 0
+            show_titlebar(c)
         else
             -- show borders of tiled clients only if multiple clients
             if #shown_tiled_clients == 1 then
@@ -202,7 +215,7 @@ capi.client.connect_signal("property::minimized", function(c)
             else -- all previous clients already have their borders now
                 c.border_width = beautiful.border_width -- maybe not needed
             end
-            awful.titlebar.hide(c)
+            hide_titlebar(c)
         end
     end
 end)
