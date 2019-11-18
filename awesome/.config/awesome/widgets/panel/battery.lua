@@ -41,7 +41,7 @@ return function()
 
         if battery.state == "charging" then
             widget:set_icon_color(beautiful.yellow)
-        elseif battery.state == "discharging" and battery.percentage <= 15 then
+        elseif battery.state == "discharging" and battery.percentage < 20 then
             widget:set_icon_color(beautiful.red)
         elseif battery.state == "full" then
             widget:set_icon_color(beautiful.green)

@@ -60,7 +60,7 @@ return function(children)
 
         local w = capi.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w
-        w.cursor = "hand1"
+        w.cursor = "hand2"
     end)
 
     g:connect_signal("mouse::leave", function()

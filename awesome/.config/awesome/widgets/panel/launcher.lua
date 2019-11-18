@@ -32,7 +32,7 @@ return function()
     widget:connect_signal("mouse::enter", function()
         local w = capi.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w
-        w.cursor = "hand1"
+        w.cursor = "hand2"
     end)
     widget:connect_signal("mouse::leave", function()
         if old_wibox then

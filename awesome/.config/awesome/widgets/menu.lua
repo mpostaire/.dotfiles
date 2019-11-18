@@ -6,8 +6,6 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 local gears = require("gears")
 local capi = {awesome = awesome, root = root, mouse = mouse}
 
--- TODO: close when click outside
-
 local submenu = {
     { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
     { "documentation", function()

@@ -139,7 +139,7 @@ function base_panel_widget:new(icon, label, control_widget, style)
 
         local w = capi.mouse.current_wibox
         widget._private.old_cursor, widget._private.old_wibox = w.cursor, w
-        w.cursor = "hand1"
+        w.cursor = "hand2"
     end
 
     widget._private.mouse_leave_effect = function()
