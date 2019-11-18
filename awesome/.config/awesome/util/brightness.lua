@@ -5,6 +5,8 @@ local capi = {root = root}
 
 local brightness = {}
 
+-- USE pcall() to catch error if dbus interface not found
+
 local proxy = dbus.Proxy:new(
     {
         bus = dbus.Bus.SESSION,
