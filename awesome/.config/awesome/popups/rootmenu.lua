@@ -3,7 +3,6 @@ local wibox = require("wibox")
 local variables = require("config.variables")
 local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
-local gears = require("gears")
 local capi = {awesome = awesome, root = root, mouse = mouse}
 
 local submenu = {
@@ -50,9 +49,10 @@ mainmenu:get_root().wibox:connect_signal("property::visible", function()
     background.visible = mainmenu:get_root().wibox.visible
 end)
 
-capi.root.buttons(gears.table.join(capi.root.buttons(), awful.button({ }, 3, function()
+-- this function can't be named 'show' or 'toggle' or it causes stack overflow
+function mainmenu.launch()
     background.visible = not background.visible
     mainmenu:toggle()
-end)))
+end
 
 return mainmenu

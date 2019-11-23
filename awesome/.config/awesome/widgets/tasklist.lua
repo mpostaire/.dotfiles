@@ -2,7 +2,7 @@ local awful = require("awful")
 local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
 local wibox = require("wibox")
-local client_menu = require("popups.client_menu")
+local clientmenu = require("popups.clientmenu")
 local capi = {client = client}
 
 -- launched programs widget mouse handling
@@ -19,7 +19,7 @@ local tasklist_buttons = gears.table.join(
         end
     end),
     awful.button({ }, 3, function(c)
-        client_menu.show(c)
+        clientmenu.launch(c)
     end),
     awful.button({ }, 4, function ()
         awful.client.focus.byidx(1)

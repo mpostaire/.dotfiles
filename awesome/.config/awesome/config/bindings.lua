@@ -6,13 +6,15 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 require("awful.hotkeys_popup.keys")
 local variables = require("config.variables")
 local rofi = require("util.rofi")
-local client_menu = require("popups.client_menu")
+local clientmenu = require("popups.clientmenu")
+local rootmenu = require("popups.rootmenu")
 local capi = {root = root, client = client, awesome = awesome, }
 
 local bindings = {}
 
 -- {{{ Mouse bindings
 capi.root.buttons(gears.table.join(
+    awful.button({ }, 3, rootmenu.launch),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
@@ -187,7 +189,7 @@ bindings.clientkeys = gears.table.join(
     --         c:raise()
     --     end,
     --     {description = "toggle fullscreen", group = "client"}),
-    awful.key({ variables.modkey, "Control" }, "c", function(c) client_menu.show(c, true) end,
+    awful.key({ variables.modkey, "Control" }, "c", function(c) clientmenu.launch(c, true) end,
               {description = "open control menu", group = "client"}),
     awful.key({ variables.modkey }, "q",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),

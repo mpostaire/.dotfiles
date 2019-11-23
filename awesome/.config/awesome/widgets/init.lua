@@ -17,7 +17,4 @@ return {
 
     -- control widgets
     player = require("widgets.controls.player"),
-
-    -- other widgets
-    menu = require("widgets.menu")
 }

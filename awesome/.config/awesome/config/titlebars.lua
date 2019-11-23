@@ -2,7 +2,7 @@ local gears = require("gears")
 local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
-local client_menu = require("popups.client_menu")
+local clientmenu = require("popups.clientmenu")
 local color = require("util.color")
 local capi = {client = client}
 
@@ -29,7 +29,7 @@ capi.client.connect_signal("request::titlebars", function(c)
         end),
         awful.button({ }, 3, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})
-            client_menu.show(c)
+            clientmenu.launch(c)
         end)
     )
 
