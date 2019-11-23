@@ -84,10 +84,10 @@ local app_switcher = awful.popup {
                 {
                     {
                         {
-                            id = 'icon_role',
+                            id = 'clienticon',
                             forced_height = dpi(110),
                             forced_width = dpi(110),
-                            widget = wibox.widget.imagebox,
+                            widget = awful.widget.clienticon,
                         },
                         halign = 'center',
                         widget = wibox.container.place
@@ -110,6 +110,9 @@ local app_switcher = awful.popup {
             },
             id = 'background_role',
             widget = wibox.container.background,
+            create_callback = function(self, c, index, objects) --luacheck: no unused
+                self:get_children_by_id('clienticon')[1].client = c
+            end
         },
     },
     border_color = beautiful.border_normal,

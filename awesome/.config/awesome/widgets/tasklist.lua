@@ -42,10 +42,10 @@ awful.screen.connect_for_each_screen(function(s)
                 {
                     {
                         {
-                            id = 'icon_role',
-                            forced_height = 22,
-                            forced_width = 22,
-                            widget = wibox.widget.imagebox,
+                            id = 'clienticon',
+                            forced_height = dpi(22),
+                            forced_width = dpi(22),
+                            widget = awful.widget.clienticon,
                         },
                         valign = 'center',
                         widget = wibox.container.place
@@ -62,7 +62,10 @@ awful.screen.connect_for_each_screen(function(s)
                 layout = wibox.layout.align.horizontal
                 },
             id = 'background_role',
-            widget = wibox.container.background
+            widget = wibox.container.background,
+            create_callback = function(self, c, index, objects) --luacheck: no unused
+                self:get_children_by_id('clienticon')[1].client = c
+            end
         }
     }
 end)
