@@ -183,7 +183,7 @@ return function()
 
         local w = capi.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w
-        w.cursor = "hand1"
+        w.cursor = "hand2"
     end)
     next_widget:connect_signal("mouse::leave", function()
         next_widget:set_markup_silently(icons.next)
@@ -198,7 +198,7 @@ return function()
 
         local w = capi.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w
-        w.cursor = "hand1"
+        w.cursor = "hand2"
     end)
     prev_widget:connect_signal("mouse::leave", function()
         prev_widget:set_markup_silently(icons.prev)

@@ -43,9 +43,19 @@ local function focus_next_client()
 end
 
 local function focus_prev_client()
+    local last_client
     for c in awful.client.iterate(current_tag_filter) do
-        focus_client(c)
+        last_client = c
     end
+    focus_client(last_client)
+end
+
+local function current_tag_num_of_clients()
+    local count = 0
+    for _ in awful.client.iterate(current_tag_filter) do
+        count = count + 1
+    end
+    return count
 end
 
 -- launched programs widget mouse handling
@@ -118,12 +128,16 @@ awful.keygrabber {
     stop_key = variables.altkey,
     stop_event = 'release',
     start_callback = function()
-        app_switcher.visible = true
-        awful.client.focus.history.disable_tracking()
+        if current_tag_num_of_clients() > 0 then
+            app_switcher.visible = true
+            awful.client.focus.history.disable_tracking()
+        end
     end,
     stop_callback = function()
-        app_switcher.visible = false
-        awful.client.focus.history.enable_tracking()
+        if app_switcher.visible then
+            app_switcher.visible = false
+            awful.client.focus.history.enable_tracking()
+        end
     end,
     root_keybindings = {
         {{variables.altkey}, 'Tab', focus_next_client, nil, {description = 'app switcher', group = 'client'}},
