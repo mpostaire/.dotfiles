@@ -93,8 +93,12 @@ theme.column_count = 1
 -- theme.useless_gap   = dpi(10)
 theme.useless_gap   = dpi(0)
 theme.border_width  = dpi(2)
-theme.border_normal = color.darken_by(theme.black_alt, 0.5)
-theme.border_focus  = color.darken_by(theme.black, 0.25)
+-- used when titlebars are showed
+theme.border_normal_alt = color.darken_by(theme.black_alt, 0.5)
+theme.border_focus_alt  = color.darken_by(theme.black, 0.25)
+--
+theme.border_normal = theme.black_alt
+theme.border_focus  = theme.red
 theme.border_marked = "#91231c"
 
 -- {{{ taglist

@@ -23,8 +23,20 @@ capi.client.connect_signal("mouse::enter", function(c)
     c:emit_signal("request::activate", "mouse_enter", {raise = false})
 end)
 
-capi.client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-capi.client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+capi.client.connect_signal("focus", function(c)
+    if c.titlebar_showed then
+        c.border_color = beautiful.border_focus_alt
+    else
+        c.border_color = beautiful.border_focus
+    end
+end)
+capi.client.connect_signal("unfocus", function(c)
+    if c.titlebar_showed then
+        c.border_color = beautiful.border_normal_alt
+    else
+        c.border_color = beautiful.border_normal
+    end
+end)
 -- }}}
 
 
@@ -41,6 +53,13 @@ capi.client.connect_signal("unfocus", function(c) c.border_color = beautiful.bor
 
 local function show_titlebar(client)
     awful.titlebar.show(client)
+    client.titlebar_showed = true
+
+    if client == capi.client.focus then
+        client.border_color = beautiful.border_focus_alt
+    else
+        client.border_color = beautiful.border_normal_alt
+    end
 
     if client.maximized then
         client.shape = gears.shape.rectangle
@@ -53,6 +72,14 @@ end
 
 local function hide_titlebar(client)
     awful.titlebar.hide(client)
+    client.titlebar_showed = false
+
+    if client == capi.client.focus then
+        client.border_color = beautiful.border_focus
+    else
+        client.border_color = beautiful.border_normal
+    end
+
     client.shape = gears.shape.rectangle
 end
 
@@ -63,7 +90,6 @@ local function handle_tiled(client)
     -- end
     client.maximized = false
     hide_titlebar(client)
-    client.titlebar_showed = false
     if #awful.screen.focused().tiled_clients == 1 and not beautiful.gap_single_client then
         client.border_width = beautiful.border_width_single_client
     else
@@ -81,7 +107,6 @@ local function handle_floating(client)
         --     client.was_maximized = false
         -- end
         show_titlebar(client)
-        client.titlebar_showed = true
         client.border_width = beautiful.border_width
         -- resize client to its previous size minus titlebar size
         if not client.floating and not client.fullscreen then
@@ -113,13 +138,11 @@ capi.client.connect_signal("manage", function(c)
     if c.floating or awful.layout.getname() == "floating" then
         -- show titlebar
         show_titlebar(c)
-        c.titlebar_showed = true
         -- show borders
         c.border_width = beautiful.border_width -- maybe not needed
     else
         -- hide titlebar
         hide_titlebar(c)
-        c.titlebar_showed = false
         -- show borders of tiled clients only if multiple clients
         if #shown_tiled_clients == 1 then
             c.border_width = beautiful.border_width_single_client
@@ -150,7 +173,6 @@ capi.client.connect_signal("property::floating", function(c)
     if c.floating or awful.layout.getname() == "floating" then
         -- show titlebar
         show_titlebar(c)
-        c.titlebar_showed = true
         -- show borders
         c.border_width = beautiful.border_width
         -- hide borders of other client if only tiled remaining and layout not floating
@@ -164,7 +186,6 @@ capi.client.connect_signal("property::floating", function(c)
         end
     else
         hide_titlebar(c)
-        c.titlebar_showed = false
         -- show borders of tiled clients only if multiple clients
         if #shown_tiled_clients == 1 then
             c.border_width = beautiful.border_width_single_client
