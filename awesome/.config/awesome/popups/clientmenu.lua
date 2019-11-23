@@ -97,7 +97,7 @@ function mainmenu.launch(client, shortcut)
             mainmenu:show({
                 coords = {
                     x = client.x + client.border_width,
-                    y = client.y + beautiful.font_height * 1.5 + client.border_width
+                    y = client.y + beautiful.titlebar_height + client.border_width
                 }
             })
         else

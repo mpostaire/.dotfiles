@@ -93,8 +93,8 @@ theme.column_count = 1
 -- theme.useless_gap   = dpi(10)
 theme.useless_gap   = dpi(0)
 theme.border_width  = dpi(2)
-theme.border_normal = theme.black_alt
-theme.border_focus  = theme.red
+theme.border_normal = color.darken_by(theme.black_alt, 0.5)
+theme.border_focus  = color.darken_by(theme.black, 0.25)
 theme.border_marked = "#91231c"
 
 -- {{{ taglist
@@ -111,7 +111,7 @@ theme.taglist_bg_urgent = theme.black
 
 -- {{{ titlebar
 theme.titlebar_bg_normal = theme.black_alt
-theme.titlebar_bg_focus = theme.red
+theme.titlebar_bg_focus = theme.black
 
 theme.titlebar_fg_normal = theme.white
 theme.titlebar_fg_focus = theme.true_white
@@ -256,6 +256,7 @@ theme.font_height = beautiful.get_font_height(theme.font)
 theme.awesome_icon_wibar = theme_assets.awesome_icon(
     theme.wibar_height - theme.wibar_bottom_border_width, theme.true_white, theme.red
 )
+theme.titlebar_height = theme.wibar_height
 
 theme.menu_item_margins = dpi(5)
 

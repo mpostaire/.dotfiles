@@ -60,7 +60,7 @@ awful.screen.connect_for_each_screen(function(s)
                 nil,
                 expand = "outside",
                 layout = wibox.layout.align.horizontal
-                },
+            },
             id = 'background_role',
             widget = wibox.container.background,
             create_callback = function(self, c, index, objects) --luacheck: no unused
