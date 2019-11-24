@@ -38,28 +38,31 @@ awful.screen.connect_for_each_screen(function(s)
         buttons = tasklist_buttons,
         widget_template = {
             {
-                nil,
                 {
                     {
                         {
-                            id = 'clienticon',
-                            forced_height = dpi(22),
-                            forced_width = dpi(22),
-                            widget = awful.widget.clienticon,
+                            {
+                                id = 'clienticon',
+                                forced_height = dpi(22),
+                                forced_width = dpi(22),
+                                widget = awful.widget.clienticon,
+                            },
+                            valign = 'center',
+                            widget = wibox.container.place
                         },
-                        valign = 'center',
-                        widget = wibox.container.place
+                        {
+                            id = 'text_role',
+                            widget = wibox.widget.textbox,
+                        },
+                        spacing = dpi(4),
+                        layout = wibox.layout.fixed.horizontal
                     },
-                    {
-                        id = 'text_role',
-                        widget = wibox.widget.textbox,
-                    },
-                    spacing = dpi(4),
-                    layout = wibox.layout.fixed.horizontal
+                    left = dpi(4),
+                    right = dpi(4),
+                    widget = wibox.container.margin
                 },
-                nil,
-                expand = "outside",
-                layout = wibox.layout.align.horizontal
+                halign = 'center',
+                widget = wibox.container.place
             },
             id = 'background_role',
             widget = wibox.container.background,
