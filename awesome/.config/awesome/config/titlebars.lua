@@ -42,7 +42,7 @@ capi.client.connect_signal("request::titlebars", function(c)
     local middle_contents = {
         -- Title
         buttons = buttons,
-        -- align  = "center",
+        align  = "center",
         widget = awful.titlebar.widget.titlewidget(c)
     }
 
