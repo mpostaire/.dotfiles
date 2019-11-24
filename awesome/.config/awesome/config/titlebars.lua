@@ -42,7 +42,7 @@ capi.client.connect_signal("request::titlebars", function(c)
     local middle_contents = {
         -- Title
         buttons = buttons,
-        align  = "center",
+        -- align  = "center",
         widget = awful.titlebar.widget.titlewidget(c)
     }
 
@@ -55,6 +55,10 @@ capi.client.connect_signal("request::titlebars", function(c)
         awful.titlebar.widget.closebutton    (c),
         layout = wibox.layout.fixed.horizontal
     }
+
+    -- bug: resize does not shrink client title first but buttons and icons
+    --      I'm not sure there is a fix fore that. there is a github issue but its
+    --      current resolution seems to have the same problem
 
     awful.titlebar(c, {size = beautiful.titlebar_height}):setup {
         outline,
@@ -95,7 +99,7 @@ capi.client.connect_signal("request::titlebars", function(c)
                     },
                     layout = wibox.layout.align.horizontal
                 },
-                expand = "outside",
+                -- expand = "outside", --- uncomment this for true center but it causes bug noted at line 59
                 layout = wibox.layout.align.horizontal
             },
             bottom = beautiful.border_width,

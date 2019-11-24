@@ -110,7 +110,7 @@ local function handle_floating(client)
         client.border_width = beautiful.border_width
         -- resize client to its previous size minus titlebar size
         if not client.floating and not client.fullscreen then
-            client:relative_move(0, 0, 0, -(beautiful.titlebar_height + beautiful.border_width) + 1)
+            client:relative_move(0, 0, 0, -beautiful.titlebar_height)
         end
     end
 end
@@ -182,7 +182,7 @@ capi.client.connect_signal("property::floating", function(c)
         -- resize client to its previous size minus titlebar size
         -- FIXME when awesome is restarded and a client is set floating this is applied and the client shrinks each time
         if awful.layout.getname() ~= "floating" and not c.fullscreen then
-            c:relative_move(0, 0, 0, -(beautiful.titlebar_height + beautiful.border_width) + 1)
+            c:relative_move(0, 0, 0, -beautiful.titlebar_height)
         end
     else
         hide_titlebar(c)
@@ -214,6 +214,7 @@ capi.client.connect_signal("property::maximized", function(c)
         if c.floating then
             c.floating = false
         end
+        c.shape = gears.shape.rectangle
     end
 end)
 
