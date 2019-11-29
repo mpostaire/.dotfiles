@@ -15,6 +15,8 @@ TODO
 ## TODO
 
 ### high priority
+- when keygrabber active, lock fail
+
 - each reload, floating clients lose height equivalent to their title bar height
 - weather inside calendar
 
