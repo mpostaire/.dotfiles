@@ -86,6 +86,9 @@ theme.fg_focus      = theme.true_white
 theme.fg_urgent     = theme.black
 theme.fg_minimize   = theme.true_white
 
+theme.prompt_fg_cursor = theme.bg_normal
+theme.prompt_bg_cursor = theme.fg_normal
+
 theme.gap_single_client = false
 theme.maximized_hide_border = true
 theme.fullscreen_hide_border = true

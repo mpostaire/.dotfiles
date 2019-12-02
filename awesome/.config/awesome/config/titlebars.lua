@@ -59,6 +59,7 @@ capi.client.connect_signal("request::titlebars", function(c)
     -- bug: resize does not shrink client title first but buttons and icons
     --      I'm not sure there is a fix fore that. there is a github issue but its
     --      current resolution seems to have the same problem
+    -- fix? try using constraint layout with strategy property (check doc)
 
     awful.titlebar(c, {size = beautiful.titlebar_height}):setup {
         outline,

@@ -8,6 +8,7 @@ local variables = require("config.variables")
 local rofi = require("util.rofi")
 local clientmenu = require("popups.clientmenu")
 local rootmenu = require("popups.rootmenu")
+local applauncher = require("popups.applauncher")
 local capi = {root = root, client = client, awesome = awesome, }
 
 local bindings = {}
@@ -150,6 +151,9 @@ local globalkeys = gears.table.join(
                 {description = "show the power menu", group = "launcher"}),
     -- rofi launcher menu
     awful.key({ variables.modkey }, "space", function() rofi.launcher_menu("drun") end,
+                {description = "show the launcher menu", group = "launcher"}),
+    -- app launcher
+    awful.key({ variables.modkey, "Shift" }, "space", function() applauncher.run(true) end,
                 {description = "show the launcher menu", group = "launcher"}),
 
     -- laptop special keys
