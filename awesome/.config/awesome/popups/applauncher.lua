@@ -6,8 +6,11 @@ local desktopapps = require("util.desktopapps")
 local capi = {mouse = mouse}
 
 -- // TODO make this history based
--- // TODO rofi like scroll (scroll linked to item selection instead of showed items scroll)
+-- // TODO scroll "drag" selection (when scroll, le même item reste select mais s'il sort de la caméra,
+--                                  changer l'item select par le dernier ou le premier de la caméra
+--                                  selon le scroll up ou down)
 -- // FIXME select up and down wrap buggy when showed items < max_showed_items and other cases
+-- // TODO replace popup by a wibox ?
 
 local applauncher = {}
 
@@ -18,10 +21,19 @@ prompt_textbox.forced_height = beautiful.get_font_height(beautiful.font)
 -- how many items scrolled per scroll
 local scrollbar_velocity = 1 -- // FIXME this
 
-local function build_popup(width, height)
-    local icon_size = 32
-    -- local max_showed_item_count = (height - 2 * 25 - prompt_height) / icon_size
-    local max_showed_item_count = 11
+local function build_popup(args)
+    local prompt_spacing = args.prompt_spacing or 15
+    local scrollbar_spacing = args.scrollbar_spacing or 10
+    local width = args.width or 250
+    local height = args.height or capi.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.wibar_bottom_border_width
+    local icon_size = args.icon_size or 32
+    local margins = args.margins or 25
+    local item_margins = args.item_margins or 2
+    local item_spacing = args.item_spacing or 4
+
+    local prompt_height = prompt_textbox.forced_height + prompt_spacing
+    local item_height = icon_size + 2 * item_margins
+    local max_showed_item_count = math.floor((height - 2 * margins - prompt_height) / item_height)
     local layout_height = icon_size * max_showed_item_count
 
     local scrollbar = wibox.widget {
@@ -76,7 +88,7 @@ local function build_popup(width, height)
                 {
                     {
                         icon_widgets[i],
-                        right = 4,
+                        right = item_spacing,
                         widget = wibox.container.margin
                     },
                     {
@@ -87,7 +99,7 @@ local function build_popup(width, height)
                     forced_height = icon_size,
                     layout = wibox.layout.align.horizontal
                 },
-                margins = 2,
+                margins = item_margins,
                 widget = wibox.container.margin
             },
             widget = wibox.container.background
@@ -173,42 +185,52 @@ local function build_popup(width, height)
                 {
                     {
                         {
-                            markup = '<span foreground="'..beautiful.green..'">Lancer: </span>',
-                            widget = wibox.widget.textbox
+                            {
+                                {
+                                    markup = '<span foreground="'..beautiful.green..'">Lancer: </span>',
+                                    widget = wibox.widget.textbox
+                                },
+                                prompt_textbox,
+                                fill_space = true,
+                                layout = wibox.layout.fixed.horizontal
+                            },
+                            bottom = prompt_spacing,
+                            widget = wibox.container.margin
                         },
-                        prompt_textbox,
-                        fill_space = true,
-                        layout = wibox.layout.fixed.horizontal
+                        {
+                            nil,
+                            items_container,
+                            {
+                                scrollbar_container,
+                                left = scrollbar_spacing,
+                                widget = wibox.container.margin
+                            },
+                            buttons = gears.table.join(
+                                awful.button({}, 4, function()
+                                    if scrollbar.value == 0 then return end
+                                    scrollbar.value = scrollbar.value - 1
+                                    scrollbar:emit_signal("widget::redraw_needed")
+                                end),
+                                awful.button({}, 5, function()
+                                    if scrollbar.value == scrollbar.maximum then return end
+                                    scrollbar.value = scrollbar.value + 1
+                                    scrollbar:emit_signal("widget::redraw_needed")
+                                end)
+                            ),
+                            -- forced_height = layout_height,
+                            layout = wibox.layout.align.horizontal,
+                        },
+                        layout = wibox.layout.fixed.vertical
                     },
-                    bottom = 10,
-                    widget = wibox.container.margin
+                    halign = "left",
+                    content_fill_horizontal = true,
+                    widget = wibox.container.place
                 },
-                {
-                    nil,
-                    items_container,
-                    {
-                        scrollbar_container,
-                        left = 10,
-                        widget = wibox.container.margin
-                    },
-                    buttons = gears.table.join(
-                        awful.button({}, 4, function()
-                            if scrollbar.value == 0 then return end
-                            scrollbar.value = scrollbar.value - 1
-                            scrollbar:emit_signal("widget::redraw_needed")
-                        end),
-                        awful.button({}, 5, function()
-                            if scrollbar.value == scrollbar.maximum then return end
-                            scrollbar.value = scrollbar.value + 1
-                            scrollbar:emit_signal("widget::redraw_needed")
-                        end)
-                    ),
-                    -- forced_height = layout_height,
-                    layout = wibox.layout.align.horizontal,
-                },
-                layout = wibox.layout.fixed.vertical
+                margins = margins,
+                widget = wibox.container.margin
             },
-            margins = 25,
+            right = 2,
+            color = beautiful.border_normal,
             widget = wibox.container.margin
         },
         ontop = true,
@@ -216,9 +238,8 @@ local function build_popup(width, height)
         maximum_width = width,
         minimum_height = height,
         maximum_height = height,
-        border_width = 2,
         border_color = beautiful.black_alt,
-        placement = awful.placement.centered
+        placement = awful.placement.bottom_left
     }
 
     function popup.show()
@@ -291,15 +312,20 @@ end
 -- if not generated wait for it
 -- if reload specified, wait for new menu before showing it (it's faster after first generation)
 function applauncher.run(reload)
-    if popup and not reload then
-        popup.show()
-        run_prompt()
-    else
+    if not popup then
         desktopapps.build_list(function()
-            build_popup(500, 500)
+            build_popup{width = 500}
             popup.show()
             run_prompt()
         end)
+    elseif reload then
+        desktopapps.build_list(function()
+            popup.show()
+            run_prompt()
+        end)
+    else
+        popup.show()
+        run_prompt()
     end
 end
 

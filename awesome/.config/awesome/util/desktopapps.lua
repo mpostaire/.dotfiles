@@ -4,6 +4,8 @@ local gears = require("gears")
 
 local desktopapps = {}
 
+-- // TODO get correct icon theme
+
 -- Expecting a wm_name of awesome omits too many applications and tools
 menu_utils.wm_name = ""
 
