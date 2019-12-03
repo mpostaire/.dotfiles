@@ -9,7 +9,6 @@ local capi = {mouse = mouse}
 -- // TODO scroll "drag" selection (when scroll, le même item reste select mais s'il sort de la caméra,
 --                                  changer l'item select par le dernier ou le premier de la caméra
 --                                  selon le scroll up ou down)
--- // FIXME select up and down wrap buggy when showed items < max_showed_items and other cases
 -- // TODO replace popup by a wibox ?
 
 local applauncher = {}
@@ -148,7 +147,7 @@ local function build_popup(args)
                     end
                     items_container.children[count].widget.widget.second.text = entry[1]
                     items_container.children[count].cmd = entry[2]
-                    items_container.children[count].position_index = index
+                    items_container.children[count].position_index = count
                     count = count + 1
                 end
             end
@@ -256,7 +255,7 @@ local function build_popup(args)
     end
     function popup.select_up()
         local temp = selected_widget - 1
-        if temp < 1 and items_container.children[selected_widget].position_index == 1 then
+        if temp < 1 and selected_widget > 0 and items_container.children[selected_widget].position_index == 1 then
             scrollbar.value = scrollbar.maximum
             select_widget(max_showed_item_count)
         elseif temp < 1 then
@@ -267,7 +266,7 @@ local function build_popup(args)
     end
     function popup.select_down()
         local temp = selected_widget + 1
-        if temp > max_showed_item_count and items_container.children[selected_widget].position_index == item_count then
+        if selected_widget > 0 and items_container.children[selected_widget].position_index == item_count then
             scrollbar.value = 0
             select_widget(1)
         elseif temp > max_showed_item_count then
