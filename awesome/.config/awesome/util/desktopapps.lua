@@ -1,6 +1,7 @@
 local menu_gen   = require("menubar.menu_gen")
 local menu_utils = require("menubar.utils")
 local gears = require("gears")
+local helpers = require("util.helpers")
 
 local desktopapps = {}
 
@@ -29,6 +30,7 @@ end
 desktopapps.entries = {}
 
 -- returns all entries matching query
+-- // TODO better search
 function desktopapps.search(query, iteration_callback)
     if not desktopapps.entries then return end
     if not query then query = "" end
@@ -49,6 +51,12 @@ end
 
 -- Use MenuBar parsing utils to generate list of apps
 -- // TODO add the comment to each entry
+-- // TODO add history based sort option
+--    each time an entry is launched, we save its name followed by the number of times it has been launched
+--    we sort them like this: (change sort function in desktopapps.lua)
+--    a < b if a.frequency > b. frequency or a.name < b.name
+--    to make this faster connect to awesome reload/quit signals and save frequencies only then
+--    (in the meantime it is saved in entries table)
 function desktopapps.build_list(callback)
     menu_gen.generate(function(entries)
         desktopapps.entries = {}
@@ -59,7 +67,9 @@ function desktopapps.build_list(callback)
         end
 
         -- Sort entries alphabetically (by name)
-        table.sort(desktopapps.entries, function (a, b) return a[1] < b[1] end)
+        table.sort(desktopapps.entries, function(a, b)
+            return helpers.replace_special_chars(a[1]):lower() < helpers.replace_special_chars(b[1]):lower()
+        end)
 
         if callback then callback(desktopapps.entries) end
     end)
