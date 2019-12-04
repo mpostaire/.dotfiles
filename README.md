@@ -15,7 +15,9 @@ TODO
 ## TODO
 
 ### high priority
-- when keygrabber active, lock fail
+- when keygrabber/mousegrabber active, lock fail
+
+- try a global background wibox for click outside events (have one wibox for all instances where we want click outside detection)
 
 - each reload, floating clients lose height equivalent to their title bar height
 - weather inside calendar

@@ -2,6 +2,7 @@ local menu_gen   = require("menubar.menu_gen")
 local menu_utils = require("menubar.utils")
 local gears = require("gears")
 local helpers = require("util.helpers")
+local variables = require("config.variables")
 
 local desktopapps = {}
 
@@ -9,6 +10,8 @@ local desktopapps = {}
 
 -- Expecting a wm_name of awesome omits too many applications and tools
 menu_utils.wm_name = ""
+
+menu_utils.terminal = variables.terminal
 
 -- Add support for NixOS systems too
 table.insert(menu_gen.all_menu_dirs, string.format("%s/.nix-profile/share/applications", os.getenv("HOME")))

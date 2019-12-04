@@ -275,7 +275,8 @@ theme.yellow_hover = color.lighten_by(theme.yellow, 0.25)
 
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
-theme.icon_theme = nil
+-- // TODO make this find icon theme automatically
+theme.icon_theme = "Papirus Red"
 
 return theme
 

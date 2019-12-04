@@ -6,11 +6,6 @@ local gears = require("gears")
 local desktopapps = require("util.desktopapps")
 local capi = {mouse = mouse}
 
--- // TODO make this history based
--- // TODO scroll "drag" selection (when scroll, le même item reste select mais s'il sort de la caméra,
---                                  changer l'item select par le dernier ou le premier de la caméra
---                                  selon le scroll up ou down)
-
 local applauncher = {}
 
 local popup = wibox {
@@ -132,7 +127,8 @@ local function build_popup(args)
         items_container:add(widget)
     end
 
-    local function scroll()
+    -- may have to redo this
+    local function scroll_layout_contents()
         if scrollbar.maximum == 1 then return end
 
         for i = 1, max_showed_item_count do
@@ -156,7 +152,7 @@ local function build_popup(args)
 
         item_count = 0
         local count = 1
-        desktopapps.search(query, function(_, match, entry)
+        desktopapps.search(query, function(index, match, entry)
             if match then
                 item_count = item_count + 1
                 if count <= max_showed_item_count then
@@ -169,6 +165,7 @@ local function build_popup(args)
                     items_container.children[count].widget.widget.second.text = entry[1]
                     items_container.children[count].cmd = entry[2]
                     items_container.children[count].position_index = count
+                    items_container.children[count].index = index
                     count = count + 1
                 end
             end
@@ -180,6 +177,7 @@ local function build_popup(args)
             items_container.children[i].widget.widget.second.text = ""
             items_container.children[i].cmd = nil
             items_container.children[i].position_index = nil
+            items_container.children[count].index = nil
         end
 
         -- if selected_widget was 0, attempt to select 1
@@ -196,7 +194,7 @@ local function build_popup(args)
         scrollbar_container.widget.bar_color = scrollbar.maximum > 1 and beautiful.black_alt or beautiful.black
     end
 
-    scrollbar:connect_signal("property::value", scroll)
+    scrollbar:connect_signal("property::value", scroll_layout_contents)
 
     prompt_textbox.ellipsize = "start"
     popup.widget = wibox.widget {
