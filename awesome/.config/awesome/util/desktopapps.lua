@@ -1,12 +1,11 @@
 local menu_utils = require("menubar.utils")
 local gears = require("gears")
+local gfs = require("gears.filesystem")
 local utils = require("menubar.utils")
 local helpers = require("util.helpers")
 local variables = require("config.variables")
 
 local desktopapps = {}
-
--- // TODO get correct icon theme
 
 -- Expecting a wm_name of awesome omits too many applications and tools
 menu_utils.wm_name = ""
@@ -15,8 +14,8 @@ menu_utils.terminal = variables.terminal
 
 --- Get the path to the directories where XDG menu applications are installed.
 local function get_xdg_menu_dirs()
-    local dirs = gears.filesystem.get_xdg_data_dirs()
-    table.insert(dirs, 1, gears.filesystem.get_xdg_data_home())
+    local dirs = gfs.get_xdg_data_dirs()
+    table.insert(dirs, 1, gfs.get_xdg_data_home())
     return gears.table.map(function(dir) return dir .. 'applications/' end, dirs)
 end
 
@@ -30,7 +29,7 @@ table.insert(desktopapps.all_menu_dirs, string.format("%s/.nix-profile/share/app
 -- Remove non existent paths in order to avoid issues
 local existent_paths = {}
 for _,v in pairs(desktopapps.all_menu_dirs) do
-    if gears.filesystem.is_dir(v) then
+    if gfs.is_dir(v) then
         table.insert(existent_paths, v)
     end
 end
@@ -42,6 +41,7 @@ local function trim(s)
 end
 
 desktopapps.entries = {}
+local frequency_table
 
 -- returns all entries matching query
 function desktopapps.search(query, iteration_callback)
@@ -77,16 +77,46 @@ function desktopapps.search(query, iteration_callback)
     return ret
 end
 
+local function load_frequency_table()
+    if frequency_table then
+        return frequency_table
+    end
+    frequency_table = {}
+    local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
+    local count_file = io.open(count_file_name, "r")
+    if count_file then
+        for line in count_file:lines() do
+            local name, count = string.match(line, "([^;]+);([^;]+)")
+            if name ~= nil and count ~= nil then
+                frequency_table[name] = tonumber(count)
+            end
+        end
+        count_file:close()
+    end
+    return frequency_table
+end
+
+local function write_frequency_table()
+    local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
+    local count_file = assert(io.open(count_file_name, "w"))
+    for name, count in pairs(frequency_table) do
+        local str = string.format("%s;%d\n", name, count)
+        count_file:write(str)
+    end
+    count_file:close()
+end
+
+_G.awesome.connect_signal("startup", load_frequency_table)
+_G.awesome.connect_signal("exit", write_frequency_table)
+
+function desktopapps.inc_frequency(name)
+    frequency_table[name] = frequency_table[name] + 1
+end
+
 --- Generate an array of all visible menu entries.
 -- @tparam function callback Will be fired when all menu entries were parsed
 -- with the resulting list of menu entries as argument.
 -- @tparam table callback.entries All menu entries.
--- // TODO add history based sort option
---    each time an entry is launched, we save its name followed by the number of times it has been launched
---    we sort them like this: (change sort function in desktopapps.lua)
---    a < b if a.frequency > b. frequency or a.name < b.name
---    to make this faster connect to awesome reload/quit signals and save frequencies only then
---    (in the meantime it is saved in entries table)
 function desktopapps.build_list(callback)
     local result = {}
     local unique_entries = {}
@@ -111,27 +141,21 @@ function desktopapps.build_list(callback)
                             keywords = gears.string.split(keywords, ";")
                         end
                         local categories = entry.categories or nil
-                        table.insert(result, { name, cmdline, icon, comment, generic_name, keywords, categories })
+                        local frequency = frequency_table[name] or 0
+                        table.insert(result, { name, cmdline, icon, comment, generic_name, keywords, categories, frequency })
                         unique_entries[unique_key] = true
-
-                        -- if entry.Name == "Firefox" then
-                        --     -- require("naughty").notify{text=generic_name}
-                        --     -- for k,v in pairs(entry) do
-                        --     --     require("naughty").notify{text=tostring(k).."="..tostring(v)}
-                        --     -- end
-                        --     -- for k,v in pairs(keywords) do
-                        --     --     require("naughty").notify{text=tostring(k).."="..tostring(v)}
-                        --     -- end
-                        -- end
                     end
                 end
             end
             dirs_parsed = dirs_parsed + 1
 
             if dirs_parsed == #desktopapps.all_menu_dirs then
-                -- Sort entries alphabetically (by name)
+                -- Sort entries by frequency and alphabetically (by name)
                 table.sort(result, function(a, b)
-                    return helpers.replace_special_chars(a[1]):lower() < helpers.replace_special_chars(b[1]):lower()
+                    if a[8] == b[8] then
+                        return helpers.replace_special_chars(a[1]):lower() < helpers.replace_special_chars(b[1]):lower()
+                    end
+                    return a[8] > b[8]
                 end)
 
                 desktopapps.entries = result

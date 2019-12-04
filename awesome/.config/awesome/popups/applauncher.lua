@@ -302,8 +302,11 @@ local function build_popup(args)
         background.visible = false
         popup.visible = false
     end
-    function popup.get_selected_item_cmd()
-        if items_container.children[selected_widget] then return items_container.children[selected_widget].cmd end
+    function popup.get_selected_item()
+        local item_widget_background = items_container.children[selected_widget]
+        if item_widget_background then
+            return item_widget_background.widget.widget.second.children[1].text, item_widget_background.cmd
+        end
     end
     function popup.select_up()
         local temp = selected_widget - 1
@@ -335,8 +338,11 @@ local function run_prompt()
     prompt.run {
         textbox      = prompt_textbox,
         exe_callback = function()
-            local cmd = popup.get_selected_item_cmd()
-            if cmd then awful.spawn.easy_async_with_shell(cmd, function() end) end
+            local name, cmd = popup.get_selected_item()
+            if name and cmd then
+                awful.spawn.easy_async_with_shell(cmd, function() end)
+                desktopapps.inc_frequency(name)
+            end
         end,
         keypressed_callback = function(_, key)
             if key == "Up" then
