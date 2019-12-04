@@ -1,8 +1,8 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local rofi = require("util.rofi")
 local awful = require("awful")
 local gears = require("gears")
+local applauncher = require("popups.applauncher")
 local capi = {mouse = mouse}
 
 return function()
@@ -24,8 +24,7 @@ return function()
     }
 
     widget:buttons(gears.table.join(
-        awful.button({}, 1, function() rofi.launcher_menu("drun") end),
-        awful.button({}, 3, function() rofi.launcher_menu("window") end)
+        awful.button({}, 1, function() applauncher.run(true) end)
     ))
 
     local old_cursor, old_wibox
