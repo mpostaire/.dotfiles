@@ -4,6 +4,7 @@ local beautiful = require("beautiful")
 local wibox = require("wibox")
 local gears = require("gears")
 local desktopapps = require("util.desktopapps")
+local helpers = require("util.helpers")
 local capi = {mouse = mouse}
 
 local applauncher = {}
@@ -44,7 +45,7 @@ local function build_popup(args)
     local icon_size = args.icon_size or 32
     local margins = args.margins or 25
     local item_margins = args.item_margins or 2
-    local item_spacing = args.item_spacing or 4
+    local icon_spacing = args.icon_spacing or 4
 
     local prompt_height = prompt_textbox.forced_height + prompt_spacing
     local item_height = icon_size + 2 * item_margins
@@ -86,6 +87,8 @@ local function build_popup(args)
         if selected_widget ~= 0 then
             items_container.children[selected_widget].bg = beautiful.bg_normal
             items_container.children[selected_widget].fg = beautiful.fg_normal
+            local text = items_container.children[selected_widget].widget.widget.second.children[2].text
+            items_container.children[selected_widget].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..text..'</span></i>'
         end
 
         selected_widget = index
@@ -93,6 +96,8 @@ local function build_popup(args)
         if selected_widget ~= 0 then
             items_container.children[selected_widget].bg = beautiful.fg_normal
             items_container.children[selected_widget].fg = beautiful.bg_normal
+            local text = items_container.children[selected_widget].widget.widget.second.children[2].text
+            items_container.children[selected_widget].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..text..'</span></i>'
         end
     end
 
@@ -103,12 +108,20 @@ local function build_popup(args)
                 {
                     {
                         icon_widgets[i],
-                        right = item_spacing,
+                        right = icon_spacing,
                         widget = wibox.container.margin
                     },
                     {
-                        align = 'left',
-                        widget = wibox.widget.textbox
+                        {
+                            align = 'left',
+                            widget = wibox.widget.textbox
+                        },
+                        {
+                            align = 'left',
+                            font = helpers.change_font_size(beautiful.font, 9),
+                            widget = wibox.widget.textbox
+                        },
+                        layout = wibox.layout.flex.vertical
                     },
                     nil,
                     forced_height = icon_size,
@@ -121,6 +134,7 @@ local function build_popup(args)
         }
         widget:buttons(gears.table.join(
             awful.button({}, 1, function()
+                if not items_container.children[i].position_index then return end
                 select_widget(i)
             end)
         ))
@@ -139,7 +153,13 @@ local function build_popup(args)
             else
                 items_container.children[i].widget.widget.first.widget = icon_placeholder
             end
-            items_container.children[i].widget.widget.second.text = item[1]
+            items_container.children[i].widget.widget.second.children[1].text = item[1]
+            local comment = item[4] ~= "" and item[4] or item[5]
+            if i == selected_widget then
+                items_container.children[i].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
+            else
+                items_container.children[i].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment..'</span></i>'
+            end
             items_container.children[i].cmd = item[2]
             items_container.children[i].position_index = scrollbar.value + i
         end
@@ -162,7 +182,13 @@ local function build_popup(args)
                     else
                         items_container.children[count].widget.widget.first.widget = icon_placeholder
                     end
-                    items_container.children[count].widget.widget.second.text = entry[1]
+                    items_container.children[count].widget.widget.second.children[1].text = entry[1]
+                    local comment = entry[4] ~= "" and entry[4] or entry[5]
+                    if count == selected_widget then
+                        items_container.children[count].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
+                    else
+                        items_container.children[count].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment..'</span></i>'
+                    end
                     items_container.children[count].cmd = entry[2]
                     items_container.children[count].position_index = count
                     items_container.children[count].index = index
@@ -174,7 +200,8 @@ local function build_popup(args)
         -- then clear following widgets if needed
         for i = count, max_showed_item_count do
             items_container.children[i].widget.widget.first.widget = nil
-            items_container.children[i].widget.widget.second.text = ""
+            items_container.children[i].widget.widget.second.children[1].text = ""
+            items_container.children[i].widget.widget.second.children[2].markup = ""
             items_container.children[i].cmd = nil
             items_container.children[i].position_index = nil
             items_container.children[count].index = nil
@@ -327,7 +354,7 @@ end
 function applauncher.run(reload)
     if not popup.widget then
         desktopapps.build_list(function()
-            build_popup{width = 500}
+            build_popup{width = 500, icon_spacing = 8, icon_size = 36}
             popup.show()
             run_prompt()
         end)
