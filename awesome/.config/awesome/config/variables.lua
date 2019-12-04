@@ -8,6 +8,8 @@ variables.home = os.getenv("HOME") .. "/"
 variables.gui_editor = "code"
 variables.browser = os.getenv("BROWSER") or "firefox"
 
+variables.locale = os.getenv("LANG")
+
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
 -- If you do not like this or do not have such a key,

@@ -1,5 +1,5 @@
 -- set locale
-os.setlocale('fr_FR.utf8')
+os.setlocale(os.getenv("LANG"))
 
 -- If LuaRocks is installed, make sure that packages installed through it are
 -- found (e.g. lgi). If LuaRocks is not installed, do nothing.
