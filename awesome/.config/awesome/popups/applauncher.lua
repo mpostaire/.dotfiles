@@ -85,22 +85,25 @@ local function build_popup(args)
         end
 
         if selected_widget ~= 0 then
-            items_container.children[selected_widget].bg = beautiful.bg_normal
-            items_container.children[selected_widget].fg = beautiful.fg_normal
-            local text = items_container.children[selected_widget].widget.widget.second.children[2].text
-            items_container.children[selected_widget].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..text..'</span></i>'
+            local item_background = items_container.children[selected_widget]
+            item_background.bg = beautiful.bg_normal
+            item_background.fg = beautiful.fg_normal
+            local comment_textbox = items_container.children[selected_widget].widget.widget.second.children[2]
+            comment_textbox.markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment_textbox.text..'</span></i>'
         end
 
         selected_widget = index
 
         if selected_widget ~= 0 then
-            items_container.children[selected_widget].bg = beautiful.fg_normal
-            items_container.children[selected_widget].fg = beautiful.bg_normal
-            local text = items_container.children[selected_widget].widget.widget.second.children[2].text
-            items_container.children[selected_widget].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..text..'</span></i>'
+            local item_background = items_container.children[selected_widget]
+            item_background.bg = beautiful.fg_normal
+            item_background.fg = beautiful.bg_normal
+            local comment_textbox = items_container.children[selected_widget].widget.widget.second.children[2]
+            comment_textbox.markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment_textbox.text..'</span></i>'
         end
     end
 
+    local comment_font = helpers.change_font_size(beautiful.font, 9)
     for i = 1, max_showed_item_count do
         table.insert(icon_widgets, wibox.widget.imagebox())
         local widget = wibox.widget {
@@ -118,7 +121,7 @@ local function build_popup(args)
                         },
                         {
                             align = 'left',
-                            font = helpers.change_font_size(beautiful.font, 9),
+                            font = comment_font,
                             widget = wibox.widget.textbox
                         },
                         layout = wibox.layout.flex.vertical
@@ -141,27 +144,29 @@ local function build_popup(args)
         items_container:add(widget)
     end
 
-    -- may have to redo this
     local function scroll_layout_contents()
         if scrollbar.maximum == 1 then return end
 
         for i = 1, max_showed_item_count do
             local item = filtered_items[scrollbar.value + i]
+            local item_widget_background = items_container.children[i]
+            local item_widget = item_widget_background.widget.widget
             if item[3] then
-                items_container.children[i].widget.widget.first.widget = icon_widgets[i]
-                items_container.children[i].widget.widget.first.widget.image = item[3]
+                item_widget.first.widget = icon_widgets[i]
+                icon_widgets[i].image = item[3]
             else
-                items_container.children[i].widget.widget.first.widget = icon_placeholder
+                item_widget.first.widget = icon_placeholder
             end
-            items_container.children[i].widget.widget.second.children[1].text = item[1]
+            local name_comment_textboxes = item_widget.second
+            name_comment_textboxes.children[1].text = item[1]
             local comment = item[4] ~= "" and item[4] or item[5]
             if i == selected_widget then
-                items_container.children[i].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
+                name_comment_textboxes.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
             else
-                items_container.children[i].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment..'</span></i>'
+                name_comment_textboxes.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment..'</span></i>'
             end
-            items_container.children[i].cmd = item[2]
-            items_container.children[i].position_index = scrollbar.value + i
+            item_widget_background.cmd = item[2]
+            item_widget_background.position_index = scrollbar.value + i
         end
     end
 
@@ -172,26 +177,29 @@ local function build_popup(args)
 
         item_count = 0
         local count = 1
-        desktopapps.search(query, function(index, match, entry)
+        desktopapps.search(query, function(_, match, entry)
             if match then
                 item_count = item_count + 1
                 if count <= max_showed_item_count then
+                    local item_widget_background = items_container.children[count]
+                    local item_widget = item_widget_background.widget.widget
+                    local item_widget_first = item_widget.first
                     if entry[3] then
-                        items_container.children[count].widget.widget.first.widget = icon_widgets[count]
-                        items_container.children[count].widget.widget.first.widget.image = entry[3]
+                        item_widget_first.widget = icon_widgets[count]
+                        item_widget_first.widget.image = entry[3]
                     else
-                        items_container.children[count].widget.widget.first.widget = icon_placeholder
+                        item_widget_first.widget = icon_placeholder
                     end
-                    items_container.children[count].widget.widget.second.children[1].text = entry[1]
+                    local item_widget_second = item_widget.second
+                    item_widget_second.children[1].text = entry[1]
                     local comment = entry[4] ~= "" and entry[4] or entry[5]
                     if count == selected_widget then
-                        items_container.children[count].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
+                        item_widget_second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
                     else
-                        items_container.children[count].widget.widget.second.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment..'</span></i>'
+                        item_widget_second.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment..'</span></i>'
                     end
-                    items_container.children[count].cmd = entry[2]
-                    items_container.children[count].position_index = count
-                    items_container.children[count].index = index
+                    item_widget_background.cmd = entry[2]
+                    item_widget_background.position_index = count
                     count = count + 1
                 end
             end
@@ -199,12 +207,13 @@ local function build_popup(args)
 
         -- then clear following widgets if needed
         for i = count, max_showed_item_count do
-            items_container.children[i].widget.widget.first.widget = nil
-            items_container.children[i].widget.widget.second.children[1].text = ""
-            items_container.children[i].widget.widget.second.children[2].markup = ""
-            items_container.children[i].cmd = nil
-            items_container.children[i].position_index = nil
-            items_container.children[count].index = nil
+            local item_widget_background = items_container.children[i]
+            local item_widget = item_widget_background.widget.widget
+            item_widget.first.widget = nil
+            item_widget.second.children[1].text = ""
+            item_widget.second.children[2].markup = ""
+            item_widget_background.cmd = nil
+            item_widget_background.position_index = nil
         end
 
         -- if selected_widget was 0, attempt to select 1
