@@ -146,9 +146,6 @@ local globalkeys = gears.table.join(
     end,
     {description = "htop", group = "launcher"}),
 
-    -- rofi power menu
-    awful.key({ variables.modkey }, "p", rofi.power_menu,
-                {description = "show the power menu", group = "launcher"}),
     -- rofi launcher menu
     awful.key({ variables.modkey }, "space", function() applauncher.run(true) end,
                 {description = "show the launcher menu", group = "launcher"}),
