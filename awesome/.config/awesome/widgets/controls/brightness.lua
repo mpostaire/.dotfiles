@@ -3,6 +3,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local brightness = require("util.brightness")
+local helpers = require("util.helpers")
 
 local icon = ""
 
@@ -42,7 +43,7 @@ function brightness_widget:new(width)
 
     local icon_widget = wibox.widget {
         markup = icon,
-        font = string.gsub(beautiful.icon_font, "%d+", "16"),
+        font = helpers.change_font_size(beautiful.icon_font, 16),
         widget = wibox.widget.textbox
     }
     local widget = wibox.widget {

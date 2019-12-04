@@ -12,6 +12,12 @@ function helpers.get_widget_geometry(widget)
     end
 end
 
+-- change font size
+function helpers.change_font_size(font, size)
+    return string.gsub(font, "%d+", tostring(size))
+end
+
+-- replace special chars by their normal counterpart
 function helpers.replace_special_chars(str)
     local tableAccents = {}
     tableAccents["À"] = "A"

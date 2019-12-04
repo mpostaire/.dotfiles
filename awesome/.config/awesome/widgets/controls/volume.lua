@@ -3,6 +3,7 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local awful = require("awful")
 local alsa = require("util.alsa")
+local helpers = require("util.helpers")
 
 local volume_widget = {}
 volume_widget.__index = volume_widget
@@ -61,7 +62,7 @@ function volume_widget:new(width)
 
     local icon_widget = wibox.widget {
         markup = get_icon(),
-        font = string.gsub(beautiful.icon_font, "%d+", "16"),
+        font = helpers.change_font_size(beautiful.icon_font, 16),
         widget = wibox.widget.textbox
     }
     local widget = wibox.widget {

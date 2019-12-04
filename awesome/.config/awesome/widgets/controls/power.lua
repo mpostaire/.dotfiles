@@ -2,6 +2,7 @@ local gears = require("gears")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local awful = require("awful")
+local helpers = require("util.helpers")
 local capi = {awesome = awesome}
 
 local icons = {
@@ -13,7 +14,7 @@ local icons = {
 }
 
 return function()
-    local font = string.gsub(beautiful.icon_font, "%d+", "16")
+    local font = helpers.change_font_size(beautiful.icon_font, 16)
 
     local reboot = wibox.widget {
         {

@@ -3,6 +3,7 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
+local helpers = require("util.helpers")
 local capi = {mouse = mouse}
 
 local icons = {
@@ -48,13 +49,13 @@ end
 return function()
     local prev_widget = wibox.widget {
         markup = icons.prev,
-        font = string.gsub(beautiful.icon_font, "%d+", "14"),
+        font = helpers.change_font_size(beautiful.icon_font, 14),
         align = 'center',
         widget = wibox.widget.textbox
     }
     local next_widget = wibox.widget {
         markup = icons.next,
-        font = string.gsub(beautiful.icon_font, "%d+", "14"),
+        font = helpers.change_font_size(beautiful.icon_font, 14),
         align = 'center',
         widget = wibox.widget.textbox
     }

@@ -3,6 +3,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 local alsa = require("util.alsa")
+local helpers = require("util.helpers")
 
 local volume_popup = {}
 
@@ -39,7 +40,7 @@ local progressbar = wibox.widget {
 
 local icon_widget = wibox.widget {
     markup = get_icon(),
-    font = string.gsub(beautiful.icon_font, "%d+", "128"),
+    font = helpers.change_font_size(beautiful.icon_font, 128),
     widget = wibox.widget.textbox
 }
 

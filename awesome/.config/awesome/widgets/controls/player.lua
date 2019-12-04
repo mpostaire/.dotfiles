@@ -3,6 +3,7 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
 local mpris = require("util.mpris")
+local helpers = require("util.helpers")
 
 local icons = {
     note = "",
@@ -71,7 +72,7 @@ return function()
     local widget = wibox.widget {
         {
             markup = icons.note.."   ",
-            font = string.gsub(beautiful.icon_font, "%d+", "20"),
+            font = helpers.change_font_size(beautiful.icon_font, 20),
             widget = wibox.widget.textbox
         },
         {
