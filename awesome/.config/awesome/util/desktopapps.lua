@@ -45,7 +45,6 @@ local frequency_table
 
 -- returns all entries matching query
 function desktopapps.search(query, iteration_callback)
-    if not desktopapps.entries then return end
     if not query then query = "" end
     query = helpers.replace_special_chars(trim(query)):lower()
 
@@ -110,7 +109,11 @@ _G.awesome.connect_signal("startup", load_frequency_table)
 _G.awesome.connect_signal("exit", write_frequency_table)
 
 function desktopapps.inc_frequency(name)
-    frequency_table[name] = frequency_table[name] + 1
+    if not frequency_table[name] then
+        frequency_table[name] = 1
+    else
+        frequency_table[name] = frequency_table[name] + 1
+    end
 end
 
 --- Generate an array of all visible menu entries.
