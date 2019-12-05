@@ -1,10 +1,12 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local gears = require("gears")
+local gstring = require("gears.string")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
 local variables = require("config.variables")
+
+-- // TODO placeholders when widget is loading its data
 
 local icons = {
     day = {
@@ -39,7 +41,7 @@ local icons = {
 
 return function(args)
     if not args then args = {} end
-    local location = args.location or "Paris"
+    local location = args.location or "Paris,France"
 
     local short_locale = string.sub(variables.locale, 1, 2)
     local cmd = 'curl "'..short_locale..'.wttr.in/'..location..'?format=%c;%C;%h;%t;%w;%l;%m;%p;%P"'
@@ -117,9 +119,9 @@ return function(args)
 
     -- every 2 hours
     local _, timer = awful.widget.watch(cmd, 7200, function(_, stdout)
-        data = gears.string.split(stdout, ";")
+        data = gstring.split(stdout, ";")
         icon_widget.text = get_weather_icon()
-        location_widget.markup = icons.location..data[6]
+        location_widget.markup = icons.location..gstring.split(data[6], ",")[1]
         humidity_widget.text = data[3]
         temperature_widget.text = data[4]
         wind_widget.text = data[5]

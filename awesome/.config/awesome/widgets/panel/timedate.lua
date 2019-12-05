@@ -8,7 +8,7 @@ local icon = ""
 -- // TODO weather app in calendar popup
 
 return function(format)
-    local widget = base_panel_widget:new(icon, wibox.widget.textclock(format), calendar{left_widget = weather{location = "Wavre"}})
+    local widget = base_panel_widget:new(icon, wibox.widget.textclock(format), calendar{left_widget = weather{location = "Wavre,Belgique"}})
 
     -- widget:buttons(gears.table.join(
     --     awful.button({}, 1, calendar.toggle_calendar)
