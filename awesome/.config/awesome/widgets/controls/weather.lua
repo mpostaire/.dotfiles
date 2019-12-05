@@ -5,7 +5,6 @@ local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
 local variables = require("config.variables")
-local capi = {mouse = mouse}
 
 local icons = {
     day = {
@@ -78,9 +77,9 @@ return function(args)
         homogeneous = false,
         layout = wibox.layout.grid.vertical,
     }
-    left_grid_layout:add_widget_at(wibox.container.margin(icon_widget, _, dpi(10)), 1, 1, 3, 1)
-    left_grid_layout:add_widget_at(wibox.container.margin(temperature_widget, _, dpi(10)), 1, 2, 2, 1)
-    left_grid_layout:add_widget_at(wibox.container.margin(location_widget, _, dpi(10)), 3, 2)
+    left_grid_layout:add_widget_at(wibox.container.margin(icon_widget, 0, dpi(10)), 1, 1, 3, 1)
+    left_grid_layout:add_widget_at(wibox.container.margin(temperature_widget, 0, dpi(10)), 1, 2, 2, 1)
+    left_grid_layout:add_widget_at(wibox.container.margin(location_widget, 0, dpi(10)), 3, 2)
 
     local right_grid_layout = wibox.widget {
         homogeneous = false,
@@ -132,8 +131,3 @@ return function(args)
 
     return weather_widget
 end
-
--- weather_widget:buttons(gears.table.join(
---     awful.button({}, 5, calendar_prev_month),
---     awful.button({}, 4, calendar_next_month)
--- ))
