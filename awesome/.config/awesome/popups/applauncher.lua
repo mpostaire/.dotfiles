@@ -38,6 +38,7 @@ prompt_textbox.forced_height = beautiful.get_font_height(beautiful.font)
 local scrollbar_velocity = 1 -- // FIXME this
 
 local function build_popup(args)
+    if not args then args = {} end
     local prompt_spacing = args.prompt_spacing or 15
     local scrollbar_spacing = args.scrollbar_spacing or 10
     local width = args.width or 250
