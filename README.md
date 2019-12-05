@@ -40,8 +40,6 @@ TODO
 
 - only one popup instance for each widget having a popup (make another group widget but with only this condition ?)
 
---> make a popup subclass wich make clicking outside hide itself
-
 - place all right widgets inside a container widget. if its width is too high, collapse (windows xp/10 style)
 
 ### low priority

@@ -1,11 +1,14 @@
 local wibox = require("wibox")
 local base_panel_widget = require("widgets.panel.base")
 local calendar = require("widgets.controls.calendar")
+local weather = require("widgets.controls.weather")
 
 local icon = ""
 
+-- // TODO weather app in calendar popup
+
 return function(format)
-    local widget = base_panel_widget:new(icon, wibox.widget.textclock(format), calendar())
+    local widget = base_panel_widget:new(icon, wibox.widget.textclock(format), calendar{left_widget = weather{location = "Wavre"}})
 
     -- widget:buttons(gears.table.join(
     --     awful.button({}, 1, calendar.toggle_calendar)

@@ -73,6 +73,7 @@ theme.white_alt = xresources_theme["color15"]
 theme.true_white = "#FFFFFF"
 
 theme.font          = "DejaVu Sans Mono 10"
+theme.nerd_font     = "DejaVuSansMono Nerd Font 10"
 theme.icon_font     = "Suru-Icons 12"
 
 theme.bg_normal     = theme.black

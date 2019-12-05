@@ -28,6 +28,7 @@ local function make_popup(control_widget)
             widget = wibox.container.margin
         },
         ontop = true,
+        visible = true,
         spawn_button = popup_spawn_button
     }
 end
@@ -238,6 +239,7 @@ function base_panel_widget:set_popup_enabled(popup_enabled)
 
     if popup_enabled and not self.control_popup then
         self.control_popup = make_popup(self.control_widget)
+        self.control_popup.visible = false
     elseif not popup_enabled and self.control_popup then
         self.control_popup.visible = false
     end

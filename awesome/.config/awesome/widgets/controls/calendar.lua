@@ -46,7 +46,10 @@ local function get_first_day_in_month(month, year)
     end
 end
 
-return function()
+return function(args)
+    if not args then args = {} end
+    local left_widget = args.left_widget or nil
+
     local prev_widget = wibox.widget {
         markup = icons.prev,
         font = helpers.change_font_size(beautiful.icon_font, 14),
@@ -60,7 +63,7 @@ return function()
         widget = wibox.widget.textbox
     }
 
-    local calendar_widget = wibox.widget {
+    local calendar_grid_widget = wibox.widget {
         homogeneous = true,
         spacing = dpi(6),
         forced_num_cols = 7,
@@ -140,9 +143,9 @@ return function()
         end
     end
 
-    local month_widget = generate_header_widget(calendar_widget)
-    generate_day_names_row(calendar_widget)
-    local day_widgets = generate_day_widgets(calendar_widget)
+    local month_widget = generate_header_widget(calendar_grid_widget)
+    generate_day_names_row(calendar_grid_widget)
+    local day_widgets = generate_day_widgets(calendar_grid_widget)
     local month, year
 
     local function calendar_prev_month()
@@ -173,7 +176,7 @@ return function()
     next_widget:buttons(gears.table.join(
         awful.button({}, 1, calendar_next_month)
     ))
-    calendar_widget:buttons(gears.table.join(
+    calendar_grid_widget:buttons(gears.table.join(
         awful.button({}, 5, calendar_prev_month),
         awful.button({}, 4, calendar_next_month)
     ))
@@ -215,6 +218,24 @@ return function()
         month, year = date.month, date.year
         generate_header(month_widget, month, year)
         generate_days(day_widgets, month, year)
+    end
+
+    local calendar_widget = calendar_grid_widget
+    if left_widget then
+        local separator = wibox.widget {
+            color = beautiful.black_alt,
+            span_ratio = 0.9,
+            orientation = "vertical",
+            widget = wibox.widget.separator
+        }
+        left_widget.forced_width = dpi(360)
+        calendar_widget = wibox.widget {
+            left_widget,
+            calendar_grid_widget,
+            spacing = dpi(35),
+            spacing_widget = separator,
+            layout = wibox.layout.fixed.horizontal
+        }
     end
 
     calendar_widget.show_callback = init_current_month
