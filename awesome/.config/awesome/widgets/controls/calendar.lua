@@ -4,6 +4,7 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
+local color = require("util.color")
 local capi = {mouse = mouse}
 
 local icons = {
@@ -212,6 +213,22 @@ return function(args)
             old_wibox = nil
         end
     end)
+    local green_hover = color.lighten_by(beautiful.green, 0.5)
+    month_widget:connect_signal("mouse::enter", function()
+        month_widget:set_markup_silently('<span foreground="'..green_hover..'">'..month_widget.text..'</span>')
+
+        local w = capi.mouse.current_wibox
+        old_cursor, old_wibox = w.cursor, w
+        w.cursor = "hand2"
+    end)
+    month_widget:connect_signal("mouse::leave", function()
+        month_widget:set_markup_silently('<span foreground="'..beautiful.green..'">'..month_widget.text..'</span>')
+
+        if old_wibox then
+            old_wibox.cursor = old_cursor
+            old_wibox = nil
+        end
+    end)
 
     local function init_current_month()
         local date = os.date("*t")
@@ -219,6 +236,13 @@ return function(args)
         generate_header(month_widget, month, year)
         generate_days(day_widgets, month, year)
     end
+
+    month_widget:buttons(gears.table.join(
+        awful.button({}, 1, function()
+            init_current_month()
+            month_widget:set_markup_silently('<span foreground="'..green_hover..'">'..month_widget.text..'</span>')
+        end)
+    ))
 
     local calendar_widget = calendar_grid_widget
     if left_widget then
