@@ -18,8 +18,10 @@ local submenu = {
     { "edit config", function()
         awful.spawn.easy_async(variables.gui_editor .. " " .. variables.home .. "/dotfiles", function() end)
     end },
-    { "restart awesome", capi.awesome.restart },
-    { "quit awesome", capi.awesome.quit },
+    { "restart", capi.awesome.restart },
+    { "quit", function()
+        capi.awesome.quit()
+    end },
 }
 
 local mainmenu = awful.menu(
