@@ -149,9 +149,6 @@ local globalkeys = gears.table.join(
     -- rofi launcher menu
     awful.key({ variables.modkey }, "space", function() applauncher.run(true) end,
                 {description = "show the launcher menu", group = "launcher"}),
-    -- app launcher
-    awful.key({ variables.modkey, "Shift" }, "space", function() rofi.launcher_menu("drun") end,
-                {description = "show the rofi launcher menu", group = "launcher"}),
 
     -- laptop special keys
     awful.key({}, "XF86Calculator",
