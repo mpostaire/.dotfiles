@@ -4,41 +4,29 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local brightness = require("util.brightness")
 local helpers = require("util.helpers")
+local slider = require("widgets.slider")
 
 local icon = ""
 
 local brightness_widget = {}
 brightness_widget.__index = brightness_widget
 
-local function get_slider_color_pattern(value, maximum)
-    -- we convert value from [0,100] to [0,slider.forced_width] interval
-    value = (value / 100) * maximum
-
-    return gears.color.create_pattern({
-        type = "linear",
-        from = { value, 0 },
-        to = { value + 1, 0 },
-        stops = { { 0, beautiful.fg_normal }, { 1, beautiful.bg_focus } }
-    })
-end
-
 function brightness_widget:new(width)
     local slider_width = width or 150
     -- we convert brightness value from [10,100] to [0,100] interval
     local brightness_value = ((brightness.brightness - 10) / 90) * 100
 
-    local slider = wibox.widget {
-        bar_height = 4,
-        bar_color = get_slider_color_pattern(brightness_value, slider_width),
+    local brightness_slider = slider {
+        bar_left_color = beautiful.white,
+        bar_right_color = beautiful.bg_focus,
         handle_color = beautiful.fg_normal,
         handle_shape = gears.shape.circle,
         handle_border_color = beautiful.fg_normal,
-        handle_border_width = 1,
+        handle_width = 12,
         value = brightness_value,
         maximum = 100,
         forced_width = slider_width,
-        forced_height = 4,
-        widget = wibox.widget.slider
+        forced_height = 4
     }
 
     local icon_widget = wibox.widget {
@@ -47,26 +35,29 @@ function brightness_widget:new(width)
         widget = wibox.widget.textbox
     }
     local widget = wibox.widget {
-        icon_widget,
-        slider,
-        spacing = 8,
-        layout = wibox.layout.fixed.horizontal
+        {
+            icon_widget,
+            right = 8,
+            widget = wibox.container.margin
+        },
+        brightness_slider,
+        nil,
+        layout = wibox.layout.align.horizontal
     }
     setmetatable(widget, brightness_widget)
 
     widget._private.brightness_updating_value = false
     widget._private.mouse_updating_value = false
-    slider:connect_signal("property::value", function()
-        slider.bar_color = get_slider_color_pattern(slider.value, slider_width)
-
-        -- if we are updating slider.value because brightness changed we do not want to change it again to prevent loops
+    local handle = brightness_slider.handle
+    handle:connect_signal("property::value", function()
+        -- if we are updating handle.value because brightness changed we do not want to change it again to prevent loops
         if widget._private.brightness_updating_value then
             widget._private.brightness_updating_value = false
             return
         else
             widget._private.mouse_updating_value = true
-            -- slider.value is changed to fit in the [10,100] interval
-            brightness.set_brightness(((slider.value / 100) * 90) + 10)
+            -- handle.value is changed to fit in the [10,100] interval
+            brightness.set_brightness(((handle.value / 100) * 90) + 10)
         end
     end)
 
@@ -76,10 +67,10 @@ function brightness_widget:new(width)
             return
         end
         widget._private.brightness_updating_value = true
-        slider.value = ((brightness.brightness - 10) / 90) * 100
+        handle.value = ((brightness.brightness - 10) / 90) * 100
     end)
 
-    slider:buttons(gears.table.join(
+    brightness_slider:buttons(gears.table.join(
         awful.button({}, 4, function()
             brightness.inc_brightness(5)
         end),
