@@ -17,7 +17,7 @@ awful.rules.rules = {
             buttons = bindings.clientbuttons,
             screen = awful.screen.preferred,
             placement = awful.placement.no_overlap + awful.placement.no_offscreen,
-            size_hints_honor = false -- fixe urxvt size but some apps may not like this (may cause flickering)
+            size_hints_honor = true
         }
     },
     -- Floating clients.
@@ -72,12 +72,21 @@ awful.rules.rules = {
             callback = function(c) awful.placement.centered(c) end
         }
     },
-    -- -- Vscode no titlebar (because it has a CSD). bug: its titlebar cannot be used to move window in awesomewm
-    -- -- and its maximize/minimize button only works for maximizing
-    -- {
-    --     rule = {class = "Code"},
-    --     properties = {titlebars_enabled = false}
-    -- },
+    -- Vscode bug: its titlebar cannot be used to move window in awesomewm
+    -- and its maximize/minimize button only works for maximizing so we force it to have one
+    {
+        rule = {class = "Code"},
+        properties = {
+            titlebars_enabled = true, -- does not work
+        }
+    },
+    -- URxvt size fix
+    {
+        rule = {class = "URxvt"},
+        properties = {
+            size_hints_honor = false
+        }
+    },
     -- Set Firefox to always map on the tag named "2" on screen 1.
     {
         rule = {class = "firefox"},

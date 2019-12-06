@@ -46,7 +46,7 @@ Xft.lcdfilter: lcddefault
 *.color7:       #ABB2BF
 *.color15:      #5C6370
 
-! Xcursor.theme: xcursor-breeze
+Xcursor.theme: Suru
 ! Xcursor.size:                     0
 
 URxvt.font:                       xft:DejaVu Sans Mono:size=10

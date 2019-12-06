@@ -26,12 +26,6 @@ capi.client.connect_signal("request::titlebars", function(c)
         end)
     )
 
-    local outline = wibox.widget {
-        color  = color.lighten_by(beautiful.titlebar_bg_normal, 0.15),
-        forced_height = beautiful.border_width,
-        widget = wibox.widget.separator
-    }
-
     local left_contents = {
         buttons = awful.button({ }, 1, function()
             clientmenu.launch(c, true)
@@ -62,50 +56,46 @@ capi.client.connect_signal("request::titlebars", function(c)
     -- fix? try using constraint layout with strategy property (check doc)
 
     awful.titlebar(c, {size = beautiful.titlebar_height}):setup {
-        outline,
         {
-            {
-                { -- hacky way of making Title truly centered
-                    { -- Left
-                        left_contents,
-                        left = beautiful.border_width,
-                        right = beautiful.border_width,
-                        widget = wibox.container.margin
-                    },
-                    {
-                        buttons = buttons,
-                        layout = wibox.layout.flex.horizontal
-                    },
-                    {
-                        buttons = buttons,
-                        layout = wibox.layout.flex.horizontal
-                    },
-                    layout = wibox.layout.align.horizontal
+            { -- hacky way of making Title truly centered
+                { -- Left
+                    left_contents,
+                    left = beautiful.border_width,
+                    right = beautiful.border_width,
+                    widget = wibox.container.margin
                 },
-                middle_contents, -- Middle
-                { -- hacky way of making Title truly centered
-                    {
-                        buttons = buttons,
-                        layout = wibox.layout.flex.horizontal
-                    },
-                    {
-                        buttons = buttons,
-                        layout = wibox.layout.flex.horizontal
-                    },
-                    { -- Right
-                        right_contents,
-                        left = beautiful.border_width,
-                        right = beautiful.border_width,
-                        widget = wibox.container.margin
-                    },
-                    layout = wibox.layout.align.horizontal
+                {
+                    buttons = buttons,
+                    layout = wibox.layout.flex.horizontal
                 },
-                -- expand = "outside", --- uncomment this for true center but it causes bug noted at line 59
+                {
+                    buttons = buttons,
+                    layout = wibox.layout.flex.horizontal
+                },
                 layout = wibox.layout.align.horizontal
             },
-            bottom = beautiful.border_width,
-            widget = wibox.container.margin
+            middle_contents, -- Middle
+            { -- hacky way of making Title truly centered
+                {
+                    buttons = buttons,
+                    layout = wibox.layout.flex.horizontal
+                },
+                {
+                    buttons = buttons,
+                    layout = wibox.layout.flex.horizontal
+                },
+                { -- Right
+                    right_contents,
+                    left = beautiful.border_width,
+                    right = beautiful.border_width,
+                    widget = wibox.container.margin
+                },
+                layout = wibox.layout.align.horizontal
+            },
+            -- expand = "outside", --- uncomment this for true center but it causes bug noted at line 59
+            layout = wibox.layout.align.horizontal
         },
-        layout = wibox.layout.fixed.vertical
+        bottom = beautiful.border_width,
+        widget = wibox.container.margin
     }
 end)

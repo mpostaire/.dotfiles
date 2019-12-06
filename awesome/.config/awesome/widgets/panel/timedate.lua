@@ -5,8 +5,6 @@ local weather = require("widgets.controls.weather")
 
 local icon = ""
 
--- // TODO weather app in calendar popup
-
 return function(format)
     local widget = base_panel_widget:new(icon, wibox.widget.textclock(format), calendar{left_widget = weather{location = "Wavre,Belgique"}})
 

@@ -5,8 +5,7 @@ local gstring = require("gears.string")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
 local variables = require("config.variables")
-
--- // TODO placeholders when widget is loading its data
+local network = require("util.network")
 
 local icons = {
     day = {
@@ -47,30 +46,36 @@ return function(args)
     local cmd = 'curl "'..short_locale..'.wttr.in/'..location..'?format=%c;%C;%h;%t;%w;%l;%m;%p;%P"'
 
     local icon_widget = wibox.widget {
-        font = helpers.change_font_size(beautiful.nerd_font, 30),
+        text = "",
+        font = helpers.change_font_size(beautiful.nerd_font, 26),
         widget = wibox.widget.textbox
     }
 
     local location_widget = wibox.widget {
+        text = "Pas de données météo...",
         widget = wibox.widget.textbox
     }
 
     local temperature_widget = wibox.widget {
+        text = "...°C",
         font = helpers.change_font_size(beautiful.font, 18),
         widget = wibox.widget.textbox
     }
 
     local humidity_widget = wibox.widget {
+        text = "...",
         align = "right",
         widget = wibox.widget.textbox
     }
 
     local precipitations_widget = wibox.widget {
+        text = "...",
         align = "right",
         widget = wibox.widget.textbox
     }
 
     local wind_widget = wibox.widget {
+        text = "...",
         align = "right",
         widget = wibox.widget.textbox
     }
@@ -117,8 +122,8 @@ return function(args)
         return "Err"
     end
 
-    -- every 2 hours
-    local _, timer = awful.widget.watch(cmd, 7200, function(_, stdout)
+    -- every hour
+    local _, timer = awful.widget.watch(cmd, 3600, function(_, stdout)
         data = gstring.split(stdout, ";")
         icon_widget.text = get_weather_icon()
         location_widget.markup = icons.location..gstring.split(data[6], ",")[1]
@@ -127,7 +132,11 @@ return function(args)
         wind_widget.text = data[5]
         precipitations_widget.text = data[8]
     end)
-    timer:emit_signal("timeout")
+
+    network.on_properties_changed(function()
+        -- // TODO when connection is back up from a state where it wasn't, update widget
+        -- timer:emit_signal("timeout")
+    end)
 
     weather_widget.type = "control_widget"
 

@@ -97,9 +97,6 @@ theme.column_count = 1
 -- theme.useless_gap   = dpi(10)
 theme.useless_gap   = dpi(0)
 theme.border_width  = dpi(2)
--- used when titlebars are showed
-theme.border_normal_alt = color.darken_by(theme.black_alt, 0.5)
-theme.border_focus_alt  = color.darken_by(theme.black, 0.25)
 --
 theme.border_normal = theme.black_alt
 theme.border_focus  = theme.red
@@ -118,11 +115,11 @@ theme.taglist_bg_urgent = theme.black
 -- }}}
 
 -- {{{ titlebar
-theme.titlebar_bg_normal = theme.black_alt
-theme.titlebar_bg_focus = theme.black
+theme.titlebar_bg_normal = theme.border_normal
+theme.titlebar_bg_focus = theme.border_focus
 
-theme.titlebar_fg_normal = theme.white
-theme.titlebar_fg_focus = theme.true_white
+theme.titlebar_fg_normal = theme.fg_normal
+theme.titlebar_fg_focus = theme.fg_focus
 -- }}}
 
 -- {{{ snap

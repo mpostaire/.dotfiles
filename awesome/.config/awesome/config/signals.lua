@@ -24,18 +24,10 @@ capi.client.connect_signal("mouse::enter", function(c)
 end)
 
 capi.client.connect_signal("focus", function(c)
-    if c.titlebar_showed then
-        c.border_color = beautiful.border_focus_alt
-    else
-        c.border_color = beautiful.border_focus
-    end
+    c.border_color = beautiful.border_focus
 end)
 capi.client.connect_signal("unfocus", function(c)
-    if c.titlebar_showed then
-        c.border_color = beautiful.border_normal_alt
-    else
-        c.border_color = beautiful.border_normal
-    end
+    c.border_color = beautiful.border_normal
 end)
 -- }}}
 
@@ -52,35 +44,15 @@ end)
 --       - save/restore position when switching floating/tile layouts --> I'm not sure if I want this yet
 
 local function show_titlebar(client)
-    awful.titlebar.show(client)
-    client.titlebar_showed = true
-
-    if client == capi.client.focus then
-        client.border_color = beautiful.border_focus_alt
-    else
-        client.border_color = beautiful.border_normal_alt
-    end
-
-    if client.maximized then
-        client.shape = gears.shape.rectangle
-    else
-        client.shape = function(cr, w, h)
-            gears.shape.partially_rounded_rect(cr, w, h, true, true, false, false, 6)
-        end
+    if not client.requests_no_titlebar then
+        awful.titlebar.show(client)
+        client.titlebar_showed = true
     end
 end
 
 local function hide_titlebar(client)
     awful.titlebar.hide(client)
     client.titlebar_showed = false
-
-    if client == capi.client.focus then
-        client.border_color = beautiful.border_focus
-    else
-        client.border_color = beautiful.border_normal
-    end
-
-    client.shape = gears.shape.rectangle
 end
 
 local function handle_tiled(client)
@@ -199,14 +171,6 @@ capi.client.connect_signal("property::floating", function(c)
 end)
 
 capi.client.connect_signal("property::maximized", function(c)
-    if c.maximized then
-        c.shape = gears.shape.rectangle
-    else
-        c.shape = function(cr, w, h)
-            gears.shape.partially_rounded_rect(cr, w, h, true, true, false, false, 6)
-        end
-    end
-
     if awful.layout.getname() ~= "floating" then
         if c.maximized then
             c.maximized = false
@@ -214,7 +178,6 @@ capi.client.connect_signal("property::maximized", function(c)
         if c.floating then
             c.floating = false
         end
-        c.shape = gears.shape.rectangle
     end
 end)
 
