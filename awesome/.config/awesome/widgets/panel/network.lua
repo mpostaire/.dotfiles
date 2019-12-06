@@ -9,6 +9,7 @@ local gears = require("gears")
 local variables = require("config.variables")
 local network = require("util.network")
 local base_widget_panel = require("widgets.panel.base")
+local network_control_widget = require("widgets.controls.network")
 local capi = {root = root}
 
 local icons = {
@@ -25,7 +26,7 @@ local icons = {
 }
 
 return function()
-    local widget = base_widget_panel:new()
+    local widget = base_widget_panel:new{control_widget = network_control_widget()}
 
     local function get_icon()
         if network.state == 'wifi' then
@@ -67,12 +68,6 @@ return function()
 
     -- we update once so the widget is not empty at creation
     widget:update(get_icon(), get_text())
-
-    widget:connect_signal("button::press", function(_, _, _, button)
-        if button == 1 then
-            rofi.network_menu()
-        end
-    end)
 
     local widget_keys = gears.table.join(
         awful.key({ variables.modkey }, "w", rofi.network_menu,

@@ -10,7 +10,7 @@ local cmd = awful.util.shell.. [[
 ]]
 
 return function(show_label)
-    local archupdates_widget = base_panel_widget:new(icon)
+    local archupdates_widget = base_panel_widget:new{icon = icon}
 
     -- if nothing specified, we show the label
     if show_label == nil then

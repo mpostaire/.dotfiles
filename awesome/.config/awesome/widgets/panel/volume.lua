@@ -16,7 +16,7 @@ local icons = {
 }
 
 return function(show_label)
-    local widget = base_panel_widget:new(_, _, volume_control_widget:new())
+    local widget = base_panel_widget:new{control_widget = volume_control_widget:new()}
 
     -- if nothing specified, we show the label
     if show_label == nil then

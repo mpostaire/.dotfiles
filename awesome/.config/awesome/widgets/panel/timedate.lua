@@ -6,7 +6,7 @@ local weather = require("widgets.controls.weather")
 local icon = ""
 
 return function(format)
-    local widget = base_panel_widget:new(icon, wibox.widget.textclock(format), calendar{left_widget = weather{location = "Wavre,Belgique"}})
+    local widget = base_panel_widget:new{icon = icon, label = wibox.widget.textclock(format), control_widget = calendar{left_widget = weather{location = "Wavre,Belgique"}}}
 
     -- widget:buttons(gears.table.join(
     --     awful.button({}, 1, calendar.toggle_calendar)

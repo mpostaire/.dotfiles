@@ -33,7 +33,11 @@ local function make_popup(control_widget)
     }
 end
 
-function base_panel_widget:new(icon, label, control_widget, style)
+function base_panel_widget:new(args)
+    if not args then args = {} end
+    local icon = args.icon
+    local label = args.label
+    local control_widget = args.control_widget
     local default_style = {
         padding = dpi(8),
         spacing = dpi(4),
@@ -42,10 +46,7 @@ function base_panel_widget:new(icon, label, control_widget, style)
         label_font = beautiful.font,
         icon_font = beautiful.icon_font
     }
-
-    if not style then
-        style = default_style
-    end
+    local style = args.style or default_style
 
     local icon_widget = wibox.widget {
         markup = icon,
