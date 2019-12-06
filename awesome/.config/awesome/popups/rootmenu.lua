@@ -15,7 +15,9 @@ local submenu = {
            tag:view_only()
         end
     end },
-    { "edit config", variables.gui_editor .. " " .. variables.home .. "/dotfiles" },
+    { "edit config", function()
+        awful.spawn.easy_async(variables.gui_editor .. " " .. variables.home .. "/dotfiles", function() end)
+    end },
     { "restart", capi.awesome.restart },
     { "quit", capi.awesome.quit },
 }
