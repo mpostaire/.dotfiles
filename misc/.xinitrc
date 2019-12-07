@@ -52,6 +52,7 @@ mpdconf=$HOME/.config/mpd/mpd.conf
 command -v mpd > /dev/null && [ -f $mpdconf ] && mpd $mpdconf
 redshiftconf=$HOME/.config/redshift.conf
 command -v redshift > /dev/null && [ -f $redshiftconf ] && redshift -c $redshiftconf &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # exec awesome >> ~/.cache/awesome/stdout 2>> ~/.cache/awesome/stderr
 exec awesome
