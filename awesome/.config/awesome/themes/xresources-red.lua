@@ -261,7 +261,7 @@ theme.font_height = beautiful.get_font_height(theme.font)
 theme.awesome_icon_wibar = theme_assets.awesome_icon(
     theme.wibar_height - theme.wibar_bottom_border_width, theme.true_white, theme.red
 )
-theme.titlebar_height = theme.wibar_height
+theme.titlebar_height = theme.wibar_height - theme.border_width
 
 theme.menu_item_margins = dpi(5)
 
