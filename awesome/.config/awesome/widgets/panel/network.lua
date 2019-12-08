@@ -1,6 +1,5 @@
 -- this is an incomplete basic network widget
--- ethernet support not tested, ethernet icon is a placeholder
--- TODO: current 'off' icon should be not connected icon and off should show no icon or another one
+-- ethernet support not tested
 
 local beautiful = require("beautiful")
 local rofi = require("util.rofi")

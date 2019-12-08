@@ -177,6 +177,7 @@ return function()
     end)
 
     widget.type = "control_widget"
+    widget.group = "system"
 
     return widget
 end

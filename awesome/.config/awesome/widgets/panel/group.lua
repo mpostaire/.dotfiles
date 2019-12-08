@@ -24,14 +24,36 @@ return function(children)
             v:set_mouse_effects(false)
             g:add(v)
             if v.control_widget then
-                g.control_widgets:add(v.control_widget)
-                control_children[#control_children + 1] = v.control_widget
+                local index = #control_children + 1
+                control_children[index] = v.control_widget
+                v.control_widget.index = index
+                if not v.control_widget.group then v.control_widget.group = "other" end
                 v.control_widget.parent = g
             end
         elseif v.type == "control_widget" then
-            control_children[#control_children + 1] = v.control_widget
-            g.control_widgets:add(v)
+            local index = #control_children + 1
+            control_children[index] = v
+            v.index = index
+            if not v.group then v.group = "other" end
         end
+    end
+
+    local separator = wibox.widget {
+        color = beautiful.black_alt,
+        span_ratio = 0.9,
+        orientation = "horizontal",
+        forced_width = 0, -- force separator to adapt its width to the popup width
+        forced_height = 25,
+        thickness = 1,
+        widget = wibox.widget.separator
+    }
+    local last_group
+    for _,v in ipairs(control_children) do
+        if last_group and last_group ~= v.group then
+            g.control_widgets:add(separator)
+        end
+        g.control_widgets:add(v)
+        last_group = v.group
     end
 
     g.control_popup = autoclose_popup {

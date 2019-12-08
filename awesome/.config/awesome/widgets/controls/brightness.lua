@@ -80,6 +80,7 @@ function brightness_widget:new(width)
     ))
 
     widget.type = "control_widget"
+    widget.group = "slider"
 
     return widget
 end

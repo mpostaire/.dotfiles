@@ -66,7 +66,7 @@ return function(args)
 
     local calendar_grid_widget = wibox.widget {
         homogeneous = true,
-        spacing = dpi(6),
+        spacing = dpi(12),
         forced_num_cols = 7,
         layout = wibox.layout.grid.vertical,
     }

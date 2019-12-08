@@ -10,7 +10,6 @@ return {
     volume = require("widgets.panel.volume"),
     brightness = require("widgets.panel.brightness"),
     network = require("widgets.panel.network"),
-    music = require("widgets.panel.music"),
     launcher = require("widgets.panel.launcher"),
     power = require("widgets.panel.power"),
     group = require("widgets.panel.group"),
