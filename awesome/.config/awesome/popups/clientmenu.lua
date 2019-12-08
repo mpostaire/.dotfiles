@@ -9,7 +9,7 @@ local target_client
 
 local funcs = {
     close = function() target_client:kill() end,
-    toggle_maximized = function() target_client.maximized = not target_client.maximized end,
+    toggle_maximized = function() target_client.maximized = not target_client.maximized target_client:raise() end,
     toggle_minimized = function() target_client.minimized = not target_client.minimized end,
     toggle_floating = function() target_client.floating = not target_client.floating end,
     toggle_ontop = function() target_client.ontop = not target_client.ontop end,

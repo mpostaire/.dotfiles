@@ -68,7 +68,6 @@ awful.rules.rules = {
             type = {"dialog"}
         },
         properties = {
-            titlebars_enabled = true,
             callback = function(c) awful.placement.centered(c) end
         }
     },

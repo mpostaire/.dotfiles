@@ -4,7 +4,7 @@ local capi = {client = client, awesome = awesome, tag = tag}
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
-capi.client.connect_signal("manage", function (c)
+capi.client.connect_signal("manage", function(c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
     if not capi.awesome.startup then awful.client.setslave(c) end
@@ -80,7 +80,7 @@ local function handle_floating(client)
         show_titlebar(client)
         client.border_width = beautiful.border_width
         -- resize client to its previous size minus titlebar size
-        if not client.floating and not client.fullscreen then
+        if not client.floating and not client.fullscreen and not client.requests_no_titlebar then
             client:relative_move(0, 0, 0, -beautiful.titlebar_height)
         end
     end
@@ -152,7 +152,7 @@ capi.client.connect_signal("property::floating", function(c)
         end
         -- resize client to its previous size minus titlebar size
         -- FIXME when awesome is restarded and a client is set floating this is applied and the client shrinks each time
-        if awful.layout.getname() ~= "floating" and not c.fullscreen then
+        if awful.layout.getname() ~= "floating" and not c.fullscreen and not c.requests_no_titlebar then
             c:relative_move(0, 0, 0, -beautiful.titlebar_height)
         end
     else
