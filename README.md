@@ -15,21 +15,17 @@ TODO
 ## TODO
 
 ### high priority
-- when keygrabber/mousegrabber active, lock fail
-
 - try a global background wibox for click outside events (have one wibox for all instances where we want click outside detection)
 
 - each reload, floating clients lose height equivalent to their title bar height
 
 - toggle show popup controls and keygrabber inside control_widgets except if it is in a group
 
-- find a way to make sliders in group menu have an adaptative length
-
 - make mediakeys, etc work when popups like music player, calendar, etc
 
 - notification when usb plugged/unplugged
 
-- handle proxy lost connection
+- handle dbus proxy lost connection
 
 - network menu
 

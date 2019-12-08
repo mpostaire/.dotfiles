@@ -8,9 +8,6 @@ local helpers = require("util.helpers")
 local autoclose_popup = require("util.autoclose_popup")
 local capi = {mouse = mouse}
 
-local base_panel_widget = {}
-base_panel_widget.__index = base_panel_widget
-
 local popup_spawn_button = 1
 
 local function make_popup(control_widget)
@@ -33,7 +30,7 @@ local function make_popup(control_widget)
     }
 end
 
-function base_panel_widget:new(args)
+return function(args)
     if not args then args = {} end
     local icon = args.icon
     local label = args.label
@@ -83,7 +80,6 @@ function base_panel_widget:new(args)
         },
         layout = wibox.layout.fixed.horizontal
     }
-    setmetatable(widget, base_panel_widget)
 
     widget.type = "panel_widget"
     widget._private.highlight = false
@@ -153,123 +149,121 @@ function base_panel_widget:new(args)
         end
     end
 
+    function widget:update(i, l)
+        self:update_icon(i)
+        self:update_label(l)
+    end
+
+    function widget:update_icon(i)
+        if self._private.highlight then
+            self.icon_widget:set_markup_silently('<span foreground="'..color.lighten_by(self._private.style.icon_color, 0.5)..'">'..i..'</span>')
+        else
+            self.icon_widget:set_markup_silently('<span foreground="'..self._private.style.icon_color..'">'..i..'</span>')
+        end
+    end
+
+    function widget:update_label(l)
+        if self._private.highlight then
+            if self._private.format then
+                self.text_widget.format = '<span foreground="'..color.lighten_by(self._private.style.label_color, 0.5)..'">'..l..'</span>'
+            else
+                self.text_widget:set_markup_silently('<span foreground="'..color.lighten_by(self._private.style.label_color, 0.5)..'">'..l..'</span>')
+            end
+        else
+            if self._private.format then
+                self.text_widget.format = l
+            else
+                self.text_widget:set_markup_silently('<span foreground="'..self._private.style.label_color..'">'..l..'</span>')
+            end
+        end
+    end
+
+    function widget:highlight(highlight)
+        self._private.highlight = highlight
+        if self.text_widget.visible then
+            if self._private.format then
+                self:update(self.icon_widget.text, self._private.format)
+            else
+                self:update(self.icon_widget.text, self.text_widget.text)
+            end
+        else
+            self:update_icon(self.icon_widget.text)
+        end
+    end
+
+    function widget:show_label(visible)
+        if visible then
+            self:get_children_by_id('icon_margin')[1].right = self._private.style.spacing
+        else
+            self:get_children_by_id('icon_margin')[1].right = 0
+        end
+        self.text_widget.visible = visible
+    end
+
+    function widget:show_icon(visible)
+        if visible then
+            self:get_children_by_id('text_margin')[1].right = self._private.style.padding
+            self:get_children_by_id('icon_margin')[1].left = self._private.style.padding
+        else
+            self:get_children_by_id('text_margin')[1].right = 0
+        end
+        self.icon_widget.visible = visible
+    end
+
+    function widget:show(visible)
+        local text_margin = self:get_children_by_id('text_margin')[1]
+        local icon_margin = self:get_children_by_id('icon_margin')[1]
+
+        if visible then
+            text_margin.right = self._private.style.padding
+            icon_margin.left = self._private.style.padding
+            icon_margin.right = self._private.style.spacing
+        else
+            text_margin.margins = 0
+            icon_margin.margins = 0
+        end
+        self:show_label(visible)
+        self:show_icon(visible)
+    end
+
+    function widget:set_popup_enabled(popup_enabled)
+        self._private.popup_enabled = popup_enabled
+
+        if popup_enabled and not self.control_popup then
+            self.control_popup = make_popup(self.control_widget)
+            self.control_popup.visible = false
+        elseif not popup_enabled and self.control_popup then
+            self.control_popup.visible = false
+        end
+    end
+
+    function widget:set_label_color(label_color)
+        self._private.style.label_color = label_color
+        if self._private.format then
+            self:update_label(self._private.format)
+        else
+            self:update_label(self.text_widget.text)
+        end
+    end
+
+    function widget:set_icon_color(icon_color)
+        self._private.style.icon_color = icon_color
+        self:update_icon(self.icon_widget.text)
+    end
+
+    function widget:set_mouse_effects(val)
+        if val then
+            self._private.old_cursor, self._private.old_wibox = nil, nil
+            self:connect_signal("mouse::enter", self._private.mouse_enter_effect)
+            self:connect_signal("mouse::leave", self._private.mouse_leave_effect)
+        else
+            self._private.old_cursor, self._private.old_wibox = nil, nil
+            self:disconnect_signal("mouse::enter", self._private.mouse_enter_effect)
+            self:disconnect_signal("mouse::leave", self._private.mouse_leave_effect)
+        end
+    end
+
     widget:set_mouse_effects(true)
 
     return widget
 end
-
-function base_panel_widget:update(icon, label)
-    self:update_icon(icon)
-    self:update_label(label)
-end
-
-function base_panel_widget:update_icon(icon)
-    if self._private.highlight then
-        self.icon_widget:set_markup_silently('<span foreground="'..color.lighten_by(self._private.style.icon_color, 0.5)..'">'..icon..'</span>')
-    else
-        self.icon_widget:set_markup_silently('<span foreground="'..self._private.style.icon_color..'">'..icon..'</span>')
-    end
-end
-
-function base_panel_widget:update_label(label)
-    if self._private.highlight then
-        if self._private.format then
-            self.text_widget.format = '<span foreground="'..color.lighten_by(self._private.style.label_color, 0.5)..'">'..label..'</span>'
-        else
-            self.text_widget:set_markup_silently('<span foreground="'..color.lighten_by(self._private.style.label_color, 0.5)..'">'..label..'</span>')
-        end
-    else
-        if self._private.format then
-            self.text_widget.format = label
-        else
-            self.text_widget:set_markup_silently('<span foreground="'..self._private.style.label_color..'">'..label..'</span>')
-        end
-    end
-end
-
-function base_panel_widget:highlight(highlight)
-    self._private.highlight = highlight
-    if self.text_widget.visible then
-        if self._private.format then
-            self:update(self.icon_widget.text, self._private.format)
-        else
-            self:update(self.icon_widget.text, self.text_widget.text)
-        end
-    else
-        self:update_icon(self.icon_widget.text)
-    end
-end
-
-function base_panel_widget:show_label(visible)
-    if visible then
-        self:get_children_by_id('icon_margin')[1].right = self._private.style.spacing
-    else
-        self:get_children_by_id('icon_margin')[1].right = 0
-    end
-    self.text_widget.visible = visible
-end
-
-function base_panel_widget:show_icon(visible)
-    if visible then
-        self:get_children_by_id('text_margin')[1].right = self._private.style.padding
-        self:get_children_by_id('icon_margin')[1].left = self._private.style.padding
-    else
-        self:get_children_by_id('text_margin')[1].right = 0
-    end
-    self.icon_widget.visible = visible
-end
-
-function base_panel_widget:show(visible)
-    local text_margin = self:get_children_by_id('text_margin')[1]
-    local icon_margin = self:get_children_by_id('icon_margin')[1]
-
-    if visible then
-        text_margin.right = self._private.style.padding
-        icon_margin.left = self._private.style.padding
-        icon_margin.right = self._private.style.spacing
-    else
-        text_margin.margins = 0
-        icon_margin.margins = 0
-    end
-    self:show_label(visible)
-    self:show_icon(visible)
-end
-
-function base_panel_widget:set_popup_enabled(popup_enabled)
-    self._private.popup_enabled = popup_enabled
-
-    if popup_enabled and not self.control_popup then
-        self.control_popup = make_popup(self.control_widget)
-        self.control_popup.visible = false
-    elseif not popup_enabled and self.control_popup then
-        self.control_popup.visible = false
-    end
-end
-
-function base_panel_widget:set_label_color(label_color)
-    self._private.style.label_color = label_color
-    if self._private.format then
-        self:update_label(self._private.format)
-    else
-        self:update_label(self.text_widget.text)
-    end
-end
-
-function base_panel_widget:set_icon_color(icon_color)
-    self._private.style.icon_color = icon_color
-    self:update_icon(self.icon_widget.text)
-end
-
-function base_panel_widget:set_mouse_effects(val)
-    if val then
-        self._private.old_cursor, self._private.old_wibox = nil, nil
-        self:connect_signal("mouse::enter", self._private.mouse_enter_effect)
-        self:connect_signal("mouse::leave", self._private.mouse_leave_effect)
-    else
-        self._private.old_cursor, self._private.old_wibox = nil, nil
-        self:disconnect_signal("mouse::enter", self._private.mouse_enter_effect)
-        self:disconnect_signal("mouse::leave", self._private.mouse_leave_effect)
-    end
-end
-
-return base_panel_widget

@@ -26,7 +26,7 @@ return function(format)
         layout = wibox.layout.fixed.vertical
     }
 
-    local widget = base_panel_widget:new {
+    local widget = base_panel_widget {
         icon = icon,
         label = wibox.widget.textclock(format),
         control_widget = calendar {

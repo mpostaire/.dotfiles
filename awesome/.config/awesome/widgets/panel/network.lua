@@ -25,7 +25,7 @@ local icons = {
 }
 
 return function()
-    local widget = base_widget_panel:new{control_widget = network_control_widget()}
+    local widget = base_widget_panel{control_widget = network_control_widget()}
 
     local function get_icon()
         if network.state == 'wifi' then

@@ -12,9 +12,6 @@ local slider = require("widgets.slider")
 --          in the property signal handler of the slider value afterwards. (idea : in alsa.on_properties_changed
 --          add a table argument of all changed properties to check if a mute change is the origin of the callback)
 
-local volume_widget = {}
-volume_widget.__index = volume_widget
-
 local icons = {
     low = "",
     medium = "",
@@ -36,7 +33,7 @@ local function get_icon()
     end
 end
 
-function volume_widget:new(width)
+return function(width)
     local slider_width = width or 150
     -- we convert brightness value from [10,100] to [0,100] interval
     local volume_value = ((alsa.volume - 10) / 90) * 100
@@ -47,7 +44,7 @@ function volume_widget:new(width)
         handle_color = beautiful.fg_normal,
         handle_shape = gears.shape.circle,
         handle_border_color = beautiful.fg_normal,
-        handle_width = 12,
+        handle_width = 14,
         value = volume_value,
         maximum = 100,
         forced_width = slider_width,
@@ -69,7 +66,6 @@ function volume_widget:new(width)
         nil,
         layout = wibox.layout.align.horizontal
     }
-    setmetatable(widget, volume_widget)
 
     widget._private.alsa_updating_value = false
     widget._private.mouse_updating_value = false
@@ -117,5 +113,3 @@ function volume_widget:new(width)
 
     return widget
 end
-
-return volume_widget

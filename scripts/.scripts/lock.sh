@@ -19,6 +19,9 @@ else
     background="-i $background"
 fi
 
+# send lock signal to awesome (awesome can then stop its active keygrabber/mousegrabber)
+awesome-client 'awesome.emit_signal("lock")'
+
 # kill rofi to prevent locking failure
 killall rofi
 

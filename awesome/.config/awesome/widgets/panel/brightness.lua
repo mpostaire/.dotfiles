@@ -8,7 +8,7 @@ local brightness_control_widget = require("widgets.controls.brightness")
 local icon = ""
 
 return function(show_label)
-    local widget = base_panel_widget:new{icon = icon, control_widget = brightness_control_widget:new()}
+    local widget = base_panel_widget{icon = icon, control_widget = brightness_control_widget()}
 
     -- if nothing specified, we show the label
     if show_label == nil then

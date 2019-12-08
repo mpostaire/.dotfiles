@@ -21,7 +21,7 @@ local icons = {
 }
 
 return function()
-    local widget = base_panel_widget:new()
+    local widget = base_panel_widget()
 
     local function get_icon()
         local icon

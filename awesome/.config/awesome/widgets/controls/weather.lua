@@ -119,7 +119,7 @@ return function(args)
 
     local function get_weather_icon()
         if data[1] and icons.day[data[1]] then return icons.day[data[1]] end
-        return "Err"
+        return ""
     end
 
     -- every hour
@@ -133,10 +133,10 @@ return function(args)
         precipitations_widget.text = data[8]
     end)
 
-    network.on_properties_changed(function()
-        -- // TODO when connection is back up from a state where it wasn't, update widget
-        -- timer:emit_signal("timeout")
-    end)
+    -- // TODO when connection is back up from a state where it wasn't, update widget
+    -- network.on_properties_changed(function()
+    --     -- timer:emit_signal("timeout")
+    -- end)
 
     weather_widget.type = "control_widget"
 

@@ -6,8 +6,6 @@ local alsa = require("util.alsa")
 local base_panel_widget = require("widgets.panel.base")
 local volume_control_widget = require("widgets.controls.volume")
 
--- BUG: when muted slider does not update volume -> not exactly that but check
-
 local icons = {
     low = "",
     medium = "",
@@ -16,7 +14,7 @@ local icons = {
 }
 
 return function(show_label)
-    local widget = base_panel_widget:new{control_widget = volume_control_widget:new()}
+    local widget = base_panel_widget{control_widget = volume_control_widget()}
 
     -- if nothing specified, we show the label
     if show_label == nil then

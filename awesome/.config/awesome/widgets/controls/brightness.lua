@@ -8,10 +8,7 @@ local slider = require("widgets.slider")
 
 local icon = ""
 
-local brightness_widget = {}
-brightness_widget.__index = brightness_widget
-
-function brightness_widget:new(width)
+return function(width)
     local slider_width = width or 150
     -- we convert brightness value from [10,100] to [0,100] interval
     local brightness_value = ((brightness.brightness - 10) / 90) * 100
@@ -22,7 +19,7 @@ function brightness_widget:new(width)
         handle_color = beautiful.fg_normal,
         handle_shape = gears.shape.circle,
         handle_border_color = beautiful.fg_normal,
-        handle_width = 12,
+        handle_width = 14,
         value = brightness_value,
         maximum = 100,
         forced_width = slider_width,
@@ -44,7 +41,6 @@ function brightness_widget:new(width)
         nil,
         layout = wibox.layout.align.horizontal
     }
-    setmetatable(widget, brightness_widget)
 
     widget._private.brightness_updating_value = false
     widget._private.mouse_updating_value = false
@@ -84,5 +80,3 @@ function brightness_widget:new(width)
 
     return widget
 end
-
-return brightness_widget

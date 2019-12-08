@@ -5,7 +5,7 @@ local wibox = require("wibox")
 local gears = require("gears")
 local desktopapps = require("util.desktopapps")
 local helpers = require("util.helpers")
-local capi = {mouse = mouse}
+local capi = {mouse = mouse, awesome = awesome}
 
 local applauncher = {}
 
@@ -27,9 +27,8 @@ local background = wibox {
     type = 'normal'
 }
 
-background:connect_signal("button::press", function()
-    prompt.stop()
-end)
+background:connect_signal("button::press", prompt.stop)
+capi.awesome.connect_signal("lock", prompt.stop)
 
 local prompt_textbox = wibox.widget.textbox()
 prompt_textbox.forced_height = beautiful.get_font_height(beautiful.font)

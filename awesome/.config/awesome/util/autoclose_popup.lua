@@ -7,7 +7,7 @@
 --       should be a better, smarter solution (and with less bugs and strange behaviours) but maybe slower ?
 
 local awful = require("awful")
-local capi = {mousegrabber = mousegrabber}
+local capi = {mousegrabber = mousegrabber, awesome = awesome}
 
 return function(args)
     local popup = awful.popup(args)
@@ -63,6 +63,10 @@ return function(args)
         if not capi.mousegrabber.isrunning() and popup.visible then
             capi.mousegrabber.run(grabber, "left_ptr")
         end
+    end)
+
+    capi.awesome.connect_signal("lock", function()
+        popup.visible = false
     end)
 
     return popup

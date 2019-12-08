@@ -880,7 +880,9 @@ end
 
 function prompt.stop()
     keygrabber.stop(grabber)
-    textbox:set_markup("")
+    if textbox then
+        textbox:set_markup("")
+    end
     history_save(history_path)
     if done_callback then done_callback() end
 end
