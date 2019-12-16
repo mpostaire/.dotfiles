@@ -147,6 +147,10 @@ theme.wibar_height = dpi(32)
 
 -- {{{ tasklist
 -- theme.tasklist_disable_icon = true
+theme.tasklist_fg_normal = theme.fg_normal
+theme.tasklist_bg_normal = theme.bg_normal
+theme.tasklist_fg_focus = theme.fg_focus
+theme.tasklist_bg_focus = theme.bg_focus
 theme.tasklist_fg_urgent = theme.yellow
 theme.tasklist_bg_urgent = theme.bg_normal
 theme.tasklist_font_urgent = "DejaVu Sans Mono Bold 10"
