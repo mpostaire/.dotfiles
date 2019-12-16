@@ -69,7 +69,7 @@ local tasklist_buttons = gears.table.join(
     awful.button({ }, 5, focus_prev_client)
 )
 
-local app_switcher = awful.popup {
+local appswitcher = awful.popup {
     widget = awful.widget.tasklist {
         screen = capi.mouse.screen,
         filter = awful.widget.tasklist.filter.currenttags,
@@ -132,13 +132,13 @@ awful.keygrabber {
     stop_event = 'release',
     start_callback = function()
         if current_tag_num_of_clients() > 0 then
-            app_switcher.visible = true
+            appswitcher.visible = true
             awful.client.focus.history.disable_tracking()
         end
     end,
     stop_callback = function()
-        if app_switcher.visible then
-            app_switcher.visible = false
+        if appswitcher.visible then
+            appswitcher.visible = false
             awful.client.focus.history.enable_tracking()
         end
     end,
@@ -148,4 +148,4 @@ awful.keygrabber {
     },
 }
 
-return app_switcher
+return appswitcher

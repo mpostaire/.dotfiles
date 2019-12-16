@@ -42,7 +42,7 @@ require("beautiful").init(require("themes.xresources-red"))
 require("config")
 
 -- app switcher (alt+tab)
-require("popups.app_switcher")
+require("popups.appswitcher")
 
 -- collision (TODO make my own simplified version)
 -- require("collision")()
