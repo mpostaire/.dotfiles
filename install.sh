@@ -1,13 +1,11 @@
 cd ~/dotfiles
 stow */
 
-touch ~/.config/mpd/pid ~/.config/mpd/state
-
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-yay -S networkmanager-dmenu-git #bibata-cursor-theme
 
-# see https://wiki.archlinux.org/index.php/acpid
-# systemctl start acpid.service
+systemctl enable --user redshift.service
+systemctl start --user redshift.service
 
-# systemctl --user enable redshift.service
-# systemctl --user enable mpd.service
+touch ~/.config/mpd/pid ~/.config/mpd/state
+systemctl enable --user mpd.service
+systemctl start --user mpd.service
