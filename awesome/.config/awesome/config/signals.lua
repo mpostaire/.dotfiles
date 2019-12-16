@@ -2,7 +2,6 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local capi = {client = client, awesome = awesome, tag = tag}
 
--- {{{ Signals
 -- Signal function to execute when a new client appears.
 capi.client.connect_signal("manage", function(c)
     -- Set the windows at the slave,
@@ -28,22 +27,17 @@ end)
 capi.client.connect_signal("unfocus", function(c)
     c.border_color = beautiful.border_normal
 end)
--- }}}
-
 
 -- {{{ No borders if tiled and is only one client, titlebar only in floating layout, rounded top titlebar corners,
 -- client do not remember if was maximized in floating layout when switching layout, no maximized state if tiled layout
--- /!\ A client in a tag's floating layout is not floating. Floating is a special mode that ignores the tag's layout.
+-- /!\ A client in a tag's floating layout is not always floating. Floating is a special mode that ignores the tag's layout.
 --     In following comments floating and tiled client really mean its layout not the special mode.
 -- Big ugly piece of code but I think I got every corner case covered. It could be simpler but more performance consuming.
--- /!\ With the following code, all clients have titlebars while floating and no titlebars otherwise regardeless
--- of any rules
--- TODO: make a table of managed clients using client.window as keys storing properties useful for:
---       - save/restore maximized state when switching floating/tile layouts
---       - save/restore position when switching floating/tile layouts --> I'm not sure if I want this yet
+-- /!\ With the following code, clients have titlebars while floating and no titlebars otherwise depending
+-- of client.requests_no_titlebar or client.show_titlebars
 
 local function show_titlebar(client)
-    if not client.requests_no_titlebar then
+    if not client.requests_no_titlebar or client.show_titlebars then
         awful.titlebar.show(client)
         client.titlebar_showed = true
     end

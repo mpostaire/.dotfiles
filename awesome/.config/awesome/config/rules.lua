@@ -60,7 +60,9 @@ awful.rules.rules = {
         rule_any = {
             type = {"normal", "dialog"}
         },
-        properties = {titlebars_enabled = true}
+        properties = {
+            show_titlebars = true
+        }
     },
     -- Dialog clients centered on screen
     {
@@ -76,7 +78,7 @@ awful.rules.rules = {
     {
         rule = {class = "Code"},
         properties = {
-            titlebars_enabled = true, -- does not work
+            show_titlebars = true,
         }
     },
     -- URxvt size fix
