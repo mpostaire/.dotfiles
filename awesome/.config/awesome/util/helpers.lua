@@ -2,6 +2,16 @@ local capi = {mouse = mouse}
 
 local helpers = {}
 
+function helpers.truncate_number(number, decimals)
+    local power = 10^decimals
+    return math.floor(number * power) / power
+end
+
+function helpers.round_number(number, decimals)
+    local power = 10^decimals
+    return math.floor((number * power) + 0.5) / power
+end
+
 -- get a widget geometry under pointer
 function helpers.get_widget_geometry(widget)
     local w, g = capi.mouse.current_widgets, capi.mouse.current_widget_geometries

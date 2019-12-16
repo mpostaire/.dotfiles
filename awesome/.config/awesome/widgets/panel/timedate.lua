@@ -16,9 +16,7 @@ return function(format)
     }
 
     local left_widget = wibox.widget {
-        weather {
-            location = "Wavre,Belgique"
-        },
+        weather(),
         notifcenter(),
         spacing = 35,
         spacing_widget = separator,

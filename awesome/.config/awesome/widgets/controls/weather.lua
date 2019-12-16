@@ -5,7 +5,9 @@ local gstring = require("gears.string")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
 local variables = require("config.variables")
+local solar = require("util.solar")
 local network = require("util.network")
+local geoclue = require("util.geoclue")
 
 local icons = {
     day = {
@@ -21,7 +23,6 @@ local icons = {
         ["🌩"] = "",
         ["✨"] = ""
     },
-    -- // TODO night icons unused for now (not an easy way to do this without json)
     night = {
         ["☀️"] = "",
         ["☁️"] = "",
@@ -38,13 +39,7 @@ local icons = {
     location = '<span foreground="'..beautiful.red_alt..'"> </span>'
 }
 
-return function(args)
-    if not args then args = {} end
-    local location = args.location or "Paris,France"
-
-    local short_locale = string.sub(variables.locale, 1, 2)
-    local cmd = 'curl "'..short_locale..'.wttr.in/'..location..'?format=%c;%C;%h;%t;%w;%l;%m;%p;%P"'
-
+return function()
     local icon_widget = wibox.widget {
         text = "",
         font = helpers.change_font_size(beautiful.nerd_font, 26),
@@ -52,7 +47,7 @@ return function(args)
     }
 
     local location_widget = wibox.widget {
-        text = "Pas de données météo...",
+        text = "Pas de données météo",
         widget = wibox.widget.textbox
     }
 
@@ -117,25 +112,54 @@ return function(args)
 
     local data = {}
 
-    local function get_weather_icon()
-        if data[1] and icons.day[data[1]] then return icons.day[data[1]] end
+    local function get_weather_icon(lat, long)
+        local sunrise = os.time(solar.sun_time{lat = lat, long = long, sunrise = true})
+        local sunset = os.time(solar.sun_time{lat = lat, long = long, sunrise = false})
+        local current_time = os.time()
+        local day_night_state
+        if current_time >= sunset then
+            day_night_state = "night"
+        elseif current_time >= sunrise then
+            day_night_state = "day"
+        else
+            day_night_state = "night"
+        end
+        if data[1] and icons[day_night_state][data[1]] then return icons[day_night_state][data[1]] end
         return ""
     end
 
     -- every hour
-    local _, timer = awful.widget.watch(cmd, 3600, function(_, stdout)
-        data = gstring.split(stdout, ";")
-        icon_widget.text = get_weather_icon()
-        location_widget.markup = icons.location..gstring.split(data[6], ",")[1]
-        humidity_widget.text = data[3]
-        temperature_widget.text = data[4]
-        wind_widget.text = data[5]
-        precipitations_widget.text = data[8]
+    local ret, timer
+    geoclue.on_location_found(function()
+        local latitude = string.gsub(tostring(helpers.truncate_number(geoclue.latitude, 2)), ",", ".")
+        local longitude = string.gsub(tostring(helpers.truncate_number(geoclue.longitude, 2)), ",", ".")
+        local location_query = latitude..","..longitude
+        local short_locale = string.sub(variables.locale, 1, 2)
+        local cmd = 'curl "'..short_locale..'.wttr.in/'..location_query..'?format=%c;%C;%h;%t;%w;%l;%m;%p;%P"'
+
+        if timer then
+            timer:stop()
+        end
+        ret, timer = awful.widget.watch(cmd, 3600, function(_, stdout)
+            if not stdout then return end
+            data = gstring.split(stdout, ";")
+            if not data[6] then return end
+            local location_data = gstring.split(data[6], ",")
+            local lat, long = tonumber(location_data[1]), tonumber(location_data[2])
+            local location_str = geoclue.coords_to_string(lat, long)
+            icon_widget.text = get_weather_icon(lat, long)
+            location_widget.markup = icons.location..location_str
+            humidity_widget.text = data[3]
+            temperature_widget.text = data[4]
+            wind_widget.text = data[5]
+            precipitations_widget.text = data[8]
+        end)
     end)
 
-    -- // TODO when connection is back up from a state where it wasn't, update widget
+    -- // TODO when connection is back up from a state where it was down, update widget
+    -- it can also update widget after a suspend because a suspend change network state
     -- network.on_properties_changed(function()
-    --     -- timer:emit_signal("timeout")
+    --     timer:emit_signal("timeout")
     -- end)
 
     weather_widget.type = "control_widget"
