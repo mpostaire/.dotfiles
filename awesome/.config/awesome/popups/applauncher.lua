@@ -138,9 +138,19 @@ local function build_popup(args)
         widget:buttons(gears.table.join(
             awful.button({}, 1, function()
                 if not items_container.children[i].position_index then return end
-                select_widget(i)
+                if selected_widget ~= i then select_widget(i) return end
+                local name, cmd = popup.get_selected_item()
+                if name and cmd then
+                    awful.spawn.easy_async_with_shell(cmd, function() end)
+                    desktopapps.inc_frequency(name)
+                    prompt.stop()
+                    popup.hide()
+                end
             end)
         ))
+        widget:connect_signal("mouse::enter", function()
+            select_widget(i)
+        end)
         items_container:add(widget)
     end
 
@@ -262,12 +272,12 @@ local function build_popup(args)
                             awful.button({}, 4, function()
                                 if scrollbar.value == 0 then return end
                                 scrollbar.value = scrollbar.value - 1
-                                scrollbar:emit_signal("widget::redraw_needed")
+                                -- scrollbar:emit_signal("widget::redraw_needed")
                             end),
                             awful.button({}, 5, function()
                                 if scrollbar.value == scrollbar.maximum then return end
                                 scrollbar.value = scrollbar.value + 1
-                                scrollbar:emit_signal("widget::redraw_needed")
+                                -- scrollbar:emit_signal("widget::redraw_needed")
                             end)
                         ),
                         -- forced_height = layout_height,
