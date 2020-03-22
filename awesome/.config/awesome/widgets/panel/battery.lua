@@ -1,6 +1,8 @@
 local beautiful = require("beautiful")
+local naughty = require("naughty")
 local base_panel_widget = require("widgets.panel.base")
 local battery = require("util.battery")
+local helpers = require("util.helpers")
 
 local icons = {
     charging = {
@@ -59,80 +61,49 @@ return function()
     -- we update once so the widget is not empty at creation
     widget:update(get_icon(), get_text())
 
-    battery.on_properties_changed(function()
+    local low_battery_notification_sent = false
+    local critical_battery_notification_sent = false
+    battery.on_properties_changed(function(changed)
         widget:update(get_icon(), get_text())
+
+        for k,_ in pairs(changed) do
+            if k == "State" then
+                if battery.state == "discharging" then
+                    naughty.notify {
+                        title = "Batterie en décharge",
+                        text = helpers.s_to_hms(battery.time_to_empty).." restantes avant décharge complète"
+                    }
+                elseif battery.state == "charging" then
+                    naughty.notify {
+                        title = "Batterie en charge",
+                        text = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
+                    }
+                elseif battery.state == "full" then
+                    naughty.notify {
+                        title = "Batterie chargée",
+                        text = "Vous pouvez débrancher l'alimentation"
+                    }
+                end
+            elseif k == "Percentage" then
+                if battery.percentage < 10 and not critical_battery_notification_sent then
+                    naughty.notify {
+                        title = "Batterie critique",
+                        text = "Branchez l'alimentation",
+                    }
+                    critical_battery_notification_sent = true
+                elseif battery.percentage < 20 and not low_battery_notification_sent then
+                    naughty.notify {
+                        title = "Batterie basse",
+                        text = "Branchez l'alimentation",
+                    }
+                    low_battery_notification_sent = true
+                else
+                    critical_battery_notification_sent = false
+                    low_battery_notification_sent = false
+                end
+            end
+        end
     end)
 
     return widget
 end
-
--- MOVE notification code elsewhere
-
--- local notification = popup_notification:new()
--- notification.popup.widget:get_children_by_id("icon")[1].font = "DejaVuSansMono Nerd Font 16"
-
--- battery_widget:buttons(gears.table.join(
---     awful.button({}, 1, function() notification:toggle() end)
--- ))
-
--- local function get_title()
---     if battery.state == states.full then
---         return "<b>Batterie chargée</b>"
---     else
---         if battery.state == states.charging then
---             return "<b>Batterie en charge</b>"
---         elseif battery.state == states.discharging then
---             return "<b>Batterie en décharge</b>"
---         end
---     end
--- end
-
--- local function get_message()
---     if battery.state == states.full then
---         return "Vous pouvez débrancher du secteur"
---     else
---         local time
---         if battery.state == states.charging then
---             time = battery.TimeToFull
---         elseif battery.state == states.discharging then
---             time = battery.TimeToEmpty
---         end
-
---         local hours = math.floor(time / 3600)
---         local minutes = math.floor((time % 3600) / 60)
---         hours = tonumber(hours)
---         minutes = tonumber(minutes)
-
---         local message = ""
---         if hours == 0 then
---             if minutes == 1 then
---                 message = minutes.. " minute"
---             else
---                 message = minutes.. " minutes"
---             end
---         else
---             if hours == 1 then
---                 message = hours.. " heure"
---             else
---                 message = hours.. " heures"
---             end
-
---             if minutes == 1 then
---                 message = message.. " et " ..minutes.. " minute"
---             elseif minutes ~= 0 then
---                 message = message.. " et " ..minutes.. " minutes"
---             end
---         end
-
---         if battery.state == states.charging then
---             message = message.. " avant charge complète"
---         elseif battery.state == states.discharging then
---             if (hours == 1 and minutes == 0) or (hours == 0 and minutes == 1) then
---                 message = message.. " restante"
---             else
---                 message = message.. " restantes"
---             end
---         end
---         return message
---     end
--- end

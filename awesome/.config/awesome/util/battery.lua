@@ -3,7 +3,7 @@ local dbus = require("dbus_proxy")
 
 local battery = {}
 
--- TODO: handle cases where battery state is not "charging", "discharging" or "full"
+-- // TODO: handle cases where battery state is not "charging", "discharging" or "full"
 local states = {
     [0] = "unknown",
     "charging",
@@ -67,7 +67,7 @@ proxy:on_properties_changed(function (p, changed, invalidated)
 
     if call_callback then
         for _,v in pairs(on_properties_changed_callbacks) do
-            v()
+            v(changed)
         end
     end
 end)

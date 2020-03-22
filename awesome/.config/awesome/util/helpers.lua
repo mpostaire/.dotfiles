@@ -2,6 +2,17 @@ local capi = {mouse = mouse}
 
 local helpers = {}
 
+function helpers.s_to_hms(seconds)
+    if seconds <= 0 then
+        return "00:00:00";
+    else
+        hours = string.format("%02.f", math.floor(seconds / 3600));
+        mins = string.format("%02.f", math.floor(seconds / 60 - (hours * 60)));
+        secs = string.format("%02.f", math.floor(seconds - hours * 3600 - mins * 60));
+        return hours..":"..mins..":"..secs
+    end
+end
+
 function helpers.truncate_number(number, decimals)
     local power = 10^decimals
     return math.floor(number * power) / power
