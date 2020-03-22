@@ -28,6 +28,13 @@ capi.client.connect_signal("unfocus", function(c)
     c.border_color = beautiful.border_normal
 end)
 
+-- Focus urgent clients automatically
+client.connect_signal("property::urgent", function(c)
+    c.minimized = false
+    c:raise()
+    c:jump_to()
+end)
+
 -- {{{ No borders if tiled and is only one client, titlebar only in floating layout, rounded top titlebar corners,
 -- client do not remember if was maximized in floating layout when switching layout, no maximized state if tiled layout
 -- /!\ A client in a tag's floating layout is not always floating. Floating is a special mode that ignores the tag's layout.
