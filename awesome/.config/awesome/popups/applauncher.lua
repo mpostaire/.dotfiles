@@ -187,7 +187,7 @@ local function build_popup(args)
 
         item_count = 0
         local count = 1
-        desktopapps.search(query, function(_, match, entry)
+        filtered_items = desktopapps.search(query, function(_, match, entry)
             if match then
                 item_count = item_count + 1
                 if count <= max_showed_item_count then
