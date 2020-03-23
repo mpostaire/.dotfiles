@@ -1,4 +1,4 @@
--- this should look like the kde plasma 5 container for widget at the end
+-- // FIXME better separators in control widget group
 local wibox = require("wibox")
 local gears = require("gears")
 local awful = require("awful")
@@ -18,7 +18,9 @@ return function(children)
     local panel_children, control_children = {}, {}
 
     for _,v in pairs(children) do
-        if v.type == "panel_widget" then
+        if v == "separator" then
+            control_children[#control_children + 1] = "separator"
+        elseif v.type == "panel_widget" then
             panel_children[#panel_children + 1] = v
             v:set_popup_enabled(false)
             v:set_mouse_effects(false)
@@ -27,14 +29,12 @@ return function(children)
                 local index = #control_children + 1
                 control_children[index] = v.control_widget
                 v.control_widget.index = index
-                if not v.control_widget.group then v.control_widget.group = "other" end
                 v.control_widget.parent = g
             end
         elseif v.type == "control_widget" then
             local index = #control_children + 1
             control_children[index] = v
             v.index = index
-            if not v.group then v.group = "other" end
         end
     end
 
@@ -47,13 +47,35 @@ return function(children)
         thickness = 1,
         widget = wibox.widget.separator
     }
-    local last_group
-    for _,v in ipairs(control_children) do
-        if last_group and last_group ~= v.group then
-            g.control_widgets:add(separator)
+
+    local function has_widget_above(index)
+        local ret = {}
+        for i=index-1,1,-1 do
+            if control_children[i] == "separator" then return false end
+            if control_children[i].visible then return true end
         end
-        g.control_widgets:add(v)
-        last_group = v.group
+        return false
+    end
+
+    local function has_widget_below(index)
+        local ret = {}
+        for i=index+1,#control_children do
+            if control_children[i] == "separator" then return false end
+            if control_children[i].visible then return true end
+        end
+        return false
+    end
+
+    for i=1,#control_children do
+        if control_children[i] == "separator" then
+            if has_widget_above(i) and has_widget_below(i) then
+                g.control_widgets:add(separator)
+            else
+                control_children[i] = "hidden_separator"
+            end
+        else
+            g.control_widgets:add(control_children[i])
+        end
     end
 
     g.control_popup = autoclose_popup {

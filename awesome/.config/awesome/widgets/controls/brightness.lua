@@ -78,7 +78,6 @@ return function(width)
     ))
 
     widget.type = "control_widget"
-    widget.group = "slider"
 
     return widget
 end

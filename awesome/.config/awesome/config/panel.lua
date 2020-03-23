@@ -28,7 +28,9 @@ awful.screen.connect_for_each_screen(function(s)
                 widgets.group({
                     widgets.brightness(false),
                     widgets.volume(false),
+                    "separator",
                     widgets.player(),
+                    "separator",
                     widgets.battery(),
                     widgets.power()
                 }),
