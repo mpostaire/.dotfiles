@@ -5,6 +5,8 @@ local gears = require("gears")
 local alsa = require("util.alsa")
 local helpers = require("util.helpers")
 
+if not alsa.enabled then return end
+
 local volume_popup = {}
 
 local icons = {

@@ -14,6 +14,8 @@ local icons = {
 }
 
 return function(show_label)
+    if not alsa.enabled then return nil end
+    
     local widget = base_panel_widget{control_widget = volume_control_widget()}
 
     -- if nothing specified, we show the label

@@ -34,6 +34,8 @@ local function get_icon()
 end
 
 return function(width)
+    if not alsa.enabled then return nil end
+    
     local slider_width = width or 150
     -- we convert brightness value from [10,100] to [0,100] interval
     local volume_value = ((alsa.volume - 10) / 90) * 100

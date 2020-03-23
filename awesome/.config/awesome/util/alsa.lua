@@ -5,14 +5,24 @@ local capi = {root = root}
 
 local alsa = {}
 
-local proxy = dbus.Proxy:new(
-    {
-        bus = dbus.Bus.SESSION,
-        name = "fr.mpostaire.awdctl",
-        interface = "fr.mpostaire.awdctl.Volume",
-        path = "/fr/mpostaire/awdctl/Volume"
-    }
-)
+local proxy
+local function init_proxy()
+    proxy = dbus.Proxy:new(
+        {
+            bus = dbus.Bus.SESSION,
+            name = "fr.mpostaire.awdctl",
+            interface = "fr.mpostaire.awdctl.Volume",
+            path = "/fr/mpostaire/awdctl/Volume"
+        }
+    )
+end
+
+if pcall(init_proxy) then
+    alsa.enabled = true
+else
+    alsa.enabled = false
+    return alsa
+end
 
 local on_properties_changed_callbacks = {}
 
