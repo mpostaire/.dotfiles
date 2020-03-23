@@ -72,6 +72,8 @@ theme.white_alt = xresources_theme["color15"]
 
 theme.true_white = "#FFFFFF"
 
+theme.accent = theme.blue
+
 theme.font          = "DejaVu Sans Mono 10"
 theme.nerd_font     = "DejaVuSansMono Nerd Font 10"
 theme.icon_font     = "Suru-Icons 12"
@@ -99,11 +101,11 @@ theme.useless_gap   = dpi(0)
 theme.border_width  = dpi(2)
 --
 theme.border_normal = theme.black_alt
-theme.border_focus  = theme.red
+theme.border_focus  = theme.accent
 theme.border_marked = "#91231c"
 
 -- {{{ taglist
-theme.taglist_fg_focus = theme.red
+theme.taglist_fg_focus = theme.accent
 theme.taglist_fg_occupied = theme.white
 theme.taglist_fg_empty = theme.white_alt
 theme.taglist_fg_urgent = theme.yellow
@@ -255,6 +257,8 @@ theme.awesome_icon = theme_assets.awesome_icon(
 )
 
 -- {{{ User defined variables (use search to figure out what they do)
+-- // TODO remove these and define them in their corresponding files
+--         make them redefinable here as config but as of now they are what defines default behaviour
 theme.border_width_single_client = dpi(0)
 theme.wibar_widgets_padding = dpi(8)
 theme.wibar_border_color = theme.black_alt
@@ -263,23 +267,15 @@ theme.wibar_bottom_border_width = theme.border_width
 theme.notification_offset = dpi(4)
 theme.font_height = beautiful.get_font_height(theme.font)
 theme.awesome_icon_wibar = theme_assets.awesome_icon(
-    theme.wibar_height - theme.wibar_bottom_border_width, theme.true_white, theme.red
+    theme.wibar_height - theme.wibar_bottom_border_width, theme.true_white, theme.accent
 )
 theme.titlebar_height = theme.wibar_height - theme.border_width
 
 theme.menu_item_margins = dpi(5)
-
-theme.fg_normal_hover = color.lighten_by(theme.fg_normal, 0.5)
-theme.white_alt_hover = color.lighten_by(theme.white_alt, 0.25)
-theme.red_hover = color.lighten_by(theme.red, 0.25)
-theme.yellow_hover = color.lighten_by(theme.yellow, 0.25)
 -- }}}
 
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
--- // TODO make this find icon theme automatically
-theme.icon_theme = "Papirus Red"
+theme.icon_theme = "Adwaita"
 
 return theme
-
--- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

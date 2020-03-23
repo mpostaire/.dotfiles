@@ -36,7 +36,7 @@ require("awful.autofocus")
 
 -- Themes define colours, icons, font and wallpapers.
 -- do not place this line below
-require("beautiful").init(require("themes.xresources-red"))
+require("beautiful").init(require("themes.xresources"))
 
 -- configuration
 require("config")

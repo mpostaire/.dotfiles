@@ -12,6 +12,8 @@ local icons = {
     next = ""
 }
 
+local fg_normal_hover = color.lighten_by(beautiful.fg_normal, 0.5)
+
 local function get_day_names()
     local day_names = {}
     for i = 6, 12 do
@@ -184,7 +186,7 @@ return function(args)
 
     local old_cursor, old_wibox
     next_widget:connect_signal("mouse::enter", function()
-        next_widget:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icons.next..'</span>')
+        next_widget:set_markup_silently('<span foreground="'..fg_normal_hover..'">'..icons.next..'</span>')
 
         local w = capi.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w
@@ -199,7 +201,7 @@ return function(args)
         end
     end)
     prev_widget:connect_signal("mouse::enter", function()
-        prev_widget:set_markup_silently('<span foreground="'..beautiful.fg_normal_hover..'">'..icons.prev..'</span>')
+        prev_widget:set_markup_silently('<span foreground="'..fg_normal_hover..'">'..icons.prev..'</span>')
 
         local w = capi.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w

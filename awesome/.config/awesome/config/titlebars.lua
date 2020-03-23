@@ -27,10 +27,10 @@ local buttons_colors = {
     bg_pressed = color.lighten_by(beautiful.titlebar_bg_focus, 0.35)
 }
 local close_colors = {
-    bg = beautiful.titlebar_bg_normal,
-    bg_focus = beautiful.titlebar_bg_focus,
-    bg_hover = color.darken_by(beautiful.titlebar_bg_focus, 0.25),
-    bg_pressed = color.darken_by(beautiful.titlebar_bg_focus, 0.35)
+    bg = color.lighten_by(beautiful.titlebar_bg_normal, 0.15),
+    bg_focus = color.darken_by(beautiful.red, 0.25),
+    bg_hover = color.darken_by(beautiful.red, 0.15),
+    bg_pressed = color.darken_by(beautiful.red, 0.35)
 }
 
 -- Generates a client button created by a font glyph
@@ -52,7 +52,7 @@ local gen_text_button = function (c, symbol, cmd, colors)
             left = 10,
             widget = wibox.container.margin
         },
-        -- bg = beautiful.green,
+        bg = capi.client.focus == c and colors.bg_focus or colors.bg,
         widget = wibox.widget.background
     }
 

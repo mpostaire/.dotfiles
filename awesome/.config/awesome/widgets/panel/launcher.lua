@@ -16,7 +16,7 @@ return function()
                 margins = 6,
                 widget = wibox.container.margin
             },
-            bg = beautiful.red,
+            bg = beautiful.accent,
             widget = wibox.container.background
         },
         right = beautiful.wibar_widgets_padding,

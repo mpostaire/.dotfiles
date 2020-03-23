@@ -42,14 +42,6 @@ return function(args)
         opacity = opacity,
         value = value,
 
-
-        -- background_color = beautiful.green,
-        -- color = beautiful.red,
-        -- forced_height = 4,
-        -- forced_width = slider_width,
-        -- value = volume_value,
-        -- max_value = 100,
-        -- bar_border_width = 9,
         widget = wibox.widget.progressbar
     }
 
@@ -98,22 +90,3 @@ return function(args)
 
     return layout
 end
--- border_color
--- border_width
--- bar_border_color
--- bar_border_width
--- color
--- background_color
--- bar_shape
--- shape
--- clip
--- ticks
--- ticks_gap
--- ticks_size
--- max_value
--- margins
--- paddings
--- forced_height
--- forced_width
--- opacity
--- visible
