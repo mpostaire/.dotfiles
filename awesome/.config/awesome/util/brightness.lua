@@ -5,16 +5,24 @@ local capi = {root = root}
 
 local brightness = {}
 
--- USE pcall() to catch error if dbus interface not found
+local proxy
+local function init_proxy()
+    proxy = dbus.Proxy:new(
+        {
+            bus = dbus.Bus.SESSION,
+            name = "fr.mpostaire.awdctl",
+            interface = "fr.mpostaire.awdctl.Brightness",
+            path = "/fr/mpostaire/awdctl/Brightness"
+        }
+    )
+end
 
-local proxy = dbus.Proxy:new(
-    {
-        bus = dbus.Bus.SESSION,
-        name = "fr.mpostaire.awdctl",
-        interface = "fr.mpostaire.awdctl.Brightness",
-        path = "/fr/mpostaire/awdctl/Brightness"
-    }
-)
+if pcall(init_proxy) then
+    brightness.enabled = true
+else
+    brightness.enabled = false
+    return brightness
+end
 
 local on_properties_changed_callbacks = {}
 

@@ -9,6 +9,8 @@ local slider = require("widgets.slider")
 local icon = ""
 
 return function(width)
+    if not brightness.enabled then return nil end
+    
     local slider_width = width or 150
     -- we convert brightness value from [10,100] to [0,100] interval
     local brightness_value = ((brightness.brightness - 10) / 90) * 100

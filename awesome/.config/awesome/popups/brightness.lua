@@ -5,6 +5,8 @@ local gears = require("gears")
 local brightness = require("util.brightness")
 local helpers = require("util.helpers")
 
+if not brightness.enabled then return end
+
 local brightness_popup = {}
 
 local icon = ""
