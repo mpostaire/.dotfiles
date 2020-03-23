@@ -62,3 +62,6 @@ i3lock -mn -e $background             \
 --date-font="DejaVu Sans Mono"        \
 --verif-font="DejaVu Sans Mono"       \
 --wrong-font="DejaVu Sans Mono"
+
+# send unlock signal to awesome (awesome can resume whatever it was doing)
+awesome-client 'awesome.emit_signal("unlock")'

@@ -4,6 +4,7 @@ local base_panel_widget = require("widgets.panel.base")
 local calendar = require("widgets.controls.calendar")
 local weather = require("widgets.controls.weather")
 local notifcenter = require("widgets.controls.notifcenter")
+local capi = {awesome = awesome}
 
 local icon = ""
 
@@ -24,13 +25,17 @@ return function(format)
         layout = wibox.layout.fixed.vertical
     }
 
+    local textclock = wibox.widget.textclock(format)
+    
     local widget = base_panel_widget {
         icon = icon,
-        label = wibox.widget.textclock(format),
+        label = textclock,
         control_widget = calendar {
             left_widget = left_widget
         }
     }
+
+    capi.awesome.connect_signal("unlock", function() textclock:force_update() end)
 
     -- widget:buttons(gears.table.join(
     --     awful.button({}, 1, calendar.toggle_calendar)
