@@ -4,7 +4,7 @@ local spawn = require("awful.spawn")
 local cmds = {
     "awdctl -d", -- maybe put this in xinitrc instead
     "mpdbus -d", -- maybe put this in xinitrc instead
-    "compton -b", -- maybe put this in xinitrc instead
+    "picom -b", -- maybe put this in xinitrc instead
 }
 
 local function autostart(cmd)
