@@ -16,14 +16,25 @@ return function(format)
         widget = wibox.widget.separator
     }
 
-    local left_widget = wibox.widget {
-        weather(),
-        notifcenter(),
-        spacing = 35,
-        spacing_widget = separator,
-        fill_space = true,
-        layout = wibox.layout.fixed.vertical
-    }
+    local weather_widget = weather()
+    
+    local left_widget
+    if weather_widget.visible == false then
+        left_widget = wibox.widget {
+            notifcenter(),
+            fill_space = true,
+            layout = wibox.layout.fixed.vertical
+        }
+    else
+        left_widget = wibox.widget {
+            weather_widget,
+            notifcenter(),
+            spacing = 35,
+            spacing_widget = separator,
+            fill_space = true,
+            layout = wibox.layout.fixed.vertical
+        }
+    end
 
     local textclock = wibox.widget.textclock(format)
     

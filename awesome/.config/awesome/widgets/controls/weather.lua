@@ -107,8 +107,15 @@ return function()
             layout = wibox.layout.align.horizontal
         },
         right = dpi(10),
+        visible = geoclue.enabled,
         widget = wibox.container.margin
     }
+
+    weather_widget.type = "control_widget"
+
+    if not geoclue.enabled then
+        return weather_widget
+    end
 
     local data = {}
 
@@ -161,8 +168,6 @@ return function()
     -- network.on_properties_changed(function()
     --     timer:emit_signal("timeout")
     -- end)
-
-    weather_widget.type = "control_widget"
 
     return weather_widget
 end

@@ -1,17 +1,30 @@
+local lgi = require("lgi")
+local Gio = lgi.Gio
+local GLib = lgi.GLib
 local dbus = require("dbus_proxy")
 
 local geoclue = {}
 
 local on_location_found_callbacks = {}
 
-local manager_proxy = dbus.Proxy:new(
-    {
-        bus = dbus.Bus.SYSTEM,
-        name = "org.freedesktop.GeoClue2",
-        interface = "org.freedesktop.GeoClue2.Manager",
-        path = "/org/freedesktop/GeoClue2/Manager"
-    }
-)
+local manager_proxy
+local function init_manager_proxy()
+    manager_proxy = dbus.Proxy:new(
+        {
+            bus = dbus.Bus.SYSTEM,
+            name = "org.freedesktop.GeoClue2",
+            interface = "org.freedesktop.GeoClue2.Manager",
+            path = "/org/freedesktop/GeoClue2/Manager"
+        }
+    )
+end
+
+if pcall(init_manager_proxy) then
+    geoclue.enabled = true
+else
+    geoclue.enabled = false
+    return geoclue
+end
 
 local client_path = manager_proxy:GetClient()
 local client = dbus.Proxy:new(
@@ -26,9 +39,6 @@ local client = dbus.Proxy:new(
 -- set DesktopId as a string (s) set to awesomewm
 -- dbus_proxy cannot set proxy properties (only cached ones so kinda useless)
 -- so we set them manually
-local lgi = require("lgi")
-local Gio = lgi.Gio
-local GLib = lgi.GLib
 local s = GLib.Variant("s", "awesome")
 Gio.DBusProxy.call_sync(
     client._proxy,
