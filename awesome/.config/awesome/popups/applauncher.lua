@@ -1,6 +1,7 @@
 local awful = require("awful")
 local prompt = require("util.prompt")
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local wibox = require("wibox")
 local gears = require("gears")
 local desktopapps = require("util.desktopapps")
@@ -12,7 +13,7 @@ local applauncher = {}
 local popup = wibox {
     ontop = true,
     type = "normal",
-    border_color = beautiful.black_alt,
+    border_color = color.black_alt,
     placement = awful.placement.bottom_left
 }
 
@@ -41,7 +42,9 @@ local function build_popup(args)
     local prompt_spacing = args.prompt_spacing or 15
     local scrollbar_spacing = args.scrollbar_spacing or 10
     local width = args.width or 250
-    local height = args.height or capi.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.wibar_bottom_border_width
+    local height = args.height or capi.mouse.screen.geometry.height
+    local x = args.x or 0
+    local y = args.y or 0
     local icon_size = args.icon_size or 32
     local margins = args.margins or 25
     local item_margins = args.item_margins or 2
@@ -53,7 +56,7 @@ local function build_popup(args)
     local layout_height = icon_size * max_showed_item_count
 
     local scrollbar = wibox.widget {
-        bar_color = beautiful.black_alt,
+        bar_color = color.black_alt,
         handle_color = beautiful.fg_normal,
         value = 0,
         forced_height = 10,
@@ -89,7 +92,7 @@ local function build_popup(args)
             item_background.bg = beautiful.bg_normal
             item_background.fg = beautiful.fg_normal
             local comment_textbox = items_container.children[selected_widget].widget.widget.second.children[2]
-            comment_textbox.markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment_textbox.text..'</span></i>'
+            comment_textbox.markup = '<i><span foreground="'..color.white_alt..'">'..comment_textbox.text..'</span></i>'
         end
 
         selected_widget = index
@@ -173,7 +176,7 @@ local function build_popup(args)
             if i == selected_widget then
                 name_comment_textboxes.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
             else
-                name_comment_textboxes.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment..'</span></i>'
+                name_comment_textboxes.children[2].markup = '<i><span foreground="'..color.white_alt..'">'..comment..'</span></i>'
             end
             item_widget_background.cmd = item[2]
             item_widget_background.position_index = scrollbar.value + i
@@ -206,7 +209,7 @@ local function build_popup(args)
                     if count == selected_widget then
                         item_widget_second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
                     else
-                        item_widget_second.children[2].markup = '<i><span foreground="'..beautiful.white_alt..'">'..comment..'</span></i>'
+                        item_widget_second.children[2].markup = '<i><span foreground="'..color.white_alt..'">'..comment..'</span></i>'
                     end
                     item_widget_background.cmd = entry[2]
                     item_widget_background.position_index = count
@@ -236,8 +239,8 @@ local function build_popup(args)
 
         scrollbar.maximum = math.max((item_count - max_showed_item_count) / scrollbar_velocity, 1)
         scrollbar.handle_width = (max_showed_item_count / item_count) * layout_height
-        scrollbar_container.widget.handle_color = scrollbar.maximum > 1 and beautiful.white or beautiful.black
-        scrollbar_container.widget.bar_color = scrollbar.maximum > 1 and beautiful.black_alt or beautiful.black
+        scrollbar_container.widget.handle_color = scrollbar.maximum > 1 and color.white or color.black
+        scrollbar_container.widget.bar_color = scrollbar.maximum > 1 and color.black_alt or color.black
     end
 
     scrollbar:connect_signal("property::value", scroll_layout_contents)
@@ -250,7 +253,7 @@ local function build_popup(args)
                     {
                         {
                             {
-                                markup = '<span foreground="'..beautiful.green..'">Lancer: </span>',
+                                markup = '<span foreground="'..color.green..'">Lancer: </span>',
                                 widget = wibox.widget.textbox
                             },
                             prompt_textbox,
@@ -298,8 +301,8 @@ local function build_popup(args)
     }
     popup.width = width
     popup.height = height
-    popup.x = 0
-    popup.y = beautiful.wibar_height - beautiful.wibar_bottom_border_width
+    popup.x = x
+    popup.y = y
 
     function popup.show()
         scrollbar.value = 0
@@ -376,10 +379,10 @@ end
 -- launch appmenu if generated
 -- if not generated wait for it
 -- if reload specified, wait for new menu before showing it (it's faster after first generation)
-function applauncher.run(reload)
+function applauncher.run(reload, args)
     if not popup.widget then
         desktopapps.build_list(function()
-            build_popup{width = 500, icon_spacing = 8, icon_size = 36}
+            build_popup(args)
             popup.show()
             run_prompt()
         end)

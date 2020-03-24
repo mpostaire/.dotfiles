@@ -1,5 +1,6 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local base_panel_widget = require("widgets.panel.base")
 local calendar = require("widgets.controls.calendar")
 local weather = require("widgets.controls.weather")
@@ -10,7 +11,7 @@ local icon = ""
 
 return function(format)
     local separator = wibox.widget {
-        color = beautiful.black_alt,
+        color = color.black_alt,
         span_ratio = 0.9,
         orientation = "horizontal",
         widget = wibox.widget.separator

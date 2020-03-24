@@ -1,6 +1,7 @@
 local gears = require("gears")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local awful = require("awful")
 local alsa = require("util.alsa")
 local helpers = require("util.helpers")
@@ -21,7 +22,7 @@ local icons = {
 
 local function get_icon()
     if alsa.muted then
-        return '<span foreground="'..beautiful.white_alt..'">'..icons.muted..'</span>'
+        return '<span foreground="'..color.white_alt..'">'..icons.muted..'</span>'
     else
         if alsa.volume < 33 then
             return icons.low
@@ -41,7 +42,7 @@ return function(width)
     local volume_value = ((alsa.volume - 10) / 90) * 100
 
     local volume_slider = slider {
-        bar_left_color = beautiful.white,
+        bar_left_color = color.white,
         bar_right_color = beautiful.bg_focus,
         handle_color = beautiful.fg_normal,
         handle_shape = gears.shape.circle,

@@ -3,13 +3,13 @@ local awful = require("awful")
 local spawn = require("awful.spawn")
 local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
-require("awful.hotkeys_popup.keys")
+-- require("awful.hotkeys_popup.keys")
 local variables = require("config.variables")
 local rofi = require("util.rofi")
 local clientmenu = require("popups.clientmenu")
 local rootmenu = require("popups.rootmenu")
 local applauncher = require("popups.applauncher")
-local capi = {root = root, client = client, awesome = awesome, }
+local capi = {root = root, client = client, awesome = awesome, mouse = mouse}
 
 local bindings = {}
 
@@ -98,7 +98,7 @@ local globalkeys = gears.table.join(
                                                         local tags = awful.screen.focused().tags
                                                         for _,v in pairs(tags) do
                                                             if v.gap == 0 then
-                                                                v.gap = beautiful.useless_gap
+                                                                v.gap = beautiful.useless_gap or 0
                                                             else
                                                                 v.gap = 0
                                                             end
@@ -147,8 +147,13 @@ local globalkeys = gears.table.join(
     {description = "htop", group = "launcher"}),
 
     -- rofi launcher menu
-    awful.key({ variables.modkey }, "space", function() applauncher.run(true) end,
-                {description = "show the launcher menu", group = "launcher"}),
+    awful.key({ variables.modkey }, "space", function()
+        applauncher.run(true, {
+            height = capi.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.border_width,
+            width = 500, icon_spacing = 8, icon_size = 36, y = beautiful.wibar_height - beautiful.border_width
+        })
+    end,
+    {description = "show the launcher menu", group = "launcher"}),
 
     -- laptop special keys
     awful.key({}, "XF86Calculator",

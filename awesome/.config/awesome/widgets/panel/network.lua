@@ -5,6 +5,7 @@ local beautiful = require("beautiful")
 local rofi = require("util.rofi")
 local awful = require("awful")
 local gears = require("gears")
+local color = require("themes.color")
 local variables = require("config.variables")
 local network = require("util.network")
 local base_widget_panel = require("widgets.panel.base")
@@ -48,7 +49,7 @@ return function()
             widget:set_icon_color(beautiful.fg_normal)
             return icons[network.state]
         else
-            widget:set_icon_color(beautiful.white_alt)
+            widget:set_icon_color(color.white_alt)
             return icons[network.state]
         end
     end

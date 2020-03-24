@@ -1,93 +1,38 @@
 local theme_assets = require("beautiful.theme_assets")
 local xresources = require("beautiful.xresources")
-local xresources_theme = xresources.get_current_theme()
 local dpi = xresources.apply_dpi
 local gears = require("gears")
 local naughty = require("naughty")
 local awful = require("awful")
-local color = require("util.color")
+local color = require("themes.color")
 local beautiful = require("beautiful")
 local variables = require("config.variables")
 local gfs = require("gears.filesystem")
 local capi = {screen = screen}
 local themes_path = gfs.get_configuration_dir().."themes/"
 
+require("themes.wallpaper").set()
+
 local theme = {}
-
--- {{{ Wallpaper
-local function set_wallpaper(wallpaper_path)
-    if string.sub(wallpaper_path, 1, 1) == "~" then
-        wallpaper_path = variables.home .. string.sub(wallpaper_path, 2)
-    end
-
-    if gfs.file_readable(wallpaper_path) then
-        theme.wallpaper = wallpaper_path
-    else
-        theme.wallpaper = gfs.get_themes_dir().."default/background.png"
-    end
-
-    -- sets it for each screen
-    awful.screen.connect_for_each_screen(function(s)
-        if theme.wallpaper then
-            local wallpaper = theme.wallpaper
-            -- If wallpaper is a function, call it with the screen
-            if type(wallpaper) == "function" then
-                wallpaper = wallpaper(s)
-            end
-            gears.wallpaper.maximized(wallpaper, s, true)
-        end
-    end)
-end
-
-set_wallpaper("~/Images/lunar_eclipse.jpg")
--- }}}
-
--- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-capi.screen.connect_signal("property::geometry", set_wallpaper)
-
-
-theme.black = xresources_theme["color0"]
-theme.black_alt = xresources_theme["color8"]
-
-theme.red = xresources_theme["color1"]
-theme.red_alt = xresources_theme["color9"]
-
-theme.green = xresources_theme["color2"]
-theme.green_alt = xresources_theme["color10"]
-
-theme.yellow = xresources_theme["color3"]
-theme.yellow_alt = xresources_theme["color11"]
-
-theme.blue = xresources_theme["color4"]
-theme.blue_alt = xresources_theme["color12"]
-
-theme.magenta = xresources_theme["color5"]
-theme.magenta_alt = xresources_theme["color13"]
-
-theme.cyan = xresources_theme["color6"]
-theme.cyan_alt = xresources_theme["color14"]
-
-theme.white = xresources_theme["color7"]
-theme.white_alt = xresources_theme["color15"]
 
 theme.true_white = "#FFFFFF"
 
-theme.accent = theme.blue
+theme.accent = color.blue
 
 theme.font          = "DejaVu Sans Mono 10"
 theme.nerd_font     = "DejaVuSansMono Nerd Font 10"
 theme.icon_font     = "Suru-Icons 12"
 
-theme.bg_normal     = theme.black
-theme.bg_focus      = theme.black_alt
-theme.bg_urgent     = theme.yellow
-theme.bg_minimize   = theme.black
-theme.bg_systray    = theme.black
+theme.bg_normal     = color.black
+theme.bg_focus      = color.black_alt
+theme.bg_urgent     = color.yellow
+theme.bg_minimize   = color.black
+theme.bg_systray    = color.black
 
-theme.fg_normal     = theme.white
-theme.fg_focus      = theme.true_white
-theme.fg_urgent     = theme.black
-theme.fg_minimize   = theme.true_white
+theme.fg_normal     = color.white
+theme.fg_focus      = color.true_white
+theme.fg_urgent     = color.black
+theme.fg_minimize   = color.true_white
 
 theme.prompt_fg_cursor = theme.bg_normal
 theme.prompt_bg_cursor = theme.fg_normal
@@ -100,20 +45,20 @@ theme.column_count = 1
 theme.useless_gap   = dpi(0)
 theme.border_width  = dpi(2)
 --
-theme.border_normal = theme.black_alt
+theme.border_normal = color.black_alt
 theme.border_focus  = theme.accent
 theme.border_marked = "#91231c"
 
 -- {{{ taglist
 theme.taglist_fg_focus = theme.accent
-theme.taglist_fg_occupied = theme.white
-theme.taglist_fg_empty = theme.white_alt
-theme.taglist_fg_urgent = theme.yellow
+theme.taglist_fg_occupied = color.white
+theme.taglist_fg_empty = color.white_alt
+theme.taglist_fg_urgent = color.yellow
 
-theme.taglist_bg_focus = theme.black
-theme.taglist_bg_occupied = theme.black
-theme.taglist_bg_empty = theme.black
-theme.taglist_bg_urgent = theme.black
+theme.taglist_bg_focus = color.black
+theme.taglist_bg_occupied = color.black
+theme.taglist_bg_empty = color.black
+theme.taglist_bg_urgent = color.black
 -- }}}
 
 -- {{{ titlebar
@@ -125,7 +70,7 @@ theme.titlebar_fg_focus = theme.fg_focus
 -- }}}
 
 -- {{{ snap
-theme.snap_bg = theme.yellow
+theme.snap_bg = color.yellow
 theme.snap_shape = gears.shape.rectangle
 theme.snap_border_width = dpi(3)
 -- }}}
@@ -139,8 +84,8 @@ naughty.config.defaults.border_width = theme.border_width
 -- }}}
 
 -- {{{ hotkeys popup
-theme.hotkeys_modifiers_fg = theme.white_alt
-theme.hotkeys_border_color = theme.black_alt
+theme.hotkeys_modifiers_fg = color.white_alt
+theme.hotkeys_border_color = color.black_alt
 -- }}}
 
 -- {{{ wibar
@@ -153,7 +98,7 @@ theme.tasklist_fg_normal = theme.fg_normal
 theme.tasklist_bg_normal = theme.bg_normal
 theme.tasklist_fg_focus = theme.fg_focus
 theme.tasklist_bg_focus = theme.bg_focus
-theme.tasklist_fg_urgent = theme.yellow
+theme.tasklist_fg_urgent = color.yellow
 theme.tasklist_bg_urgent = theme.bg_normal
 theme.tasklist_font_urgent = "DejaVu Sans Mono Bold 10"
 theme.tasklist_fg_minimize = theme.white_alt
@@ -255,24 +200,6 @@ theme.layout_cornerse = themes_path.."icons/layouts/cornerse.png"
 theme.awesome_icon = theme_assets.awesome_icon(
     theme.menu_height, theme.fg_focus, theme.bg_normal
 )
-
--- {{{ User defined variables (use search to figure out what they do)
--- // TODO remove these and define them in their corresponding files
---         make them redefinable here as config but as of now they are what defines default behaviour
-theme.border_width_single_client = dpi(0)
-theme.wibar_widgets_padding = dpi(8)
-theme.wibar_border_color = theme.black_alt
-theme.widgets_inner_padding = dpi(4)
-theme.wibar_bottom_border_width = theme.border_width
-theme.notification_offset = dpi(4)
-theme.font_height = beautiful.get_font_height(theme.font)
-theme.awesome_icon_wibar = theme_assets.awesome_icon(
-    theme.wibar_height - theme.wibar_bottom_border_width, theme.true_white, theme.accent
-)
-theme.titlebar_height = theme.wibar_height - theme.border_width
-
-theme.menu_item_margins = dpi(5)
--- }}}
 
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.

@@ -1,5 +1,6 @@
 require("popups.volume") -- show popup
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local awful = require("awful")
 local gears = require("gears")
 local alsa = require("util.alsa")
@@ -27,7 +28,7 @@ return function(show_label)
 
     local function get_icon()
         if alsa.muted then
-            return '<span foreground="'..beautiful.white_alt..'">'..icons.muted..'</span>'
+            return '<span foreground="'..color.white_alt..'">'..icons.muted..'</span>'
         else
             if alsa.volume < 33 then
                 return icons.low
@@ -41,8 +42,8 @@ return function(show_label)
 
     local function update_widget()
         if alsa.muted then
-            widget:set_icon_color(beautiful.white_alt)
-            widget:set_label_color(beautiful.white_alt)
+            widget:set_icon_color(color.white_alt)
+            widget:set_label_color(color.white_alt)
         else
             widget:set_icon_color(beautiful.fg_normal)
             widget:set_label_color(beautiful.fg_normal)

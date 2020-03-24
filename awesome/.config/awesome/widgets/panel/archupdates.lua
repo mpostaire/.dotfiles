@@ -1,4 +1,5 @@
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local awful = require("awful")
 local base_panel_widget = require("widgets.panel.base")
 
@@ -24,7 +25,7 @@ return function(show_label)
             archupdates_widget:show(false)
             return ""
         elseif updates == 0 then
-            archupdates_widget:set_icon_color(beautiful.blue)
+            archupdates_widget:set_icon_color(color.blue)
             archupdates_widget:show_icon(true)
             archupdates_widget:show_label(show_label)
             return updates_aur
@@ -34,7 +35,7 @@ return function(show_label)
             archupdates_widget:show_label(show_label)
             return updates
         else
-            archupdates_widget:set_icon_color(beautiful.blue)
+            archupdates_widget:set_icon_color(color.blue)
             archupdates_widget:show_icon(true)
             archupdates_widget:show_label(show_label)
             return updates.."+"..updates_aur

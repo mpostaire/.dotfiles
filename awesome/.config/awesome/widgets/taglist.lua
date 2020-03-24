@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local wibox = require("wibox")
 local gears = require("gears")
 local variables = require("config.variables")
-local color = require("util.color")
+local color = require("themes.color")
 local capi = {client = client, mouse = mouse}
 
 -- tags buttons widget mouse handling
@@ -111,8 +111,8 @@ awful.screen.connect_for_each_screen(function(s)
                 shape  = gears.shape.circle,
                 widget = wibox.container.background,
             },
-            left  = beautiful.wibar_widgets_padding,
-            right = beautiful.wibar_widgets_padding,
+            left  = 8,
+            right = 8,
             widget = wibox.container.margin,
             create_callback = function(self, tag, index, tags)
                 local old_cursor, old_wibox

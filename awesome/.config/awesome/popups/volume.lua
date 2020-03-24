@@ -18,7 +18,7 @@ local icons = {
 
 local function get_icon()
     if alsa.muted then
-        return '<span foreground="'..beautiful.white_alt..'">'..icons.muted..'</span>'
+        return '<span foreground="'..color.white_alt..'">'..icons.muted..'</span>'
     else
         if alsa.volume < 33 then
             return icons.low
@@ -81,8 +81,8 @@ function volume_popup.show()
     end
     progressbar.value = alsa.volume
     if alsa.muted then
-        icon_widget:set_markup_silently('<span foreground="'..beautiful.white_alt..'">'..get_icon()..'</span>')
-        progressbar.color = beautiful.white_alt
+        icon_widget:set_markup_silently('<span foreground="'..color.white_alt..'">'..get_icon()..'</span>')
+        progressbar.color = color.white_alt
     else
         icon_widget:set_markup_silently(get_icon())
         progressbar.color = beautiful.fg_normal

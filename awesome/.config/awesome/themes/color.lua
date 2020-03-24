@@ -1,6 +1,34 @@
--- TODO: rbg to hsl, then functions to change brightness, saturation, then hsl to rgb
-
 local color = {}
+
+local xresources = require("beautiful.xresources")
+local xresources_theme = xresources.get_current_theme()
+
+color.black = xresources_theme["color0"]
+color.black_alt = xresources_theme["color8"]
+
+color.red = xresources_theme["color1"]
+color.red_alt = xresources_theme["color9"]
+
+color.green = xresources_theme["color2"]
+color.green_alt = xresources_theme["color10"]
+
+color.yellow = xresources_theme["color3"]
+color.yellow_alt = xresources_theme["color11"]
+
+color.blue = xresources_theme["color4"]
+color.blue_alt = xresources_theme["color12"]
+
+color.magenta = xresources_theme["color5"]
+color.magenta_alt = xresources_theme["color13"]
+
+color.cyan = xresources_theme["color6"]
+color.cyan_alt = xresources_theme["color14"]
+
+color.white = xresources_theme["color7"]
+color.white_alt = xresources_theme["color15"]
+
+color.true_white = "#FFFFFF"
+color.true_black = "#000000"
 
 -- c is a string hex representation of a rgb color
 function color.rgbhex_to_rgbtable(c)

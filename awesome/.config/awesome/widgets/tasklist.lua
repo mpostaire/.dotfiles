@@ -4,7 +4,7 @@ local dpi = require("beautiful.xresources").apply_dpi
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local clientmenu = require("popups.clientmenu")
-local color = require("util.color")
+local color = require("themes.color")
 local capi = {client = client}
 
 local bg_hover = color.lighten_by(beautiful.tasklist_bg_normal, 0.05)

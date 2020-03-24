@@ -3,6 +3,7 @@ local wibox = require("wibox")
 local gears = require("gears")
 local awful = require("awful")
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local helpers = require("util.helpers")
 local autoclose_popup = require("util.autoclose_popup")
 local capi = {mouse = mouse}
@@ -39,7 +40,7 @@ return function(children)
     end
 
     local separator = wibox.widget {
-        color = beautiful.black_alt,
+        color = color.black_alt,
         span_ratio = 0.9,
         orientation = "horizontal",
         forced_width = 0, -- force separator to adapt its width to the popup width

@@ -3,7 +3,7 @@ local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
 local clientmenu = require("popups.clientmenu")
-local color = require("util.color")
+local color = require("themes.color")
 local helpers = require("util.helpers")
 local capi = {client = client}
 
@@ -28,9 +28,9 @@ local buttons_colors = {
 }
 local close_colors = {
     bg = color.lighten_by(beautiful.titlebar_bg_normal, 0.15),
-    bg_focus = color.darken_by(beautiful.red, 0.25),
-    bg_hover = color.darken_by(beautiful.red, 0.15),
-    bg_pressed = color.darken_by(beautiful.red, 0.35)
+    bg_focus = color.darken_by(color.red, 0.25),
+    bg_hover = color.darken_by(color.red, 0.15),
+    bg_pressed = color.darken_by(color.red, 0.35)
 }
 
 -- Generates a client button created by a font glyph
@@ -136,7 +136,7 @@ capi.client.connect_signal("request::titlebars", function(c)
     --      I'm not sure there is a fix fore that. there is a github issue but its
     --      current resolution seems to have the same problem
     -- fix? try using constraint layout with strategy property (check doc)
-    awful.titlebar(c, {size = beautiful.titlebar_height}):setup {
+    awful.titlebar(c, {size = beautiful.wibar_height - beautiful.border_width}):setup {
         {
             { -- hacky way of making Title truly centered
                 -- Left

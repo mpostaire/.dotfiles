@@ -1,16 +1,21 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local awful = require("awful")
 local gears = require("gears")
 local applauncher = require("popups.applauncher")
 local capi = {mouse = mouse}
+
+local icon = beautiful.theme_assets.awesome_icon(
+    beautiful.wibar_height - beautiful.border_width, color.true_white, beautiful.accent
+)
 
 return function()
     local widget = wibox.widget {
         {
             {
                 {
-                    image = beautiful.awesome_icon_wibar,
+                    image = icon,
                     widget = wibox.widget.imagebox
                 },
                 margins = 6,
@@ -19,7 +24,7 @@ return function()
             bg = beautiful.accent,
             widget = wibox.container.background
         },
-        right = beautiful.wibar_widgets_padding,
+        right = 4,
         widget = wibox.container.margin
     }
 

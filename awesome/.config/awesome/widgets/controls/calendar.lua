@@ -4,7 +4,7 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
-local color = require("util.color")
+local color = require("themes.color")
 local capi = {mouse = mouse}
 
 local icons = {
@@ -26,7 +26,7 @@ local function generate_day_names_row(cal)
     local day_names = get_day_names()
     for _,v in ipairs(day_names) do
         cal:add(wibox.widget {
-            markup = '<span weight="bold" foreground="'..beautiful.white_alt..'">'..v..'</span>',
+            markup = '<span weight="bold" foreground="'..color.white_alt..'">'..v..'</span>',
             align = "center",
             widget = wibox.widget.textbox
         })
@@ -89,9 +89,9 @@ return function(args)
         local date = os.date("*t")
 
         if month == date.month and year == date.year then
-            widget.markup = '<span foreground="'..beautiful.green..'">'..os.date("%a %d %b %Y")..'</span>'
+            widget.markup = '<span foreground="'..color.green..'">'..os.date("%a %d %b %Y")..'</span>'
         else
-            widget.markup = '<span foreground="'..beautiful.green..'">'..os.date("%B", os.time({month=month, day=1, year=2012}))..' '..year..'</span>'
+            widget.markup = '<span foreground="'..color.green..'">'..os.date("%B", os.time({month=month, day=1, year=2012}))..' '..year..'</span>'
         end
     end
 
@@ -122,25 +122,25 @@ return function(args)
             if k < first_day then
                 local num = prev_month_num_days - (first_day - k) + 1
                 if date.month == month - 1 and date.year == year and num == date.day then
-                    v.markup = '<span foreground="'..beautiful.blue..'">'..num..'</span>'
+                    v.markup = '<span foreground="'..color.blue..'">'..num..'</span>'
                 else
-                    v.markup = '<span foreground="'..beautiful.black_alt..'">'..num..'</span>'
+                    v.markup = '<span foreground="'..color.black_alt..'">'..num..'</span>'
                 end
             elseif k - first_day < num_days then
                 local num = k - first_day + 1
                 if date.month == month and date.year == year and num == date.day then
-                    v.markup = '<span weight="bold" foreground="'..beautiful.blue..'">'..num..'</span>'
+                    v.markup = '<span weight="bold" foreground="'..color.blue..'">'..num..'</span>'
                 elseif k % 7 == 0 or k % 7 == 6 then
-                    v.markup = '<span foreground="'..beautiful.yellow_alt..'">'..num..'</span>'
+                    v.markup = '<span foreground="'..color.yellow_alt..'">'..num..'</span>'
                 else
                     v.markup = num
                 end
             else
                 local num = k - num_days - first_day + 1
                 if date.month == month + 1 and date.year == year and num == date.day then
-                    v.markup = '<span foreground="'..beautiful.blue..'">'..num..'</span>'
+                    v.markup = '<span foreground="'..color.blue..'">'..num..'</span>'
                 else
-                    v.markup = '<span foreground="'..beautiful.black_alt..'">'..num..'</span>'
+                    v.markup = '<span foreground="'..color.black_alt..'">'..num..'</span>'
                 end
             end
         end
@@ -215,7 +215,7 @@ return function(args)
             old_wibox = nil
         end
     end)
-    local green_hover = color.lighten_by(beautiful.green, 0.5)
+    local green_hover = color.lighten_by(color.green, 0.5)
     month_widget:connect_signal("mouse::enter", function()
         month_widget:set_markup_silently('<span foreground="'..green_hover..'">'..month_widget.text..'</span>')
 
@@ -224,7 +224,7 @@ return function(args)
         w.cursor = "hand2"
     end)
     month_widget:connect_signal("mouse::leave", function()
-        month_widget:set_markup_silently('<span foreground="'..beautiful.green..'">'..month_widget.text..'</span>')
+        month_widget:set_markup_silently('<span foreground="'..color.green..'">'..month_widget.text..'</span>')
 
         if old_wibox then
             old_wibox.cursor = old_cursor
@@ -249,7 +249,7 @@ return function(args)
     local calendar_widget = calendar_grid_widget
     if left_widget then
         local separator = wibox.widget {
-            color = beautiful.black_alt,
+            color = color.black_alt,
             span_ratio = 0.9,
             orientation = "vertical",
             widget = wibox.widget.separator

@@ -1,6 +1,7 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local gstring = require("gears.string")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
@@ -36,7 +37,7 @@ local icons = {
         ["🌩"] = " ",
         ["✨"] = " "
     },
-    location = '<span foreground="'..beautiful.red_alt..'"> </span>'
+    location = '<span foreground="'..color.red_alt..'"> </span>'
 }
 
 return function()
@@ -101,7 +102,7 @@ return function()
             nil,
             {
                 right_grid_layout,
-                fg = beautiful.white_alt,
+                fg = color.white_alt,
                 widget = wibox.container.background
             },
             layout = wibox.layout.align.horizontal

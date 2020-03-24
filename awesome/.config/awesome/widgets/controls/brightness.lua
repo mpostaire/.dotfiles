@@ -2,6 +2,7 @@ local gears = require("gears")
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local brightness = require("util.brightness")
 local helpers = require("util.helpers")
 local slider = require("widgets.slider")
@@ -16,7 +17,7 @@ return function(width)
     local brightness_value = ((brightness.brightness - 10) / 90) * 100
 
     local brightness_slider = slider {
-        bar_left_color = beautiful.white,
+        bar_left_color = color.white,
         bar_right_color = beautiful.bg_focus,
         handle_color = beautiful.fg_normal,
         handle_shape = gears.shape.circle,

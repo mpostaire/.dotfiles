@@ -1,4 +1,5 @@
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local naughty = require("naughty")
 local base_panel_widget = require("widgets.panel.base")
 local battery = require("util.battery")
@@ -42,11 +43,11 @@ return function()
         end
 
         if battery.state == "charging" then
-            widget:set_icon_color(beautiful.yellow)
+            widget:set_icon_color(color.yellow)
         elseif battery.state == "discharging" and battery.percentage < 20 then
-            widget:set_icon_color(beautiful.red)
+            widget:set_icon_color(color.red)
         elseif battery.state == "full" then
-            widget:set_icon_color(beautiful.green)
+            widget:set_icon_color(color.green)
         else
             widget:set_icon_color(beautiful.fg_normal)
         end
