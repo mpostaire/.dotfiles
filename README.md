@@ -4,7 +4,7 @@ My dotfiles.
 
 ## Installation
 
-requires awesomewm 4.3+, [mpdbus](https://github.com/mpostaire/mpdbus), [awdctl](https://github.com/mpostaire/awdctl), rofi, networkmanager_dmenu, mpd, i3lock-color, compton and zsh
+requires awesomewm 4.3+, [mpdbus](https://github.com/mpostaire/mpdbus), [awdctl](https://github.com/mpostaire/awdctl), mpd, i3lock-color, picom and zsh
 
 TODO
 
