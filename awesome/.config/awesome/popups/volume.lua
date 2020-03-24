@@ -1,4 +1,5 @@
 local beautiful = require("beautiful")
+local color = require("themes.color")
 local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
