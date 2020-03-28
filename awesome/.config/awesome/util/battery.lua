@@ -29,13 +29,19 @@ local function get_first_battery_path()
 
     local devices = proxy:EnumerateDevices()
     for _, v in ipairs(devices) do
-        if v:match(".+battery") then
+        if v.Type == 2 then
             return v
         end
     end
 end
 
 local battery_path = get_first_battery_path()
+if battery_path then
+    battery.enabled = true
+else
+    battery.enabled = false
+    return battery
+end
 
 local proxy = dbus.Proxy:new(
     {

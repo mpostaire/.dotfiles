@@ -24,6 +24,8 @@ local icons = {
 }
 
 return function()
+    if not battery.enabled then return nil end
+    
     local widget = base_panel_widget()
 
     local function get_icon()
