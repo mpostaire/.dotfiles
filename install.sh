@@ -1,3 +1,5 @@
+yay -S rxvt-unicode-better-wheel-scrolling picom i3lock-color urxv-perls vte3 evince-light suru-icon-theme-git xfce4-screenshooter xss-lock
+
 cd ~/dotfiles
 stow */
 

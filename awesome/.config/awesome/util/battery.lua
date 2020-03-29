@@ -17,7 +17,7 @@ local states = {
 local on_properties_changed_callbacks = {}
 
 -- For now get only the first battery device
-local function get_first_battery_path()
+local function get_first_battery_proxy()
     local proxy = dbus.Proxy:new(
         {
             bus = dbus.Bus.SYSTEM,
@@ -29,28 +29,29 @@ local function get_first_battery_path()
 
     local devices = proxy:EnumerateDevices()
     for _, v in ipairs(devices) do
-        if v.Type == 2 then
-            return v
+        local device_proxy = dbus.Proxy:new(
+            {
+                bus = dbus.Bus.SYSTEM,
+                name = "org.freedesktop.UPower",
+                interface = "org.freedesktop.UPower.Device",
+                path = v
+            }
+        )
+        if device_proxy.Type == 2 then
+            return device_proxy
         end
     end
+
+    proxy = nil
 end
 
-local battery_path = get_first_battery_path()
-if battery_path then
+local proxy = get_first_battery_proxy()
+if proxy then
     battery.enabled = true
 else
     battery.enabled = false
     return battery
 end
-
-local proxy = dbus.Proxy:new(
-    {
-        bus = dbus.Bus.SYSTEM,
-        name = "org.freedesktop.UPower",
-        interface = "org.freedesktop.UPower.Device",
-        path = battery_path
-    }
-)
 
 proxy:on_properties_changed(function (p, changed, invalidated)
     assert(p == proxy)
