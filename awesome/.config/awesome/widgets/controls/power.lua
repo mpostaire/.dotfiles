@@ -98,7 +98,7 @@ return function()
 
     lock:buttons(gears.table.join(
         awful.button({}, 1, function()
-            awful.spawn.easy_async_with_shell("~/.scripts/lock.sh", function() end)
+            awful.spawn.easy_async_with_shell("loginctl lock-session", function() end)
             widget.parent.control_popup.visible = false
         end)
     ))
