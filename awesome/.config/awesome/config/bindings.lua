@@ -137,7 +137,7 @@ local globalkeys = gears.table.join(
     -- lock screen
     awful.key({ variables.modkey }, "l",
         function()
-            spawn.with_shell("~/.scripts/lock.sh", function() end)
+            spawn.with_shell("loginctl lock-session", function() end)
         end,
     {description = "raise lock screen", group = "launcher"}),
     awful.key({ "Control", "Mod1" }, "Delete", function()
