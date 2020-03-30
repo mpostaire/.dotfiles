@@ -17,7 +17,7 @@ local states = {
 local on_properties_changed_callbacks = {}
 
 -- For now get only the first battery device
-local function get_first_battery_path()
+local function get_first_battery_proxy()
     local proxy
     local function init_proxy()
         proxy = dbus.Proxy:new(
