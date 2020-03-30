@@ -53,7 +53,7 @@ local gen_text_button = function (c, symbol, cmd, colors)
             widget = wibox.container.margin
         },
         bg = capi.client.focus == c and colors.bg_focus or colors.bg,
-        widget = wibox.widget.background
+        widget = wibox.container.background
     }
 
     button:buttons(gears.table.join(
@@ -103,7 +103,13 @@ capi.client.connect_signal("request::titlebars", function(c)
     local buttons = gears.table.join(
         awful.button({ }, 1, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})
-            awful.mouse.client.move(c)
+
+            if helpers.double_click() then
+                c.maximized = not c.maximized
+                c:raise()
+            else
+                awful.mouse.client.move(c)
+            end
         end),
         awful.button({ }, 3, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})

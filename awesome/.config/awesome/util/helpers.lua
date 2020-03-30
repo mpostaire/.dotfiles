@@ -1,3 +1,4 @@
+local timer = require("gears.timer")
 local capi = {mouse = mouse}
 
 local helpers = {}
@@ -36,6 +37,19 @@ end
 -- change font size
 function helpers.change_font_size(font, size)
     return string.gsub(font, "%d+", tostring(size))
+end
+
+function helpers.double_click()
+    if double_click_timer then
+        double_click_timer:stop()
+        double_click_timer = nil
+        return true
+    end
+
+    double_click_timer = timer.start_new(0.20, function()
+        double_click_timer = nil
+        return false
+    end)
 end
 
 local tableAccents = {
