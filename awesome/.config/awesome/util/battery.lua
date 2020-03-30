@@ -18,14 +18,21 @@ local on_properties_changed_callbacks = {}
 
 -- For now get only the first battery device
 local function get_first_battery_path()
-    local proxy = dbus.Proxy:new(
-        {
-            bus = dbus.Bus.SYSTEM,
-            name = "org.freedesktop.UPower",
-            interface = "org.freedesktop.UPower",
-            path = "/org/freedesktop/UPower"
-        }
-    )
+    local proxy
+    local function init_proxy()
+        proxy = dbus.Proxy:new(
+            {
+                bus = dbus.Bus.SYSTEM,
+                name = "org.freedesktop.UPower",
+                interface = "org.freedesktop.UPower",
+                path = "/org/freedesktop/UPower"
+            }
+        )
+    end
+
+    if not pcall(init_proxy) then
+        return
+    end
 
     local devices = proxy:EnumerateDevices()
     for _, v in ipairs(devices) do
