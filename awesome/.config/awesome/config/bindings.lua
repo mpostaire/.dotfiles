@@ -5,7 +5,6 @@ local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
 -- require("awful.hotkeys_popup.keys")
 local variables = require("config.variables")
-local rofi = require("util.rofi")
 local clientmenu = require("popups.clientmenu")
 local rootmenu = require("popups.rootmenu")
 local applauncher = require("popups.applauncher")
@@ -146,7 +145,7 @@ local globalkeys = gears.table.join(
     end,
     {description = "htop", group = "launcher"}),
 
-    -- rofi launcher menu
+    -- applauncher
     awful.key({ variables.modkey }, "space", function()
         applauncher.run(true, {
             height = capi.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.border_width,

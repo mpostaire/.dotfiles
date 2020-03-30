@@ -2,7 +2,6 @@
 -- ethernet support not tested
 
 local beautiful = require("beautiful")
-local rofi = require("util.rofi")
 local awful = require("awful")
 local gears = require("gears")
 local color = require("themes.color")
@@ -14,7 +13,7 @@ local capi = {root = root}
 
 local icons = {
     wifi = {
-        [0] = "", --//TODO: see networkmanager api, get active connection device. State property is the state of the connection
+        [0] = "", -- (this icon is for connection loading) //TODO: see networkmanager api, get active connection device. State property is the state of the connection
         "",
         "",
         "",
@@ -26,6 +25,8 @@ local icons = {
 }
 
 return function()
+    if not network.enabled then return nil end
+
     local widget = base_widget_panel{control_widget = network_control_widget()}
 
     local function get_icon()
@@ -69,12 +70,12 @@ return function()
     -- we update once so the widget is not empty at creation
     widget:update(get_icon(), get_text())
 
-    local widget_keys = gears.table.join(
-        awful.key({ variables.modkey }, "w", rofi.network_menu,
-                    {description = "show the network menu", group = "launcher"})
-    )
+    -- local widget_keys = gears.table.join(
+    --     awful.key({ variables.modkey }, "w", rofi.network_menu,
+    --                 {description = "show the network menu", group = "launcher"})
+    -- )
 
-    capi.root.keys(gears.table.join(capi.root.keys(), widget_keys))
+    -- capi.root.keys(gears.table.join(capi.root.keys(), widget_keys))
 
     return widget
 end

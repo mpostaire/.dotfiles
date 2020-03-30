@@ -9,14 +9,24 @@ local network = {}
 
 local on_properties_changed_callbacks = {}
 
-local manager_proxy = dbus.Proxy:new(
-    {
-        bus = dbus.Bus.SYSTEM,
-        name = "org.freedesktop.NetworkManager",
-        interface = "org.freedesktop.NetworkManager",
-        path = "/org/freedesktop/NetworkManager"
-    }
-)
+local manager_proxy
+local function init_proxy()
+    manager_proxy = dbus.Proxy:new(
+        {
+            bus = dbus.Bus.SYSTEM,
+            name = "org.freedesktop.NetworkManager",
+            interface = "org.freedesktop.NetworkManager",
+            path = "/org/freedesktop/NetworkManager"
+        }
+    )
+end
+
+if pcall(init_proxy) then
+    network.enabled = true
+else
+    network.enabled = false
+    return network
+end
 
 local connection_proxy, access_point_proxy
 
