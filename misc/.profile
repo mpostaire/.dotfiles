@@ -15,6 +15,9 @@ export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 # qt native gtk integration
 export QT_QPA_PLATFORMTHEME=gtk2
 
+# better time command formatting
+export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
+
 # enable numlock
 if [ -x /usr/bin/numlockx ]; then
       /usr/bin/numlockx on

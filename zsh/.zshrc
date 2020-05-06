@@ -1,6 +1,4 @@
-# Prompt theme 
-#              (add support git ? + zsh auto highlight regler couleurs + autres ?)
-# setopt more and co
+# TODO: use zcompile on plugins (and prompt ?) to speed up
 
 ## Bindings (cause the first char of the keycode to be slow when typed in terminal)
 
@@ -29,7 +27,7 @@ bindkey '^[[Z' none
 ## SETTINGS
 
 # Enable spelling correction
-setopt correctall
+#setopt correctall
 
 # Shell history
 setopt HIST_IGNORE_ALL_DUPS
@@ -114,6 +112,15 @@ zle -N self-insert url-quote-magic
 # fish-like autosuggestions (a bit slow)
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# IntelliSense-like find-as-you-type completion for zsh.
+# TODO: Uncomment when this is less buggy and it does not override tab functionnality (maybe make a fork)
+#source ~/.zsh/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+# This one below actually does not override tab functionnality but I did not test it further and is very old. Plus I think it is incompatible with some of this .zshrc configs and I'll need to investigate further
+#source ~/.zsh/auto-fu.zsh/auto-fu.zsh
+#zle-line-init () {auto-fu-init;}; zle -N zle-line-init
+#zstyle ':completion:*' completer _oldlist _complete
+#zle -N zle-keymap-select auto-fu-zle-keymap-select
 
 ## PROMPT
 
