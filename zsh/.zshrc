@@ -11,18 +11,20 @@ bindkey '^[[1;5D' backward-word
 # Set Ctrl+Right to skip the next word
 bindkey '^[[1;5C' forward-word
 # Set Delete to delete the next char
-bindkey '^[[3~' delete-char
+bindkey ${terminfo[kdch1]} delete-char
+# Set Insert to enable/disable insert mode
+bindkey ${terminfo[kich1]} overwrite-mode
 # Exit zsh on Ctrl+D even if line is not empty
 exit_zsh() { exit }
 zle -N exit_zsh
 bindkey '^D' exit_zsh
 # Enable Shift+Tab to go to previous entry in completion menu
 zmodload zsh/complist
-bindkey -M menuselect '^[[Z' reverse-menu-complete
+bindkey -M menuselect ${terminfo[kcbt]} reverse-menu-complete
 # Disable Shift+Tab strange behaviour outside completion menu
 none() {}
 zle -N none
-bindkey '^[[Z' none
+bindkey ${terminfo[kcbt]} none
 
 ## SETTINGS
 
@@ -100,8 +102,9 @@ autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
-bindkey "^[[A" up-line-or-beginning-search
-bindkey "^[[B" down-line-or-beginning-search
+# Up/Down arrows history search
+bindkey ${terminfo[kcuu1]} up-line-or-beginning-search
+bindkey ${terminfo[kcud1]} down-line-or-beginning-search
 
 # Easy url support (fix globbing in urls)
 autoload -Uz bracketed-paste-magic
