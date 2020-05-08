@@ -8,7 +8,7 @@
 #       IF ZTUPIDE_ASYNC, make load async (the prompt is shown even if plugins not loaded yet)
 #       Make an autocompletion file/module/??? for these commands
 
-# use this command below to benchmark zsh loading time (0.03s on empty .zshrc, 0.05s with current master in my dotfiles repository)
+# use this command below to benchmark zsh loading time (0.03s on empty .zshrc, 0.05s with current master in my dotfiles repository, 0.06s with ztupide)
 # for i ({1..10}) time zsh -ilc echo &>/dev/null
 
 export ZTUPIDE_PLUGIN_PATH=~/.zsh/plugins
@@ -28,33 +28,46 @@ ztupide() {
             local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
         fi
         
-        # source first .plugin.zsh, prevents multiple .plugin.zsh
-        if [ -d "${plugin_path}" ] && [ $(find -L "${plugin_path}" -maxdepth 2 -type f -name "*.plugin.zsh") ]; then
+        local plugin_files=$(find -L "${plugin_path}" -maxdepth 1 -type f -name "*.plugin.zsh")
+        if [ -d "${plugin_path}" ] && [ ! -z "${plugin_files}" ] ; then
+            # source first .plugin.zsh, prevents multiple .plugin.zsh
             source "${plugin_path}"/*.plugin.zsh([1])
             # echo "${plugin_name} plugin loaded"
         else
-            rm -rf "${plugin_path}"
+            # TODO: do not rm unloaded plugins that are not git repos and place them - rename ? them in special way to recognise them
+            # rm -rf "${plugin_path}"
             echo "plugin load error: ${plugin_name} is not a valid plugin"
         fi
         ;;
     unload)
+        # TODO: do not rm unloaded plugins that are not git repos and place them - rename ? them in special way to recognise them
+        # make separate unload / remove commands ?
         [ -z "${2}" ] && echo "plugin unload error: none specified" && return
 
-        local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${2}"
+        if [[ "${2}" =~ .+"/".+ ]]; then
+            local plugin_name="${${(@s:/:)2}[2]}"
+            local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
+        else
+            local plugin_name="${2}"
+            local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
+        fi
+
         if [ -d "${plugin_path}" ]; then
             rm -rf "${plugin_path}"
-            echo "${2} plugin unloaded"
+            echo "${plugin_name} plugin unloaded"
         else
-            echo "plugin unload error: ${2} plugin not found"
+            echo "plugin unload error: ${plugin_name} plugin not found"
         fi
         ;;
     update)
-        # TODO: update ztupide plugin manager
+        # TODO: also update ztupide plugin manager
         find -L "${ZTUPIDE_PLUGIN_PATH}" -maxdepth 2 -type d -name .git | while read dir; do
-            local plugin_path="${dir}/.."
-            if [ $(find -L "${plugin_path}" -maxdepth 2 -type f -name "*.plugin.zsh") ]; then
+            local plugin_path=$(dirname "${dir}")
+            local plugin_files=$(find -L "${plugin_path}" -maxdepth 1 -type f -name "*.plugin.zsh")
+            if [ ! -z "${plugin_files}" ]; then
                 git -C "${plugin_path}" pull origin master
-                echo "${2} plugin updated"
+                local plugin_name="${${(@s:/:)plugin_path}[-1]}"
+                echo "${plugin_name} plugin updated"
             fi
         done
         ;;
@@ -183,8 +196,10 @@ ztupide load zsh-colored-man-pages
 
 # fish-like autosuggestions (a bit slow)
 ZSH_AUTOSUGGEST_USE_ASYNC=1
-# source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 ztupide load zsh-users/zsh-autosuggestions
+
+# Auto-close and delete matching delimiters in zsh
+ztupide load hlissner/zsh-autopair
 
 ## PROMPT
 
