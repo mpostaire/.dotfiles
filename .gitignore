@@ -3,7 +3,8 @@ icons
 !awesome/.config/awesome/themes/icons
 themes
 !awesome/.config/awesome/themes
-zsh-autosuggestions
+zsh/.zsh/plugins/*
+!zsh/.zsh/plugins/zsh-colored-man-pages
 zsh/.zsh/cache
 mpd/.config/mpd/pid
 mpd/.config/mpd/state

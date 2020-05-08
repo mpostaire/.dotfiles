@@ -1,30 +1,99 @@
 # TODO: use zcompile on plugins (and prompt ?) to speed up
+# TODO: make my own (simple) plugin manager: ztupide
+#       ztupide load 'github_user_name/repository_name': if exists in .zsh/plugins load it, else search in github and clone (safety measure ? how to search it ? check oh my zsh and others for inspiration)
+#       ztupide unload 'plugin-name': if exists in .zsh/plugins remove its files, else do nothing
+#       ztupide update: iterate .zsh/plugins and git pull its contents (when ztupide loading, do this automatically if ZTUPIDE_AUTOUPDATE set and do it at ZTUPIDE_AUTOUPDATE_TIME interval)
+# 
+#       IF ZTUPIDE_ZCOMPILE, use zcompile on all plugins and load the compiled result
+#       IF ZTUPIDE_ASYNC, make load async (the prompt is shown even if plugins not loaded yet)
+#       Make an autocompletion file/module/??? for these commands
+
+# use this command below to benchmark zsh loading time (0.03s on empty .zshrc, 0.05s with current master in my dotfiles repository)
+# for i ({1..10}) time zsh -ilc echo &>/dev/null
+
+export ZTUPIDE_PLUGIN_PATH=~/.zsh/plugins
+
+ztupide() {
+    case "${1}" in
+    load)
+        [ -z "${2}" ] && echo "plugin load error: none specified" && return
+        [ -d "${ZTUPIDE_PLUGIN_PATH}" ] || mkdir "${ZTUPIDE_PLUGIN_PATH}"
+
+        if [[ "${2}" =~ .+"/".+ ]]; then
+            local plugin_name="${${(@s:/:)2}[2]}"
+            local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
+            [ -d "${plugin_path}" ] || git -C "${ZTUPIDE_PLUGIN_PATH}" clone https://github.com/"${2}"
+        else
+            local plugin_name="${2}"
+            local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
+        fi
+        
+        # source first .plugin.zsh, prevents multiple .plugin.zsh
+        if [ -d "${plugin_path}" ] && [ $(find -L "${plugin_path}" -maxdepth 2 -type f -name "*.plugin.zsh") ]; then
+            source "${plugin_path}"/*.plugin.zsh([1])
+            # echo "${plugin_name} plugin loaded"
+        else
+            rm -rf "${plugin_path}"
+            echo "plugin load error: ${plugin_name} is not a valid plugin"
+        fi
+        ;;
+    unload)
+        [ -z "${2}" ] && echo "plugin unload error: none specified" && return
+
+        local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${2}"
+        if [ -d "${plugin_path}" ]; then
+            rm -rf "${plugin_path}"
+            echo "${2} plugin unloaded"
+        else
+            echo "plugin unload error: ${2} plugin not found"
+        fi
+        ;;
+    update)
+        # TODO: update ztupide plugin manager
+        find -L "${ZTUPIDE_PLUGIN_PATH}" -maxdepth 2 -type d -name .git | while read dir; do
+            local plugin_path="${dir}/.."
+            if [ $(find -L "${plugin_path}" -maxdepth 2 -type f -name "*.plugin.zsh") ]; then
+                git -C "${plugin_path}" pull origin master
+                echo "${2} plugin updated"
+            fi
+        done
+        ;;
+    *)
+        echo "Usage : ztupide ACTION\n\tACTIONs: update - update plugins"
+        ;;
+    esac
+}
 
 ## Bindings (cause the first char of the keycode to be slow when typed in terminal)
+
+# Allows the use of terminfo array for keybindings
+zmodload -i zsh/terminfo
 
 # Set Ctrl+Backspace to delete previous word
 bindkey '^H' backward-kill-word
 # Set Ctrl+Delete to delete the next word
 bindkey '^[[3;5~' kill-word
+# Same as above but for vscode integrated terminal
+bindkey '^[d' kill-word
 # Set Ctrl+Left to skip previous word
 bindkey '^[[1;5D' backward-word
 # Set Ctrl+Right to skip the next word
 bindkey '^[[1;5C' forward-word
 # Set Delete to delete the next char
-bindkey ${terminfo[kdch1]} delete-char
+bindkey "${terminfo[kdch1]}" delete-char
 # Set Insert to enable/disable insert mode
-bindkey ${terminfo[kich1]} overwrite-mode
+bindkey "${terminfo[kich1]}" overwrite-mode
 # Exit zsh on Ctrl+D even if line is not empty
 exit_zsh() { exit }
 zle -N exit_zsh
 bindkey '^D' exit_zsh
 # Enable Shift+Tab to go to previous entry in completion menu
 zmodload zsh/complist
-bindkey -M menuselect ${terminfo[kcbt]} reverse-menu-complete
+bindkey -M menuselect "${terminfo[kcbt]}" reverse-menu-complete
 # Disable Shift+Tab strange behaviour outside completion menu
 none() {}
 zle -N none
-bindkey ${terminfo[kcbt]} none
+bindkey "${terminfo[kcbt]}" none
 
 ## SETTINGS
 
@@ -86,11 +155,6 @@ zstyle ':completion:*' cache-path ~/.zsh/cache
 # This may make the upper 2 lines useless
 zstyle ":completion:*:commands" rehash true
 
-## PLUGINS
-
-# Colored man pages (needs colors and format tweaking)
-source ~/.zsh/zsh-colored-man-pages/colored-man-pages.plugin.zsh
-
 # backward-kill stops at slashes
 autoload -U select-word-style
 select-word-style bash
@@ -103,8 +167,8 @@ autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 # Up/Down arrows history search
-bindkey ${terminfo[kcuu1]} up-line-or-beginning-search
-bindkey ${terminfo[kcud1]} down-line-or-beginning-search
+bindkey "${terminfo[kcuu1]}" up-line-or-beginning-search
+bindkey "${terminfo[kcud1]}" down-line-or-beginning-search
 
 # Easy url support (fix globbing in urls)
 autoload -Uz bracketed-paste-magic
@@ -112,18 +176,15 @@ zle -N bracketed-paste bracketed-paste-magic
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
+## PLUGINS
+
+# Colored man pages (needs colors and format tweaking)
+ztupide load zsh-colored-man-pages
+
 # fish-like autosuggestions (a bit slow)
 ZSH_AUTOSUGGEST_USE_ASYNC=1
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-# IntelliSense-like find-as-you-type completion for zsh.
-# TODO: Uncomment when this is less buggy and it does not override tab functionnality (maybe make a fork)
-#source ~/.zsh/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-# This one below actually does not override tab functionnality but I did not test it further and is very old. Plus I think it is incompatible with some of this .zshrc configs and I'll need to investigate further
-#source ~/.zsh/auto-fu.zsh/auto-fu.zsh
-#zle-line-init () {auto-fu-init;}; zle -N zle-line-init
-#zstyle ':completion:*' completer _oldlist _complete
-#zle -N zle-keymap-select auto-fu-zle-keymap-select
+# source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+ztupide load zsh-users/zsh-autosuggestions
 
 ## PROMPT
 
