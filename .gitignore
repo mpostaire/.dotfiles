@@ -5,6 +5,7 @@ themes
 !awesome/.config/awesome/themes
 zsh/.zsh/plugins/*
 !zsh/.zsh/plugins/zsh-colored-man-pages
+!zsh/.zsh/plugins/zsh-colored-ls
 zsh/.zsh/cache
 mpd/.config/mpd/pid
 mpd/.config/mpd/state

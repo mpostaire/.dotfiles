@@ -1,89 +1,80 @@
-# TODO: use zcompile on plugins (and prompt ?) to speed up
-# TODO: make my own (simple) plugin manager: ztupide
-#       ztupide load 'github_user_name/repository_name': if exists in .zsh/plugins load it, else search in github and clone (safety measure ? how to search it ? check oh my zsh and others for inspiration)
-#       ztupide unload 'plugin-name': if exists in .zsh/plugins remove its files, else do nothing
-#       ztupide update: iterate .zsh/plugins and git pull its contents (when ztupide loading, do this automatically if ZTUPIDE_AUTOUPDATE set and do it at ZTUPIDE_AUTOUPDATE_TIME interval)
-# 
-#       IF ZTUPIDE_ZCOMPILE, use zcompile on all plugins and load the compiled result
-#       IF ZTUPIDE_ASYNC, make load async (the prompt is shown even if plugins not loaded yet)
-#       Make an autocompletion file/module/??? for these commands
-
 # use this command below to benchmark zsh loading time (0.03s on empty .zshrc, 0.05s with current master in my dotfiles repository, 0.06s with ztupide)
 # for i ({1..10}) time zsh -ilc echo &>/dev/null
 
-export ZTUPIDE_PLUGIN_PATH=~/.zsh/plugins
+## MODULES
 
-ztupide() {
-    case "${1}" in
-    load)
-        [ -z "${2}" ] && echo "plugin load error: none specified" && return
-        [ -d "${ZTUPIDE_PLUGIN_PATH}" ] || mkdir "${ZTUPIDE_PLUGIN_PATH}"
-
-        if [[ "${2}" =~ .+"/".+ ]]; then
-            local plugin_name="${${(@s:/:)2}[2]}"
-            local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
-            [ -d "${plugin_path}" ] || git -C "${ZTUPIDE_PLUGIN_PATH}" clone https://github.com/"${2}"
-        else
-            local plugin_name="${2}"
-            local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
-        fi
-        
-        local plugin_files=$(find -L "${plugin_path}" -maxdepth 1 -type f -name "*.plugin.zsh")
-        if [ -d "${plugin_path}" ] && [ ! -z "${plugin_files}" ] ; then
-            # source first .plugin.zsh, prevents multiple .plugin.zsh
-            source "${plugin_path}"/*.plugin.zsh([1])
-            # echo "${plugin_name} plugin loaded"
-        else
-            # TODO: do not rm unloaded plugins that are not git repos and place them - rename ? them in special way to recognise them
-            # rm -rf "${plugin_path}"
-            echo "plugin load error: ${plugin_name} is not a valid plugin"
-        fi
-        ;;
-    unload)
-        # TODO: do not rm unloaded plugins that are not git repos and place them - rename ? them in special way to recognise them
-        # make separate unload / remove commands ?
-        [ -z "${2}" ] && echo "plugin unload error: none specified" && return
-
-        if [[ "${2}" =~ .+"/".+ ]]; then
-            local plugin_name="${${(@s:/:)2}[2]}"
-            local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
-        else
-            local plugin_name="${2}"
-            local plugin_path="${ZTUPIDE_PLUGIN_PATH}"/"${plugin_name}"
-        fi
-
-        if [ -d "${plugin_path}" ]; then
-            rm -rf "${plugin_path}"
-            echo "${plugin_name} plugin unloaded"
-        else
-            echo "plugin unload error: ${plugin_name} plugin not found"
-        fi
-        ;;
-    update)
-        # TODO: also update ztupide plugin manager
-        find -L "${ZTUPIDE_PLUGIN_PATH}" -maxdepth 2 -type d -name .git | while read dir; do
-            local plugin_path=$(dirname "${dir}")
-            local plugin_files=$(find -L "${plugin_path}" -maxdepth 1 -type f -name "*.plugin.zsh")
-            if [ ! -z "${plugin_files}" ]; then
-                git -C "${plugin_path}" pull origin master
-                local plugin_name="${${(@s:/:)plugin_path}[-1]}"
-                echo "${plugin_name} plugin updated"
-            fi
-        done
-        ;;
-    *)
-        echo "Usage : ztupide ACTION\n\tACTIONs: update - update plugins"
-        ;;
-    esac
-}
-
-## Bindings (cause the first char of the keycode to be slow when typed in terminal)
+zmodload zsh/complist
 
 # Allows the use of terminfo array for keybindings
 zmodload -i zsh/terminfo
 
+## COMPLETION
+
+autoload -U compinit && compinit # init completion
+# Enable tab completion menu-based
+zstyle ':completion:*' menu select
+# Default colors for listings.
+zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
+# Speed up completions
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+# Completion cache is rebuilt each time we invoke completion
+# (no need to start new zsh when installing new packages for example)
+# This may make the upper 2 lines useless
+zstyle ":completion:*:commands" rehash true
+
+## PLUGINS
+
+source ~/.zsh/ztupide/ztupide.zsh # TODO if not exists git clone it (or curl)
+
+# Colored man pages (needs colors and format tweaking)
+ztupide load zsh-colored-man-pages
+
+# Colored ls
+ztupide load zsh-colored-ls
+
+# Auto-close and delete matching delimiters in zsh (fork of hlissner/zsh-autopair that handles backward-kill-word)
+ztupide load mpostaire/zsh-autopair
+
+# fish-like autosuggestions
+ZSH_AUTOSUGGEST_USE_ASYNC=1
+# we call _zsh_autosuggest_start function after the plugin is loaded (it is needed if loading in async mode).
+ztupide load zsh-users/zsh-autosuggestions _zsh_autosuggest_start
+
+# fzf integration
+if command -v fzf > /dev/null; then
+    # TODO color scheme : https://github.com/junegunn/fzf/wiki/Color-schemes (make a xresources or terminfo ?? based one)
+    export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
+    --color=dark
+    --color=fg:-1,bg:-1,hl:#c678dd,fg+:#ffffff,bg+:#4b5263,hl+:#d858fe
+    --color=info:#98c379,prompt:#61afef,pointer:#be5046,marker:#e5c07b,spinner:#61afef,header:#61afef
+    '
+    export FZF_CTRL_R_OPTS='--reverse' # put history search prompt on top
+
+    if [[ -a /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
+        # Debian installation
+        source /usr/share/doc/fzf/examples/key-bindings.zsh
+        source /usr/share/doc/fzf/examples/completion.zsh
+    else
+        # Arch Installation
+        source /usr/share/fzf/key-bindings.zsh
+        source /usr/share/fzf/completion.zsh
+    fi
+
+    # Replace zsh's default completion selection menu with fzf!
+    ztupide load Aloxaf/fzf-tab
+else
+    bindkey "^R" history-incremental-pattern-search-backward
+fi
+
+## BINDINGS
+
 # Set Ctrl+Backspace to delete previous word
 bindkey '^H' backward-kill-word
+# backward-kill-word stops at slashes
+autoload -U select-word-style
+select-word-style bash
 # Set Ctrl+Delete to delete the next word
 bindkey '^[[3;5~' kill-word
 # Same as above but for vscode integrated terminal
@@ -101,7 +92,6 @@ exit_zsh() { exit }
 zle -N exit_zsh
 bindkey '^D' exit_zsh
 # Enable Shift+Tab to go to previous entry in completion menu
-zmodload zsh/complist
 bindkey -M menuselect "${terminfo[kcbt]}" reverse-menu-complete
 # Disable Shift+Tab strange behaviour outside completion menu
 none() {}
@@ -120,18 +110,6 @@ setopt HIST_IGNORE_SPACE
 HISTFILE=~/.zhistory
 SAVEHIST=1000
 HISTSIZE=1000
-
-# ls colors
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto --group-directories-first'
-    # alias dir='dir --color=auto'
-    # alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
 
 # .. # -> go # directories up
 ..() {
@@ -155,25 +133,6 @@ chpwd() { ls }
 # download audio from youtube
 audio-dl() { youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s' $1 }
 
-# Enable tab completion menu-based
-zstyle ':completion:*' menu select
-# Default colors for listings.
-zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
-# Speed up completions
-zstyle ':completion:*' accept-exact '*(N)'
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path ~/.zsh/cache
-# Completion cache is rebuilt each time we invoke completion
-# (no need to start new zsh when installing new packages for example)
-# This may make the upper 2 lines useless
-zstyle ":completion:*:commands" rehash true
-
-# backward-kill stops at slashes
-autoload -U select-word-style
-select-word-style bash
-
-autoload -U compinit && compinit # init completion
-
 # Cycle through history based on characters already typed on the line
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
@@ -188,18 +147,6 @@ autoload -Uz bracketed-paste-magic
 zle -N bracketed-paste bracketed-paste-magic
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
-
-## PLUGINS
-
-# Colored man pages (needs colors and format tweaking)
-ztupide load zsh-colored-man-pages
-
-# fish-like autosuggestions (a bit slow)
-ZSH_AUTOSUGGEST_USE_ASYNC=1
-ztupide load zsh-users/zsh-autosuggestions
-
-# Auto-close and delete matching delimiters in zsh
-ztupide load hlissner/zsh-autopair
 
 ## PROMPT
 
@@ -310,3 +257,6 @@ _createprompt() {
 PROMPT='$(_createprompt)'
 RPROMPT='%(?:$(_git_info):$(_git_info) %F{yellow}[%?])'
 SPROMPT="Correct %F{red}'%R'%f to %F{green}'%r'%f [Yes, No, Abort, Edit]? "
+
+# Syntax-highlighting for Zshell (needs to be at the end of .zshrc)
+ztupide load zdharma/fast-syntax-highlighting
