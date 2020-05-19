@@ -44,5 +44,3 @@ TODO
 - bluetooth widget
 
 - autoupdate script (with popups ?)
-
-- script that git pull zsh plugins when necessary (take inspiration from this [link](https://github.com/TamCore/autoupdate-oh-my-zsh-plugins/blob/master/autoupdate.plugin.zsh))

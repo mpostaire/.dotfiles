@@ -7,6 +7,8 @@ zsh/.zsh/plugins/*
 !zsh/.zsh/plugins/zsh-colored-man-pages
 !zsh/.zsh/plugins/zsh-colored-ls
 zsh/.zsh/cache
+*zwc
+zsh/.zsh/ztupide
 mpd/.config/mpd/pid
 mpd/.config/mpd/state
 mpd/.config/mpd/database

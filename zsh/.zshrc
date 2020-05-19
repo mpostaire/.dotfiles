@@ -3,6 +3,7 @@
 
 ## MODULES
 
+# Enables completion list-colors
 zmodload zsh/complist
 
 # Allows the use of terminfo array for keybindings
@@ -26,30 +27,29 @@ zstyle ":completion:*:commands" rehash true
 
 ## PLUGINS
 
-source ~/.zsh/ztupide/ztupide.zsh # TODO if not exists git clone it (or curl)
+[ -f ~/.zsh/ztupide/ztupide.zsh ] || git -C ~/.zsh clone https://github.com/mpostaire/ztupide
+ZTUPIDE_AUTOUPDATE=604800 # 7 days
+source ~/.zsh/ztupide/ztupide.zsh
 
 # Colored man pages (needs colors and format tweaking)
-ztupide load zsh-colored-man-pages
+ztupide load --async zsh-colored-man-pages
 
-# Colored ls
-ztupide load zsh-colored-ls
+# Colored ls (and set auto ls when cd with chpwd in callback to ensure the auto ls is also colored)
+ztupide load --async zsh-colored-ls 'chpwd() { ls }'
 
 # Auto-close and delete matching delimiters in zsh (fork of hlissner/zsh-autopair that handles backward-kill-word)
-ztupide load mpostaire/zsh-autopair
+ztupide load --async mpostaire/zsh-autopair
+
+# Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
+ztupide load --async zdharma/fast-syntax-highlighting
 
 # fish-like autosuggestions
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 # we call _zsh_autosuggest_start function after the plugin is loaded (it is needed if loading in async mode).
-ztupide load zsh-users/zsh-autosuggestions _zsh_autosuggest_start
+ztupide load --async zsh-users/zsh-autosuggestions _zsh_autosuggest_start
 
 # fzf integration
 if command -v fzf > /dev/null; then
-    # TODO color scheme : https://github.com/junegunn/fzf/wiki/Color-schemes (make a xresources or terminfo ?? based one)
-    export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
-    --color=dark
-    --color=fg:-1,bg:-1,hl:#c678dd,fg+:#ffffff,bg+:#4b5263,hl+:#d858fe
-    --color=info:#98c379,prompt:#61afef,pointer:#be5046,marker:#e5c07b,spinner:#61afef,header:#61afef
-    '
     export FZF_CTRL_R_OPTS='--reverse' # put history search prompt on top
 
     if [[ -a /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
@@ -63,7 +63,7 @@ if command -v fzf > /dev/null; then
     fi
 
     # Replace zsh's default completion selection menu with fzf!
-    ztupide load Aloxaf/fzf-tab
+    ztupide load --async Aloxaf/fzf-tab
 else
     bindkey "^R" history-incremental-pattern-search-backward
 fi
@@ -127,9 +127,6 @@ fix() {
     echo -e "\e[0m";
 }
 
-# auto ls when cd (chpwd function is executed each time zsh changes directory)
-chpwd() { ls }
-
 # download audio from youtube
 audio-dl() { youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s' $1 }
 
@@ -163,6 +160,7 @@ _ssh_info() {
 # Echoes information about Git repository status when inside a Git repository
 # partially tested
 # TODO: edit to my preferences
+# TODO async RPROMPT for git
 _git_info() {
     # Exit if not inside a Git repository
     ! git rev-parse --is-inside-work-tree > /dev/null 2>&1 && return
@@ -257,6 +255,3 @@ _createprompt() {
 PROMPT='$(_createprompt)'
 RPROMPT='%(?:$(_git_info):$(_git_info) %F{yellow}[%?])'
 SPROMPT="Correct %F{red}'%R'%f to %F{green}'%r'%f [Yes, No, Abort, Edit]? "
-
-# Syntax-highlighting for Zshell (needs to be at the end of .zshrc)
-ztupide load zdharma/fast-syntax-highlighting
