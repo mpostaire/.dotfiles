@@ -1,29 +1,5 @@
-# use this command below to benchmark zsh loading time (0.03s on empty .zshrc, 0.05s with current master in my dotfiles repository, 0.06s with ztupide)
-# for i ({1..10}) time zsh -ilc echo &>/dev/null
-
-## MODULES
-
-# Enables completion list-colors
-zmodload zsh/complist
-
-# Allows the use of terminfo array for keybindings
-zmodload -i zsh/terminfo
-
-## COMPLETION
-
-autoload -U compinit && compinit # init completion
-# Enable tab completion menu-based
-zstyle ':completion:*' menu select
-# Default colors for listings.
-zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
-# Speed up completions
-zstyle ':completion:*' accept-exact '*(N)'
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path ~/.zsh/cache
-# Completion cache is rebuilt each time we invoke completion
-# (no need to start new zsh when installing new packages for example)
-# This may make the upper 2 lines useless
-zstyle ":completion:*:commands" rehash true
+# init completion (must be before ztupide is sourced to enable its completions)
+autoload -U compinit && compinit
 
 ## PLUGINS
 
@@ -70,6 +46,29 @@ fi
 
 # Prompt (can be async only if it support it or else first prompt may not correctly show up)
 ztupide load prompt
+
+## MODULES
+
+# Enables completion list-colors
+zmodload zsh/complist
+
+# Allows the use of terminfo array for keybindings
+zmodload -i zsh/terminfo
+
+## COMPLETION
+
+# Enable tab completion menu-based
+zstyle ':completion:*' menu select
+# Default colors for listings.
+zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
+# Speed up completions
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+# Completion cache is rebuilt each time we invoke completion
+# (no need to start new zsh when installing new packages for example)
+# This may make the upper 2 lines useless
+zstyle ":completion:*:commands" rehash true
 
 ## BINDINGS
 

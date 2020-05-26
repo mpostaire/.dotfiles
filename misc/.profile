@@ -12,24 +12,15 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 # fix android emulator
 export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 
-# qt native gtk integration
-export QT_QPA_PLATFORMTHEME=gtk2
-
-# better time command formatting
+# time command format
 export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
 
 # enable numlock
-if [ -x /usr/bin/numlockx ]; then
-      /usr/bin/numlockx on
-fi
+[ -x /usr/bin/numlockx ] && /usr/bin/numlockx on
 
 # set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-fi
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
+[ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
+[ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
 
 # auto startx if connected in tty1 (useful if not using a login manager)
-#[[ $(tty) = "/dev/tty1" ]] && exec startx
+# [[ -z $DISPLAY && $(tty) = "/dev/tty1" ]] && exec startx
