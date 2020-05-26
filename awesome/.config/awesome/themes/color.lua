@@ -30,8 +30,18 @@ color.white_alt = xresources_theme["color15"]
 color.true_white = "#FFFFFF"
 color.true_black = "#000000"
 
+local mt_2D = {
+    __index = function(t, k)
+            local inner = {}
+            rawset(t, k, inner)
+            return inner
+        end
+}
+local color_lighten_cache = setmetatable({}, mt_2D)
+local color_darken_cache = setmetatable({}, mt_2D)
+
 -- c is a string hex representation of a rgb color
-function color.rgbhex_to_rgbtable(c)
+local function rgbhex_to_rgbtable(c)
     local R, G, B = c:match("#(%x%x)(%x%x)(%x%x)")
     return {r = tonumber(R, 16), g = tonumber(G, 16), b = tonumber(B, 16)}
 end
@@ -41,12 +51,12 @@ local function round(x)
 end
 
 -- c is a table representation of a rgb color
-function color.rgbtable_to_rgbhex(c)
+local function rgbtable_to_rgbhex(c)
     return "#" .. string.format("%.2x", round(c.r)) .. string.format("%.2x", round(c.g)) .. string.format("%.2x", round(c.b))
 end
 
 -- c is a rgb table
-function color.rgb_to_hsl(c)
+local function rgb_to_hsl(c)
     local temp = {r = c.r / 255, g = c.g / 255, b = c.b / 255}
     local min = math.min(temp.r, temp.g, temp.b)
     local max = math.max(temp.r, temp.g, temp.b)
@@ -100,7 +110,7 @@ local function hue_to_rgb(var1, var2, h)
 end
 
 -- c is a hsl table
-function color.hsl_to_rgb(c)
+local function hsl_to_rgb(c)
     local temp = {h = c.h / 360, s = c.s, l = c.l}
 
     local R, G, B
@@ -127,25 +137,31 @@ end
 
 -- c is a hex representation of a rgb color, 0 <= value <= 1
 function color.lighten_by(c, value)
-    local temp = color.rgbhex_to_rgbtable(c)
-    temp = color.rgb_to_hsl(temp)
+    if color_lighten_cache[c][value] then return color_lighten_cache[c][value] end
+
+    local temp = rgbhex_to_rgbtable(c)
+    temp = rgb_to_hsl(temp)
 
     local delta = 1 - temp.l
     temp.l = temp.l + delta * value
 
-    temp = color.hsl_to_rgb(temp)
-    return color.rgbtable_to_rgbhex(temp)
+    temp = hsl_to_rgb(temp)
+    color_lighten_cache[c][value] = rgbtable_to_rgbhex(temp)
+    return color_lighten_cache[c][value]
 end
 
 -- c is a hex representation of a rgb color, 0 <= value <= 1
 function color.darken_by(c, value)
-    local temp = color.rgbhex_to_rgbtable(c)
-    temp = color.rgb_to_hsl(temp)
+    if color_darken_cache[c][value] then return color_darken_cache[c][value] end
+    
+    local temp = rgbhex_to_rgbtable(c)
+    temp = rgb_to_hsl(temp)
 
     temp.l = temp.l - temp.l * value
 
-    temp = color.hsl_to_rgb(temp)
-    return color.rgbtable_to_rgbhex(temp)
+    temp = hsl_to_rgb(temp)
+    color_darken_cache[c][value] = rgbtable_to_rgbhex(temp)
+    return color_darken_cache[c][value]
 end
 
 return color

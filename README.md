@@ -42,5 +42,3 @@ TODO
 - music player: find cover in folder first, then find it from the file (the latter cost more performances)
 
 - bluetooth widget
-
-- autoupdate script (with popups ?)
