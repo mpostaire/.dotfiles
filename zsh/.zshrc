@@ -72,11 +72,10 @@ zstyle ":completion:*:commands" rehash true
 
 ## BINDINGS
 
+# backward-kill-word stops at slashes
+WORDCHARS=${WORDCHARS/\/}
 # Set Ctrl+Backspace to delete previous word
 bindkey '^H' backward-kill-word
-# backward-kill-word stops at slashes
-autoload -U select-word-style
-select-word-style bash
 # Set Ctrl+Delete to delete the next word
 bindkey '^[[3;5~' kill-word
 # Same as above but for vscode integrated terminal
