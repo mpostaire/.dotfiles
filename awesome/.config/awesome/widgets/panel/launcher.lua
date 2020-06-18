@@ -29,7 +29,12 @@ return function()
     }
 
     widget:buttons(gears.table.join(
-        awful.button({}, 1, function() applauncher.run(true) end)
+        awful.button({}, 1, function()
+            applauncher.run(true, {
+                height = capi.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.border_width,
+                width = 500, icon_spacing = 8, icon_size = 36, y = beautiful.wibar_height - beautiful.border_width
+            })
+        end)
     ))
 
     local old_cursor, old_wibox
