@@ -25,10 +25,7 @@ awesome-client 'awesome.emit_signal("lock")'
 # kill rofi to prevent locking failure
 killall rofi
 
-# pause music
-mpc pause
-
-i3lock -mn -e $background             \
+i3lock -n -e $background              \
 --insidevercolor=${blue}22            \
 --ringvercolor=${blue_alt}88          \
 \
