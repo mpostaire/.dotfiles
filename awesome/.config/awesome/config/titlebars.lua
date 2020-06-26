@@ -52,15 +52,12 @@ local gen_text_button = function (c, symbol, cmd, colors)
             left = 10,
             widget = wibox.container.margin
         },
+        buttons = awful.button({ }, 1, nil, function()
+            cmd(c, button)
+        end),
         bg = capi.client.focus == c and colors.bg_focus or colors.bg,
         widget = wibox.container.background
     }
-
-    button:buttons(gears.table.join(
-        awful.button({ }, 1, nil, function()
-            cmd(c, button)
-        end)
-    ))
 
     button:connect_signal("mouse::enter", function()
         button.bg = colors.bg_hover
@@ -125,8 +122,6 @@ capi.client.connect_signal("request::titlebars", function(c)
     }
 
     local middle_contents = {
-        -- Title
-        buttons = buttons,
         align  = "center",
         widget = awful.titlebar.widget.titlewidget(c)
     }
@@ -138,41 +133,19 @@ capi.client.connect_signal("request::titlebars", function(c)
         layout = wibox.layout.fixed.horizontal
     }
 
-    -- bug: resize does not shrink client title first but buttons and icons
-    --      I'm not sure there is a fix fore that. there is a github issue but its
-    --      current resolution seems to have the same problem
-    -- fix? try using constraint layout with strategy property (check doc)
     awful.titlebar(c, {size = beautiful.wibar_height - beautiful.border_width}):setup {
         {
-            { -- hacky way of making Title truly centered
-                -- Left
+            middle_contents,
+            {
                 left_contents,
                 {
                     buttons = buttons,
-                    layout = wibox.layout.flex.horizontal
+                    widget = wibox.container.background
                 },
-                {
-                    buttons = buttons,
-                    layout = wibox.layout.flex.horizontal
-                },
-                layout = wibox.layout.align.horizontal
-            },
-            middle_contents, -- Middle
-            { -- hacky way of making Title truly centered
-                {
-                    buttons = buttons,
-                    layout = wibox.layout.flex.horizontal
-                },
-                {
-                    buttons = buttons,
-                    layout = wibox.layout.flex.horizontal
-                },
-                -- Right
                 right_contents,
                 layout = wibox.layout.align.horizontal
             },
-            -- expand = "outside", --- uncomment this for true center but it causes bug noted at line 59
-            layout = wibox.layout.align.horizontal
+            layout = wibox.layout.stack
         },
         bottom = beautiful.border_width,
         widget = wibox.container.margin
