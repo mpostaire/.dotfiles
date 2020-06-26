@@ -12,7 +12,6 @@ return {
     network = require("widgets.panel.network"),
     launcher = require("widgets.panel.launcher"),
     power = require("widgets.panel.power"),
-    group = require("widgets.panel.group"),
 
     -- control widgets
     player = require("widgets.controls.player"),
