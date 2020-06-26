@@ -3,7 +3,6 @@ local wibox = require("wibox")
 local variables = require("config.variables")
 local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup")
-local capi = {awesome = awesome, root = root, mouse = mouse}
 
 local submenu = {
     { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
@@ -18,9 +17,9 @@ local submenu = {
     { "edit config", function()
         awful.spawn.easy_async(variables.gui_editor .. " " .. variables.home .. "/dotfiles", function() end)
     end },
-    { "restart", capi.awesome.restart },
+    { "restart", _G.awesome.restart },
     { "quit", function()
-        capi.awesome.quit()
+        _G.awesome.quit()
     end },
 }
 
@@ -38,8 +37,8 @@ local mainmenu = awful.menu(
 local background = wibox {
     x = 0,
     y = 0,
-    width = capi.mouse.screen.geometry.width,
-    height = capi.mouse.screen.geometry.height,
+    width = _G.mouse.screen.geometry.width,
+    height = _G.mouse.screen.geometry.height,
     opacity = 0,
     visible = false,
     ontop = true,

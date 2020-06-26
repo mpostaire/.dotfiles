@@ -8,7 +8,6 @@ local color = require("themes.color")
 local beautiful = require("beautiful")
 local variables = require("config.variables")
 local gfs = require("gears.filesystem")
-local capi = {screen = screen}
 local themes_path = gfs.get_configuration_dir().."themes/"
 
 require("themes.wallpaper").set()

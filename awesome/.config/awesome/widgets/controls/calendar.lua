@@ -5,7 +5,6 @@ local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
 local color = require("themes.color")
-local capi = {mouse = mouse}
 
 local icons = {
     prev = "",
@@ -188,7 +187,7 @@ return function(args)
     next_widget:connect_signal("mouse::enter", function()
         next_widget:set_markup_silently('<span foreground="'..fg_normal_hover..'">'..icons.next..'</span>')
 
-        local w = capi.mouse.current_wibox
+        local w = _G.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w
         w.cursor = "hand2"
     end)
@@ -203,7 +202,7 @@ return function(args)
     prev_widget:connect_signal("mouse::enter", function()
         prev_widget:set_markup_silently('<span foreground="'..fg_normal_hover..'">'..icons.prev..'</span>')
 
-        local w = capi.mouse.current_wibox
+        local w = _G.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w
         w.cursor = "hand2"
     end)
@@ -219,7 +218,7 @@ return function(args)
     month_widget:connect_signal("mouse::enter", function()
         month_widget:set_markup_silently('<span foreground="'..green_hover..'">'..month_widget.text..'</span>')
 
-        local w = capi.mouse.current_wibox
+        local w = _G.mouse.current_wibox
         old_cursor, old_wibox = w.cursor, w
         w.cursor = "hand2"
     end)

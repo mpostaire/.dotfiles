@@ -9,7 +9,6 @@ local variables = require("config.variables")
 local network = require("util.network")
 local base_widget_panel = require("widgets.panel.base")
 local network_control_widget = require("widgets.controls.network")
-local capi = {root = root}
 
 local icons = {
     wifi = {
@@ -75,7 +74,7 @@ return function()
     --                 {description = "show the network menu", group = "launcher"})
     -- )
 
-    -- capi.root.keys(gears.table.join(capi.root.keys(), widget_keys))
+    -- _G.root.keys(gears.table.join(_G.root.keys(), widget_keys))
 
     return widget
 end

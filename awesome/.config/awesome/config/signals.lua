@@ -1,14 +1,13 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-local capi = {client = client, awesome = awesome, tag = tag}
 
 -- Signal function to execute when a new client appears.
-capi.client.connect_signal("manage", function(c)
+_G.client.connect_signal("manage", function(c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
-    if not capi.awesome.startup then awful.client.setslave(c) end
+    if not _G.awesome.startup then awful.client.setslave(c) end
 
-    if capi.awesome.startup
+    if _G.awesome.startup
         and not c.size_hints.user_position
         and not c.size_hints.program_position then
             -- Prevent clients from being unreachable after screen count changes.
@@ -17,14 +16,14 @@ capi.client.connect_signal("manage", function(c)
 end)
 
 -- Enable sloppy focus, so that focus follows mouse.
-capi.client.connect_signal("mouse::enter", function(c)
+_G.client.connect_signal("mouse::enter", function(c)
     c:emit_signal("request::activate", "mouse_enter", {raise = false})
 end)
 
-capi.client.connect_signal("focus", function(c)
+_G.client.connect_signal("focus", function(c)
     c.border_color = beautiful.border_focus
 end)
-capi.client.connect_signal("unfocus", function(c)
+_G.client.connect_signal("unfocus", function(c)
     c.border_color = beautiful.border_normal
 end)
 
@@ -86,11 +85,11 @@ local function handle_everything()
     end
 end
 
-capi.tag.connect_signal("property::layout", handle_everything)
+_G.tag.connect_signal("property::layout", handle_everything)
 
-capi.tag.connect_signal("property::selected", handle_everything)
+_G.tag.connect_signal("property::selected", handle_everything)
 
-capi.client.connect_signal("manage", function(c)
+_G.client.connect_signal("manage", function(c)
     -- c.was_maximized = false
     local shown_tiled_clients = awful.screen.focused().tiled_clients
 
@@ -114,7 +113,7 @@ capi.client.connect_signal("manage", function(c)
     end
 end)
 
-capi.client.connect_signal("unmanage", function(c)
+_G.client.connect_signal("unmanage", function(c)
     local shown_tiled_clients = awful.screen.focused().tiled_clients
 
     -- hide borders if last client and not floating
@@ -123,7 +122,7 @@ capi.client.connect_signal("unmanage", function(c)
     end
 end)
 
-capi.client.connect_signal("property::floating", function(c)
+_G.client.connect_signal("property::floating", function(c)
     -- following line may be not needed after signal property::maximized is reworked
     if c.maximized then return end -- fix conflict with signal property::maximized
 
@@ -156,7 +155,7 @@ capi.client.connect_signal("property::floating", function(c)
     end
 end)
 
-capi.client.connect_signal("property::maximized", function(c)
+_G.client.connect_signal("property::maximized", function(c)
     if awful.layout.getname() ~= "floating" then
         if c.maximized then
             c.maximized = false
@@ -167,7 +166,7 @@ capi.client.connect_signal("property::maximized", function(c)
     end
 end)
 
-capi.client.connect_signal("untagged", function(c)
+_G.client.connect_signal("untagged", function(c)
     local shown_tiled_clients = awful.screen.focused().tiled_clients
 
     -- hide borders if last client and not floating
@@ -176,7 +175,7 @@ capi.client.connect_signal("untagged", function(c)
     end
 end)
 
-capi.client.connect_signal("property::minimized", function(c)
+_G.client.connect_signal("property::minimized", function(c)
     local shown_tiled_clients = awful.screen.focused().tiled_clients
 
     if c.minimized then

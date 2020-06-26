@@ -4,20 +4,19 @@ local wibox = require("wibox")
 local gears = require("gears")
 local variables = require("config.variables")
 local color = require("themes.color")
-local capi = {client = client, mouse = mouse}
 
 -- tags buttons widget mouse handling
 local taglist_buttons = gears.table.join(
     awful.button({ }, 1, function(t) t:view_only() end),
     awful.button({ variables.modkey }, 1, function(t)
-        if capi.client.focus then
-            capi.client.focus:move_to_tag(t)
+        if _G.client.focus then
+            _G.client.focus:move_to_tag(t)
         end
     end),
     awful.button({ }, 3, awful.tag.viewtoggle),
     awful.button({ variables.modkey }, 3, function(t)
-        if capi.client.focus then
-            capi.client.focus:toggle_tag(t)
+        if _G.client.focus then
+            _G.client.focus:toggle_tag(t)
         end
     end),
     awful.button({ }, 4, function(t) awful.tag.viewnext(t.screen) end),
@@ -118,7 +117,7 @@ awful.screen.connect_for_each_screen(function(s)
                 local old_cursor, old_wibox
                 self.mouse_hovering = false
                 self:connect_signal("mouse::enter", function()
-                    local w = capi.mouse.current_wibox
+                    local w = _G.mouse.current_wibox
                     old_cursor, old_wibox = w.cursor, w
                     w.cursor = "hand2"
                     self.mouse_hovering = true

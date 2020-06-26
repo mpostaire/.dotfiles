@@ -3,7 +3,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local awful = require("awful")
 local helpers = require("util.helpers")
-local capi = {awesome = awesome}
 
 local icons = {
     reboot = "",
@@ -105,7 +104,7 @@ return function()
 
     disconnect:buttons(gears.table.join(
         awful.button({}, 1, function()
-            capi.awesome.quit()
+            _G.awesome.quit()
             widget.parent.control_popup.visible = false
         end)
     ))

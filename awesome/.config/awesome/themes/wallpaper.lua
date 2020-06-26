@@ -1,5 +1,4 @@
 local gears = require("gears")
-local capi = {screen = screen}
 
 local wallpaper = {}
 
@@ -43,7 +42,7 @@ end
 
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 if set_called then 
-    capi.screen.connect_signal("property::geometry", set_wallpaper)
+    _G.screen.connect_signal("property::geometry", set_wallpaper)
 end
 
 return wallpaper

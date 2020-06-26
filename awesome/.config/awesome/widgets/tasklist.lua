@@ -5,14 +5,13 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local clientmenu = require("popups.clientmenu")
 local color = require("themes.color")
-local capi = {client = client}
 
 local bg_hover = color.lighten_by(beautiful.tasklist_bg_normal, 0.05)
 
 -- launched programs widget mouse handling
 local tasklist_buttons = gears.table.join(
     awful.button({ }, 1, function(c)
-        if c == capi.client.focus then
+        if c == _G.client.focus then
             c.minimized = true
         else
             c:emit_signal(
@@ -73,12 +72,12 @@ awful.screen.connect_for_each_screen(function(s)
             create_callback = function(self, c, index, objects) --luacheck: no unused
                 self:get_children_by_id('clienticon')[1].client = c
                 self:connect_signal("mouse::enter", function()
-                    if capi.client.focus ~= c then
+                    if _G.client.focus ~= c then
                         self.bg = bg_hover
                     end
                 end)
                 self:connect_signal("mouse::leave", function()
-                    if capi.client.focus ~= c then
+                    if _G.client.focus ~= c then
                         self.bg = beautiful.tasklist_bg_normal
                     end
                 end)

@@ -1,7 +1,6 @@
 local gears = require("gears")
 local awful = require("awful")
 local dbus = require("dbus_proxy")
-local capi = {root = root}
 
 local alsa = {}
 
@@ -92,6 +91,6 @@ local keys = gears.table.join(
     {description = "volume down", group = "multimedia"})
 )
 
-capi.root.keys(gears.table.join(capi.root.keys(), keys))
+_G.root.keys(gears.table.join(_G.root.keys(), keys))
 
 return alsa

@@ -5,7 +5,6 @@ local base_panel_widget = require("widgets.panel.base")
 local calendar = require("widgets.controls.calendar")
 local weather = require("widgets.controls.weather")
 local notifcenter = require("widgets.controls.notifcenter")
-local capi = {awesome = awesome}
 
 local icon = ""
 
@@ -47,7 +46,7 @@ return function(format)
         }
     }
 
-    capi.awesome.connect_signal("unlock", function() textclock:force_update() end)
+    _G.awesome.connect_signal("unlock", function() textclock:force_update() end)
 
     -- widget:buttons(gears.table.join(
     --     awful.button({}, 1, calendar.toggle_calendar)
@@ -58,7 +57,7 @@ return function(format)
     --     {description = "show the calendar menu", group = "launcher"})
     -- )
 
-    -- capi.root.keys(gears.table.join(capi.root.keys(), widget_keys))
+    -- _G.root.keys(gears.table.join(_G.root.keys(), widget_keys))
 
     return widget
 end

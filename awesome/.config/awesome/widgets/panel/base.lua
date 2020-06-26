@@ -6,7 +6,6 @@ local awful = require("awful")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
 local autoclose_popup = require("util.autoclose_popup")
-local capi = {mouse = mouse}
 
 local popup_spawn_button = 1
 
@@ -135,7 +134,7 @@ return function(args)
     widget._private.mouse_enter_effect = function()
         widget:highlight(true)
 
-        local w = capi.mouse.current_wibox
+        local w = _G.mouse.current_wibox
         widget._private.old_cursor, widget._private.old_wibox = w.cursor, w
         w.cursor = "hand2"
     end

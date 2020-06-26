@@ -8,12 +8,11 @@ local variables = require("config.variables")
 local clientmenu = require("popups.clientmenu")
 local rootmenu = require("popups.rootmenu")
 local applauncher = require("popups.applauncher")
-local capi = {root = root, client = client, awesome = awesome, mouse = mouse}
 
 local bindings = {}
 
 -- {{{ Mouse bindings
-capi.root.buttons(gears.table.join(
+_G.root.buttons(gears.table.join(
     awful.button({ }, 3, rootmenu.launch),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
@@ -38,28 +37,28 @@ local globalkeys = gears.table.join(
     awful.key({ variables.modkey,           }, "Left",
         function ()
             awful.client.focus.bydirection("left")
-            if capi.client.focus then capi.client.focus:raise() end
+            if _G.client.focus then _G.client.focus:raise() end
         end,
         {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Right",
     function ()
         awful.client.focus.bydirection("right")
-        if capi.client.focus then capi.client.focus:raise() end
+        if _G.client.focus then _G.client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Up",
     function ()
         awful.client.focus.bydirection("up")
-        if capi.client.focus then capi.client.focus:raise() end
+        if _G.client.focus then _G.client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
     awful.key({ variables.modkey,           }, "Down",
     function ()
         awful.client.focus.bydirection("down")
-        if capi.client.focus then capi.client.focus:raise() end
+        if _G.client.focus then _G.client.focus:raise() end
     end,
     {description = "focus left", group = "client"}
     ),
@@ -91,7 +90,7 @@ local globalkeys = gears.table.join(
     -- Standard program
     awful.key({ variables.modkey,           }, "Return", function () awful.spawn(variables.terminal) end,
               {description = "open a terminal", group = "launcher"}),
-    awful.key({ variables.modkey,           }, "r", capi.awesome.restart,
+    awful.key({ variables.modkey,           }, "r", _G.awesome.restart,
               {description = "reload awesome", group = "awesome"}),
     awful.key({ variables.modkey,           }, "g", function()
                                                         local tags = awful.screen.focused().tags
@@ -148,7 +147,7 @@ local globalkeys = gears.table.join(
     -- applauncher
     awful.key({ variables.modkey }, "space", function()
         applauncher.run(true, {
-            height = capi.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.border_width,
+            height = _G.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.border_width,
             width = 500, icon_spacing = 8, icon_size = 36, y = beautiful.wibar_height - beautiful.border_width
         })
     end,
@@ -264,10 +263,10 @@ for i = 1, 9 do
         -- Move client to tag.
         awful.key({ variables.modkey, "Shift" }, "#" .. i + 9,
                   function ()
-                      if capi.client.focus then
-                          local tag = capi.client.focus.screen.tags[i]
+                      if _G.client.focus then
+                          local tag = _G.client.focus.screen.tags[i]
                           if tag then
-                            capi.client.focus:move_to_tag(tag)
+                            _G.client.focus:move_to_tag(tag)
                           end
                      end
                   end,
@@ -275,10 +274,10 @@ for i = 1, 9 do
         -- Toggle tag on focused client.
         awful.key({ variables.modkey, "Control", "Shift" }, "#" .. i + 9,
                   function ()
-                      if capi.client.focus then
-                          local tag = capi.client.focus.screen.tags[i]
+                      if _G.client.focus then
+                          local tag = _G.client.focus.screen.tags[i]
                           if tag then
-                            capi.client.focus:toggle_tag(tag)
+                            _G.client.focus:toggle_tag(tag)
                           end
                       end
                   end,
@@ -302,7 +301,7 @@ bindings.clientbuttons = gears.table.join(
 )
 
 -- Set keys
-capi.root.keys(globalkeys)
+_G.root.keys(globalkeys)
 -- }}}
 
 return bindings

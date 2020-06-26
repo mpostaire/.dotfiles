@@ -1,5 +1,4 @@
 local timer = require("gears.timer")
-local capi = {mouse = mouse}
 
 local helpers = {}
 
@@ -26,7 +25,7 @@ end
 
 -- get a widget geometry under pointer
 function helpers.get_widget_geometry(widget)
-    local w, g = capi.mouse.current_widgets, capi.mouse.current_widget_geometries
+    local w, g = _G.mouse.current_widgets, _G.mouse.current_widget_geometries
     for k, v in ipairs(w) do
         if v == widget then
             return g[k]

@@ -5,7 +5,6 @@ local beautiful = require("beautiful")
 local clientmenu = require("popups.clientmenu")
 local color = require("themes.color")
 local helpers = require("util.helpers")
-local capi = {client = client}
 
 awful.titlebar.enable_tooltip = false
 
@@ -55,7 +54,7 @@ local gen_text_button = function (c, symbol, cmd, colors)
         buttons = awful.button({ }, 1, nil, function()
             cmd(c, button)
         end),
-        bg = capi.client.focus == c and colors.bg_focus or colors.bg,
+        bg = _G.client.focus == c and colors.bg_focus or colors.bg,
         widget = wibox.container.background
     }
 
@@ -95,7 +94,7 @@ local function window_minimize(c)
 end
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
-capi.client.connect_signal("request::titlebars", function(c)
+_G.client.connect_signal("request::titlebars", function(c)
     -- buttons for the titlebar
     local buttons = gears.table.join(
         awful.button({ }, 1, function()

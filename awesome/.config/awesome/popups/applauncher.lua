@@ -6,7 +6,6 @@ local wibox = require("wibox")
 local gears = require("gears")
 local desktopapps = require("util.desktopapps")
 local helpers = require("util.helpers")
-local capi = {mouse = mouse, awesome = awesome}
 
 local applauncher = {}
 
@@ -20,8 +19,8 @@ local popup = wibox {
 local background = wibox {
     x = 0,
     y = 0,
-    width = capi.mouse.screen.geometry.width,
-    height = capi.mouse.screen.geometry.height,
+    width = _G.mouse.screen.geometry.width,
+    height = _G.mouse.screen.geometry.height,
     opacity = 0,
     visible = false,
     ontop = true,
@@ -29,7 +28,7 @@ local background = wibox {
 }
 
 background:connect_signal("button::press", prompt.stop)
-capi.awesome.connect_signal("lock", prompt.stop)
+_G.awesome.connect_signal("lock", prompt.stop)
 
 local prompt_textbox = wibox.widget.textbox()
 prompt_textbox.forced_height = beautiful.get_font_height(beautiful.font)
@@ -42,7 +41,7 @@ local function build_popup(args)
     local prompt_spacing = args.prompt_spacing or 15
     local scrollbar_spacing = args.scrollbar_spacing or 10
     local width = args.width or 250
-    local height = args.height or capi.mouse.screen.geometry.height
+    local height = args.height or _G.mouse.screen.geometry.height
     local x = args.x or 0
     local y = args.y or 0
     local icon_size = args.icon_size or 32

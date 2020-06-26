@@ -1,7 +1,6 @@
 local awful = require("awful")
 local gears = require("gears")
 local dbus = require("dbus_proxy")
-local capi = {root = root}
 
 local brightness = {}
 
@@ -72,6 +71,6 @@ local keys = gears.table.join(
     {description = "brightness down", group = "other"})
 )
 
-capi.root.keys(gears.table.join(capi.root.keys(), keys))
+_G.root.keys(gears.table.join(_G.root.keys(), keys))
 
 return brightness

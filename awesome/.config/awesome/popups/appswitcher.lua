@@ -12,10 +12,9 @@ local beautiful = require("beautiful")
 local dpi = require("beautiful.xresources").apply_dpi
 local gears = require("gears")
 local variables = require("config.variables")
-local capi = {client = client, mouse = mouse}
 
 -- check if client 'c' is in selected tags
-local function current_tag_filter(c)
+local function selected_tags_filter(c)
     for _,v in pairs(awful.screen.focused().selected_tags) do
         if c.first_tag == v then
             return true
@@ -30,38 +29,35 @@ local function focus_client(c)
         "tasklist",
         {raise = true}
     )
-    -- c.first_tag:view_only()
 end
 
 local function focus_next_client()
-    local iterator = awful.client.iterate(current_tag_filter)
+    local iterator = awful.client.iterate(selected_tags_filter)
     iterator()
     local c = iterator()
-    if c then
-        focus_client(c)
-    end
+    if c then focus_client(c) end
 end
 
 local function focus_prev_client()
     local last_client
-    for c in awful.client.iterate(current_tag_filter) do
+    for c in awful.client.iterate(selected_tags_filter) do
         last_client = c
     end
-    focus_client(last_client)
+    if last_client then focus_client(last_client) end
 end
 
-local function current_tag_num_of_clients()
+local function selected_tags_client_count()
     local count = 0
-    for _ in awful.client.iterate(current_tag_filter) do
+    for _ in awful.client.iterate(selected_tags_filter) do
         count = count + 1
     end
     return count
 end
 
--- launched programs widget mouse handling
+-- appswitcher mouse handling
 local tasklist_buttons = gears.table.join(
     awful.button({variables.altkey}, 1, function (c)
-        if c ~= capi.client.focus then
+        if c ~= _G.client.focus then
             focus_client(c)
         end
     end),
@@ -69,9 +65,11 @@ local tasklist_buttons = gears.table.join(
     awful.button({ }, 5, focus_prev_client)
 )
 
+-- TODO use client.connect_signal("manage", function(c) end) to update appswitcher
+
 local appswitcher = awful.popup {
     widget = awful.widget.tasklist {
-        screen = capi.mouse.screen,
+        screen = _G.mouse.screen,
         filter = awful.widget.tasklist.filter.currenttags,
         buttons = tasklist_buttons,
         layout = {
@@ -131,7 +129,7 @@ awful.keygrabber {
     stop_key = variables.altkey,
     stop_event = 'release',
     start_callback = function()
-        if current_tag_num_of_clients() > 0 then
+        if selected_tags_client_count() > 0 then
             appswitcher.visible = true
             awful.client.focus.history.disable_tracking()
         end

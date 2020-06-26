@@ -1,7 +1,6 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local capi = {mouse = mouse}
 
 local target_client
 
@@ -68,8 +67,8 @@ end
 local background = wibox {
     x = 0,
     y = 0,
-    width = capi.mouse.screen.geometry.width,
-    height = capi.mouse.screen.geometry.height,
+    width = _G.mouse.screen.geometry.width,
+    height = _G.mouse.screen.geometry.height,
     opacity = 0,
     visible = false,
     ontop = true,

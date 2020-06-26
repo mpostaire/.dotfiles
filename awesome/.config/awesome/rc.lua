@@ -6,20 +6,19 @@ os.setlocale(os.getenv("LANG"))
 pcall(require, "luarocks.loader")
 
 local naughty = require("naughty")
-local capi = {awesome = awesome}
 
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
-if capi.awesome.startup_errors then
+if _G.awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
                      title = "Oops, there were errors during startup!",
-                     text = capi.awesome.startup_errors })
+                     text = _G.awesome.startup_errors })
 end
 
 -- Handle runtime errors after startup
 do
     local in_error = false
-    capi.awesome.connect_signal("debug::error", function (err)
+    _G.awesome.connect_signal("debug::error", function (err)
         -- Make sure we don't go into an endless error loop
         if in_error then return end
         in_error = true
