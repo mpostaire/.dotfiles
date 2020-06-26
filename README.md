@@ -17,9 +17,7 @@ TODO
 ### high priority
 - try a global background wibox for click outside events (have one wibox for all instances where we want click outside detection)
 
-- each reload, floating clients lose height equivalent to their title bar height
-
-- toggle show popup controls and keygrabber inside control_widgets except if it is in a group
+- toggle show popup controls and keygrabber inside control_widgets
 
 - make mediakeys, etc work when popups like music player, calendar, etc
 
@@ -31,7 +29,7 @@ TODO
 
 - clipboard so when a program is closed the content copied inside it is still useable
 
-- only one popup instance for each widget having a popup (make another group widget but with only this condition ?)
+- redo alt tab menu
 
 ### low priority
 

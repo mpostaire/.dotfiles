@@ -35,13 +35,9 @@ client.connect_signal("property::urgent", function(c)
     c:jump_to()
 end)
 
--- {{{ No borders if tiled and is only one client, titlebar only in floating layout, rounded top titlebar corners,
--- client do not remember if was maximized in floating layout when switching layout, no maximized state if tiled layout
--- /!\ A client in a tag's floating layout is not always floating. Floating is a special mode that ignores the tag's layout.
---     In following comments floating and tiled client really mean its layout not the special mode.
--- Big ugly piece of code but I think I got every corner case covered. It could be simpler but more performance consuming.
--- /!\ With the following code, clients have titlebars while floating and no titlebars otherwise depending
--- of client.requests_no_titlebar or client.show_titlebars
+-- No borders if tiled and there is only one client, titlebar only in floating layout,
+-- client do not remember if was maximized in floating layout when switching layout,
+-- if tiled layout and floating client, maximize will switch client to tiled.
 
 local function show_titlebar(client)
     if not client.requests_no_titlebar or client.show_titlebars then
@@ -56,10 +52,6 @@ local function hide_titlebar(client)
 end
 
 local function handle_tiled(client)
-    -- this if statement is new, if bugs related to maximized state, check there first
-    -- if client.maximized then
-    --     client.was_maximized = true
-    -- end
     client.maximized = false
     hide_titlebar(client)
     if #awful.screen.focused().tiled_clients == 1 and not beautiful.gap_single_client then
@@ -73,11 +65,6 @@ local function handle_floating(client)
     if client.maximized and awful.layout.getname() ~= "floating" then
         handle_tiled(client)
     else
-        -- this if statement is new, if bugs related to maximized state, check there first
-        -- if client.was_maximized then
-        --     client.maximized = true
-        --     client.was_maximized = false
-        -- end
         show_titlebar(client)
         client.border_width = beautiful.border_width
         -- resize client to its previous size minus titlebar size
@@ -152,8 +139,7 @@ capi.client.connect_signal("property::floating", function(c)
             shown_tiled_clients[1].border_width = 0
         end
         -- resize client to its previous size minus titlebar size
-        -- FIXME when awesome is restarded and a client is set floating this is applied and the client shrinks each time
-        if awful.layout.getname() ~= "floating" and not c.fullscreen and not c.requests_no_titlebar then
+        if awful.layout.getname() ~= "floating" and not c.fullscreen and not c.requests_no_titlebar and not awesome.startup then
             c:relative_move(0, 0, 0, -(beautiful.wibar_height - beautiful.border_width))
         end
     else
