@@ -16,6 +16,9 @@ ztupide load --async zsh-colored-ls 'chpwd() { ls }'
 # Auto-close and delete matching delimiters in zsh (fork of hlissner/zsh-autopair that handles backward-kill-word)
 ztupide load --async mpostaire/zsh-autopair
 
+# Try this plugin when it is less buggy (may be incompatible with fzf-tab plugin)
+# ztupide load --async marlonrichert/zsh-autocomplete
+
 # Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
 ztupide load --async zdharma/fast-syntax-highlighting
 
