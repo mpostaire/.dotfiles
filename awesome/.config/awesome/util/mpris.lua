@@ -37,11 +37,10 @@ end
 
 local mpris_proxy, old_name = nil, nil
 local function get_mpris_proxy()
-
     local name = get_mpris_name()
     if not name then
         -- player closed
-        mpris.metadata, mpris.playback_status = nil, nil
+        mpris.name, mpris.metadata, mpris.playback_status = nil, nil, nil
         for _,v in pairs(on_properties_changed_callbacks) do
             v()
         end
@@ -77,7 +76,7 @@ local function get_mpris_proxy()
         end
     end)
 
-    mpris.metadata, mpris.playback_status = proxy.Metadata, proxy.PlaybackStatus
+    mpris.name, mpris.metadata, mpris.playback_status = name, proxy.Metadata, proxy.PlaybackStatus
 
     for _,v in pairs(on_properties_changed_callbacks) do
         v()
