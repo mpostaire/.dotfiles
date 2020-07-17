@@ -25,9 +25,9 @@ awful.screen.connect_for_each_screen(function(s)
                 -- widgets.archupdates(true), -- it stresses me so it's disabled for now :)
                 widgets.network(),
                 widgets.timedate("%H:%M"),
+                widgets.player(),
                 widgets.brightness(false),
                 widgets.volume(false),
-                widgets.player(),
                 widgets.battery(),
                 widgets.power(),
                 wibox.container.margin(_, 4),

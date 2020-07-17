@@ -14,16 +14,17 @@ local icons = {
 }
 
 return function()
+    local font_height = beautiful.get_font_height(beautiful.font)
     local artist_widget = wibox.widget {
         text = "Artiste",
         forced_width = 175,
-        forced_height = beautiful.font_height,
+        forced_height = font_height,
         widget = wibox.widget.textbox
     }
     local title_widget = wibox.widget {
         text = "Title",
         forced_width = 175,
-        forced_height = beautiful.font_height,
+        forced_height = font_height,
         widget = wibox.widget.textbox
     }
     local prev_widget = wibox.widget {
@@ -47,6 +48,7 @@ return function()
                 align  = 'center',
                 markup = icons.play,
                 font = beautiful.icon_font,
+                forced_height = 22,
                 widget = wibox.widget.textbox
             },
             margins = 5,
