@@ -1,6 +1,7 @@
 local awful = require("awful")
 local gears = require("gears")
 local dbus = require("dbus_proxy")
+local Gio = require('lgi').Gio
 
 local mpris = {}
 
@@ -32,21 +33,39 @@ local function get_mpris_name()
     end
 end
 
-local function get_mpris_proxy()
-    local mpris_name = get_mpris_name()
-    if not mpris_name then return end
+-- BUG: open cmus + play music -> open vlc -> close vlc = we need to play/pause or next/prev to update song info (but openning vlc switches to correct state)
 
+local mpris_proxy, old_name = nil, nil
+local function get_mpris_proxy()
+
+    local name = get_mpris_name()
+    if not name then
+        -- player closed
+        mpris.metadata, mpris.playback_status = nil, nil
+        for _,v in pairs(on_properties_changed_callbacks) do
+            v()
+        end
+        old_name = nil
+        return nil
+    end
+    if old_name and name == old_name then
+        -- same player
+        return mpris_proxy
+    end
+    old_name = name
+    
+    -- new player
     local proxy = dbus.Proxy:new(
         {
             bus = dbus.Bus.SESSION,
-            name = mpris_name,
+            name = name,
             interface = "org.mpris.MediaPlayer2.Player",
             path = "/org/mpris/MediaPlayer2"
         }
     )
 
     proxy:on_properties_changed(function (p, changed, invalidated)
-        assert(p == proxy)
+        assert(p == mpris_proxy)
         mpris.metadata = p.Metadata
         mpris.playback_status = p.PlaybackStatus
         for _,v in pairs(on_properties_changed_callbacks) do
@@ -60,71 +79,66 @@ local function get_mpris_proxy()
 
     mpris.metadata, mpris.playback_status = proxy.Metadata, proxy.PlaybackStatus
 
+    for _,v in pairs(on_properties_changed_callbacks) do
+        v()
+    end
+
     return proxy
 end
 
-local proxy = get_mpris_proxy()
-
--- handle mpris connection/disconnection
-manager_proxy:connect_signal(function(p)
-    assert(p == manager_proxy)
-    if not proxy or not mpris.metadata then
-        -- get_mpris_name() is called inside get_mpris_proxy(): no need to check if it is a mpris name
-        proxy = get_mpris_proxy()
-        if proxy then
-            for _,v in pairs(on_properties_changed_callbacks) do
-                v()
-            end
-        end
-    end
-end,
-"NameOwnerChanged", nil)
+-- handle mpris connection/disconnection (for now supports only one mpris player at a time)
+mpris_proxy = get_mpris_proxy()
+function name_owner_changed_callback(conn, sender, object_path, interface_name, signal_name, user_data)
+    mpris_proxy = get_mpris_proxy()
+end
+dbus.Bus.SESSION:signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus',
+                                    'NameOwnerChanged', nil, nil, Gio.DBusSignalFlags.NONE, name_owner_changed_callback)
 
 function mpris.next()
-    if proxy then
-        proxy:Next()
+    if mpris_proxy then
+        mpris_proxy:Next()
     end
 end
 
 function mpris.pause()
-    if proxy then
-        proxy:Pause()
+    if mpris_proxy then
+        mpris_proxy:Pause()
     end
 end
 
 function mpris.play()
-    if proxy then
-        proxy:Play()
+    if mpris_proxy then
+        mpris_proxy:Play()
     end
 end
 
 function mpris.play_pause()
-    if proxy then
-        proxy:PlayPause()
+    if mpris_proxy then
+        mpris_proxy:PlayPause()
     end
 end
 
 function mpris.previous()
-    if proxy then
-        proxy:Previous()
+    if mpris_proxy then
+        mpris_proxy:Previous()
     end
 end
 
 function mpris.seek(offset)
-    if proxy then
-        proxy:Seek(offset)
+    if mpris_proxy then
+        mpris_proxy:Seek(offset)
     end
 end
 
 function mpris.set_position()
-    if proxy then
-        proxy:SetPosition()
+    if mpris_proxy then
+        mpris_proxy:SetPosition()
     end
 end
 
 function mpris.stop()
-    if proxy then
-        proxy:Stop()
+    if mpris_proxy then
+        mpris_proxy:Stop()
     end
 end
 

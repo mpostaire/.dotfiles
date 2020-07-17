@@ -22,7 +22,7 @@ return function()
         widget = wibox.widget.textbox
     }
     local title_widget = wibox.widget {
-        text = "Title",
+        text = "Titre",
         forced_width = 175,
         forced_height = font_height,
         widget = wibox.widget.textbox
@@ -73,7 +73,7 @@ return function()
 
     local widget = wibox.widget {
         {
-            markup = icons.note.."   ",
+            markup = " "..icons.note.."   ",
             font = helpers.change_font_size(beautiful.icon_font, 20),
             widget = wibox.widget.textbox
         },
@@ -120,34 +120,35 @@ return function()
     end)
 
     local function update_widget()
-        local metadata = mpris.metadata
+        local metadata = mpris.metadata        
         if not metadata then
-            widget.visible = false
-            return
-        end
-
-        widget.visible = true
-
-        local artist = metadata["xesam:artist"]
-        if type(artist) == 'table' then
-            artist = metadata["xesam:artist"][1]
-        end
-
-        if mpris.playback_status == "Playing" then
-            playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.pause)
-
-            title_widget.text = metadata["xesam:title"]
-            artist_widget.text = artist
-        elseif  mpris.playback_status == "Paused" then
             playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
-
-            title_widget.text = metadata["xesam:title"]
-            artist_widget.text = artist
+            
+            title_widget.text = "Titre"
+            artist_widget.text = "Artiste"
         else
-            playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
-
-            title_widget.text = "Titre inconnu"
-            artist_widget.text = "Artiste inconnu"
+            local title = metadata["xesam:title"] or "Titre inconnu"
+            local artist = metadata["xesam:artist"] or "Artiste inconnu"
+            if type(artist) == 'table' then
+                artist = metadata["xesam:artist"][1]
+            end
+    
+            if mpris.playback_status == "Playing" then
+                playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.pause)
+    
+                title_widget.text = title
+                artist_widget.text = artist
+            elseif  mpris.playback_status == "Paused" then
+                playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
+    
+                title_widget.text = title
+                artist_widget.text = artist
+            else
+                playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
+    
+                title_widget.text = "Titre"
+                artist_widget.text = "Artiste"
+            end
         end
     end
     update_widget()

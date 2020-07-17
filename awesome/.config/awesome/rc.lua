@@ -43,5 +43,5 @@ require("config")
 -- app switcher (alt+tab)
 require("popups.appswitcher")
 
--- collision (TODO make my own simplified version)
+-- TODO make my own simplified version
 -- require("collision")()
