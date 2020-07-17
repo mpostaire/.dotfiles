@@ -15,12 +15,9 @@ export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 # time command format
 export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
 
-# enable numlock
-[ -x /usr/bin/numlockx ] && /usr/bin/numlockx on
-
 # set PATH so it includes user's private bin if it exists
 [ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
 [ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
 
 # auto startx if connected in tty1 (useful if not using a login manager)
-# [[ -z $DISPLAY && $(tty) = "/dev/tty1" ]] && exec startx
+[[ -z $DISPLAY && $(tty) = "/dev/tty1" ]] && exec startx

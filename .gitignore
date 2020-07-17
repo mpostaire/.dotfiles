@@ -10,8 +10,5 @@ zsh/.zsh/plugins/*
 zsh/.zsh/cache
 *zwc
 zsh/.zsh/ztupide
-mpd/.config/mpd/pid
-mpd/.config/mpd/state
-mpd/.config/mpd/database
 polybar/.config/polybar/modules/datepid
 fonts/.local/share/fonts/.uuid

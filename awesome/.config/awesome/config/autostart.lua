@@ -3,7 +3,6 @@ local spawn = require("awful.spawn")
 -- because easy_async_with_shell is used, the & char may be not necessary
 local cmds = {
     "awdctl -d", -- maybe put this in xinitrc instead
-    "mpdbus -d", -- maybe put this in xinitrc instead
     "picom -b", -- maybe put this in xinitrc instead
 }
 
