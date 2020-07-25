@@ -8,16 +8,12 @@ return function()
     local widget = base_panel_widget{icon = icon, control_widget = player_control()}
     widget:show_label(false)
 
-    local function determine_visibility()
-        if not mpris.name then
-            widget.visible = false
-        elseif not widget.visible then
-            widget.visible = true
-        end
-    end
-
-    determine_visibility()
-    mpris.on_properties_changed(determine_visibility)
+    mpris.on_player_added(function(player)
+        if not widget.visible then widget.visible = true end
+    end)
+    mpris.on_player_removed(function(player)
+        if mpris.player_count == 0 then widget.visible = false end
+    end)
 
     return widget
 end
