@@ -1,14 +1,7 @@
 
 ## PROMPT
 
-setopt PROMPT_SUBST # Allow variables in prompt
 autoload -U colors && colors # Enable colors in prompt
-
-_prompt_retcode_rptompt='%(?:: %F{yellow}[%?])'
-
-PROMPT='$(_prompt_create)'
-RPROMPT="${_prompt_retcode_rptompt}"
-SPROMPT="Correct %F{red}'%R'%f to %F{green}'%r'%f [Yes, No, Abort, Edit]? "
 
 # _prompt_git_info taken and modified from https://joshdick.net/2017/06/08/my_git_prompt_for_zsh_revisited.html
 
@@ -99,17 +92,14 @@ _prompt_format_lines() {
     fi
 }
 
-# Encapsulate variables used for prompt creation
-_prompt_create() {
-    local current_path=$(_prompt_format_lines $(print -P %~))
-    local ret_status="%(?:%F{green}%(#:#:$):%F{red}%(#:#:$))"
-    echo "%B%(?:%F{green}:%F{red})┌ %F{green}%n@%m: %F{blue}${current_path}
-%(?:%F{green}:%F{red})└ ${ret_status}%f%b "
-}
-
+_prompt_retcode_rprompt='%(?:: %F{yellow}[%?])'
 _rprompt_async_proc=0
 # the precmd function is executed before displaying each prompt
 precmd() {
+    local current_path=$(_prompt_format_lines $(print -P %~))
+    PROMPT="%B%(?:%F{green}:%F{red})┌ %F{green}%n@%m: %F{blue}${current_path}
+%(?:%F{green}:%F{red})└ %(?:%F{green}%(#:#:$):%F{red}%(#:#:$))%f%b "
+
     async() {
         # save to temp file
         printf "%s" "$(_prompt_git_info)" > "/tmp/zsh_prompt"
@@ -132,7 +122,7 @@ precmd() {
 
 TRAPUSR1() {
     # read from temp file
-    RPROMPT="$(cat /tmp/zsh_prompt)${_prompt_retcode_rptompt}"
+    RPROMPT="$(cat /tmp/zsh_prompt)${_prompt_retcode_rprompt}"
 
     # reset proc number
     _rprompt_async_proc=0
@@ -140,3 +130,7 @@ TRAPUSR1() {
     # redisplay
     zle && zle reset-prompt
 }
+
+PROMPT="%B%F{green}>%f%b "
+RPROMPT="${_prompt_retcode_rptompt}"
+SPROMPT="Correct %F{red}'%R'%f to %F{green}'%r'%f [Yes, No, Abort, Edit]? "

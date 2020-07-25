@@ -132,7 +132,9 @@ fix() {
 }
 
 # download audio from youtube
-audio-dl() { youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s' $1 }
+audio-dl() { youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s' $@ }
+
+alias "df=df -h"
 
 # Cycle through history based on characters already typed on the line
 autoload -U up-line-or-beginning-search
