@@ -2,6 +2,7 @@ local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
+local naughty = require("naughty")
 local mpris = require("util.mpris")
 local helpers = require("util.helpers")
 
@@ -119,8 +120,15 @@ return function()
         playpause_widget.fg = beautiful.fg_normal
     end)
 
+    local handled_player
     local function update_widget()
-        local metadata = mpris.metadata        
+        local metadata
+        if not handled_player then
+            metadata = nil
+        else
+            metadata = mpris.players[handled_player].Metadata
+        end
+
         if not metadata then
             playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
             
@@ -133,12 +141,12 @@ return function()
                 artist = metadata["xesam:artist"][1]
             end
     
-            if mpris.playback_status == "Playing" then
+            if mpris.players[handled_player].PlaybackStatus == "Playing" then
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.pause)
     
                 title_widget.text = title
                 artist_widget.text = artist
-            elseif  mpris.playback_status == "Paused" then
+            elseif  mpris.players[handled_player].PlaybackStatus == "Paused" then
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
     
                 title_widget.text = title
@@ -151,14 +159,28 @@ return function()
             end
         end
     end
-    update_widget()
 
-    mpris.on_properties_changed(update_widget)
+    -- TODO replace prev notif if still showed
+    -- TODO show only on new track
+    -- naughty.notify{title="Now Playing", text="Song title", replace_id=notification}
+
+    mpris.on_player_added(function(player)
+        if not handled_player then
+            handled_player = player
+            update_widget()
+            mpris.on_track_changed(handled_player, update_widget)
+        end
+        -- require("naughty").notify{text="added player "..player}
+    end)
+    mpris.on_player_removed(function(player)
+        if handled_player == player then handled_player = nil end
+        -- require("naughty").notify{text="removed player "..player}
+    end)
 
     playpause_widget:buttons(gears.table.join(
         awful.button({}, 1, function()
-            mpris.play_pause()
-            if mpris.playback_status == "Playing" then
+            mpris.play_pause(handled_player)
+            if mpris.players[handled_player].PlaybackStatus == "Playing" then
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.pause)
             else
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
@@ -166,11 +188,24 @@ return function()
         end)
     ))
     prev_widget:buttons(gears.table.join(
-        awful.button({}, 1, function() mpris.previous() end)
+        awful.button({}, 1, function() mpris.previous(handled_player) end)
     ))
     next_widget:buttons(gears.table.join(
-        awful.button({}, 1, function() mpris.next() end)
+        awful.button({}, 1, function() mpris.next(handled_player) end)
     ))
+
+    local keys = gears.table.join(
+        awful.key({ "Control" }, "KP_Divide", function() mpris.play_pause(handled_player) end,
+        {description = "music player pause", group = "multimedia"}),
+        awful.key({ "Control" }, "KP_Right", function() mpris.next(handled_player) end,
+        {description = "music player next song", group = "multimedia"}),
+        awful.key({ "Control" }, "KP_Left", function() mpris.previous(handled_player) end,
+        {description = "music player previous song", group = "multimedia"}),
+        awful.key({ "Control" }, "KP_Begin", function() mpris.stop(handled_player) end,
+        {description = "music player stop", group = "multimedia"})
+    )
+
+    _G.root.keys(gears.table.join(_G.root.keys(), keys))
 
     widget.type = "control_widget"
 

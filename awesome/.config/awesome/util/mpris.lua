@@ -3,8 +3,9 @@ local gears = require("gears")
 local dbus = require("dbus_proxy")
 local Gio = require('lgi').Gio
 
-local mpris = {}
+local mpris = {players = {}, player_count = 0}
 
+-- TODO: check if bugs below are still there because I rewrote this module
 -- BUG: play() with rhythmbox only freezes awesome for 25 seconds! This is due to the notification being unable to find
 -- covert art (rhythmbox file not found) a fix is to disable notifications in rhythmbox interface
 -- BUG: vlc when next/prev is used, proxy.PlaybackStatus show 'Stopped' but should be 'Playing' (proxy is not updated)
@@ -13,149 +14,128 @@ local mpris = {}
 --      when playlist is then filled the player don't show itself
 -- MEMLEAK ~ 5 Kb/s but I don't know why
 
-local manager_proxy = dbus.Proxy:new(
-    {
+local manager_proxy = dbus.Proxy:new {
+    bus = dbus.Bus.SESSION,
+    name = "org.freedesktop.DBus",
+    interface = "org.freedesktop.DBus",
+    path = "/org/freedesktop/DBus"
+}
+
+local on_player_added_callbacks, on_player_removed_callbacks = {}, {}
+
+local function get_mpris_proxy(name)
+    return dbus.Proxy:new {
         bus = dbus.Bus.SESSION,
-        name = "org.freedesktop.DBus",
-        interface = "org.freedesktop.DBus",
-        path = "/org/freedesktop/DBus"
+        name = name,
+        interface = "org.mpris.MediaPlayer2.Player",
+        path = "/org/mpris/MediaPlayer2"
     }
-)
+end
 
-local on_properties_changed_callbacks = {}
-
--- for now only get first mpris player
-local function get_mpris_name()
-    local dbus_names = manager_proxy:ListNames()
-    local start = "org.mpris.MediaPlayer2."
-    for _, v in pairs(dbus_names) do
-        if v:sub(1, #start) == start then return v end
+local dbus_names = manager_proxy:ListNames()
+local mpris_name_prefix = "org.mpris.MediaPlayer2."
+for _, name in pairs(dbus_names) do
+    if name:sub(1, #mpris_name_prefix) == mpris_name_prefix then
+        mpris.players[name] = get_mpris_proxy(name)
+        mpris.player_count = mpris.player_count + 1
+        for _,v in pairs(on_player_added_callbacks) do v(name) end
     end
 end
 
--- BUG: open cmus + play music -> open vlc -> close vlc = we need to play/pause or next/prev to update song info (but openning vlc switches to correct state)
+local function name_owner_changed_callback(conn, sender, object_path, interface_name, signal_name, user_data)
+    local name = user_data[1]
+    local new_owner = user_data[2]
+    local old_owner = user_data[3]
 
-local mpris_proxy, old_name = nil, nil
-local function get_mpris_proxy()
-    local name = get_mpris_name()
-    if not name then
-        -- player closed
-        mpris.name, mpris.metadata, mpris.playback_status = nil, nil, nil
-        for _,v in pairs(on_properties_changed_callbacks) do
-            v()
+    if name:sub(1, #mpris_name_prefix) == mpris_name_prefix then
+        if old_owner == "" then -- removed player
+            mpris.players[name] = nil
+            mpris.player_count = mpris.player_count - 1
+            for _,v in pairs(on_player_removed_callbacks) do v(name) end
+        elseif new_owner == "" then -- added player
+            mpris.players[name] = get_mpris_proxy(name)
+            mpris.player_count = mpris.player_count + 1
+            for _,v in pairs(on_player_added_callbacks) do v(name) end
         end
-        old_name = nil
-        return nil
     end
-    if old_name and name == old_name then
-        -- same player
-        return mpris_proxy
-    end
-    old_name = name
-    
-    -- new player
-    local proxy = dbus.Proxy:new(
-        {
-            bus = dbus.Bus.SESSION,
-            name = name,
-            interface = "org.mpris.MediaPlayer2.Player",
-            path = "/org/mpris/MediaPlayer2"
-        }
-    )
-
-    proxy:on_properties_changed(function (p, changed, invalidated)
-        assert(p == mpris_proxy)
-        mpris.metadata = p.Metadata
-        mpris.playback_status = p.PlaybackStatus
-        for _,v in pairs(on_properties_changed_callbacks) do
-            v()
-        end
-
-        if not mpris.metadata then
-            proxy = nil
-        end
-    end)
-
-    mpris.name, mpris.metadata, mpris.playback_status = name, proxy.Metadata, proxy.PlaybackStatus
-
-    for _,v in pairs(on_properties_changed_callbacks) do
-        v()
-    end
-
-    return proxy
-end
-
--- handle mpris connection/disconnection (for now supports only one mpris player at a time)
-mpris_proxy = get_mpris_proxy()
-function name_owner_changed_callback(conn, sender, object_path, interface_name, signal_name, user_data)
-    mpris_proxy = get_mpris_proxy()
 end
 dbus.Bus.SESSION:signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus',
                                     'NameOwnerChanged', nil, nil, Gio.DBusSignalFlags.NONE, name_owner_changed_callback)
 
-function mpris.next()
-    if mpris_proxy then
-        mpris_proxy:Next()
+local function first_player()
+    for k,v in pairs(mpris.players) do return k end
+end
+
+function mpris.next(player)
+    if not player then player = first_player() end
+    if player and mpris.players[player] then
+        mpris.players[player]:Next()
     end
 end
 
-function mpris.pause()
-    if mpris_proxy then
-        mpris_proxy:Pause()
+function mpris.previous(player)
+    if not player then player = first_player() end
+    if player and mpris.players[player] then
+        mpris.players[player]:Previous()
     end
 end
 
-function mpris.play()
-    if mpris_proxy then
-        mpris_proxy:Play()
+function mpris.pause(player)
+    if not player then player = first_player() end
+    if player and mpris.players[player] then
+        mpris.players[player]:Pause()
     end
 end
 
-function mpris.play_pause()
-    if mpris_proxy then
-        mpris_proxy:PlayPause()
+function mpris.play(player)
+    if not player then player = first_player() end
+    if player and mpris.players[player] then
+        mpris.players[player]:Play()
     end
 end
 
-function mpris.previous()
-    if mpris_proxy then
-        mpris_proxy:Previous()
+function mpris.play_pause(player)
+    if not player then player = first_player() end
+    if player and mpris.players[player] then
+        mpris.players[player]:PlayPause()
     end
 end
 
-function mpris.seek(offset)
-    if mpris_proxy then
-        mpris_proxy:Seek(offset)
+function mpris.seek(player, offset)
+    if not player then player = first_player() end
+    if player and mpris.players[player] then
+        mpris.players[player]:Seek(offset)
     end
 end
 
-function mpris.set_position()
-    if mpris_proxy then
-        mpris_proxy:SetPosition()
+function mpris.set_position(player, position)
+    if not player then player = first_player() end
+    if player and mpris.players[player] then
+        mpris.players[player]:SetPosition(position)
     end
 end
 
-function mpris.stop()
-    if mpris_proxy then
-        mpris_proxy:Stop()
+function mpris.stop(player)
+    if not player then player = first_player() end
+    if player and mpris.players[player] then
+        mpris.players[player]:Stop()
     end
 end
 
-function mpris.on_properties_changed(func)
-    table.insert(on_properties_changed_callbacks, func)
+function mpris.on_player_added(func)
+    table.insert(on_player_added_callbacks, func)
+    -- exec callbacks (if needed) when we subscribe to this event (useful when players launched before awesomewm startup)
+    for k,_ in pairs(mpris.players) do func(k) end
 end
-
-local keys = gears.table.join(
-    awful.key({ "Control" }, "KP_Divide", function() mpris.play_pause() end,
-    {description = "music player pause", group = "multimedia"}),
-    awful.key({ "Control" }, "KP_Right", function() mpris.next() end,
-    {description = "music player next song", group = "multimedia"}),
-    awful.key({ "Control" }, "KP_Left", function() mpris.previous() end,
-    {description = "music player previous song", group = "multimedia"}),
-    awful.key({ "Control" }, "KP_Begin", function() mpris.stop() end,
-    {description = "music player stop", group = "multimedia"})
-)
-
-_G.root.keys(gears.table.join(_G.root.keys(), keys))
+function mpris.on_player_removed(func)
+    table.insert(on_player_removed_callbacks, func)
+end
+function mpris.on_track_changed(name, func)
+    if not name or not mpris.players[name] then return end
+    mpris.players[name]:on_properties_changed(function(p, changed, invalidated)
+        assert(p == mpris.players[name])
+        func(changed, invalidated)
+    end)
+end
 
 return mpris
