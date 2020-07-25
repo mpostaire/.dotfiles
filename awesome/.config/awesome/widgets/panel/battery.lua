@@ -87,7 +87,7 @@ return function()
                         text = "Vous pouvez débrancher l'alimentation"
                     }
                 end
-            elseif k == "Percentage" then
+            elseif k == "Percentage" and battery.state == "discharging" then
                 if battery.percentage < 10 and not critical_battery_notification_sent then
                     naughty.notify {
                         title = "Batterie critique",
