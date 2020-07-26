@@ -130,7 +130,7 @@ end
 function mpris.on_player_removed(func)
     table.insert(on_player_removed_callbacks, func)
 end
-function mpris.on_track_changed(name, func)
+function mpris.on_properties_changed(name, func)
     if not name or not mpris.players[name] then return end
     mpris.players[name]:on_properties_changed(function(p, changed, invalidated)
         assert(p == mpris.players[name])

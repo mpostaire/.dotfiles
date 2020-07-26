@@ -1,4 +1,5 @@
 local timer = require("gears.timer")
+local awful = require("awful")
 
 local helpers = {}
 
@@ -47,6 +48,42 @@ function helpers.double_click()
 
     double_click_timer = timer.start_new(0.20, function()
         double_click_timer = nil
+        return false
+    end)
+end
+
+-- long click button action on click released
+-- short_press_callback is the function called if the click is considered short (< long_press_timeout)
+-- long_press_callback is the function called if the click is considered long (>= long_press_timeout)
+-- long_press_timeout is the time used to define if a click is long or short
+-- long_press_repeat is the time (in seconds) the long_press_callback is called after its first call (value of -1 = no repeats)
+function helpers.long_press_click(mod, button, short_press_callback, long_press_callback, long_press_timeout, long_press_repeat)
+    local long_press, long_press_timer = false, nil
+    if not long_press_timeout then long_press_timeout = 1 end
+    if not long_press_repeat then long_press_repeat = -1 end
+    return awful.button({}, 1, function()
+        long_press_timer = timer.start_new(long_press_timeout, function()
+            long_press = true
+            if long_press_repeat == -1 then
+                long_press_callback()
+            else
+                long_press_timer = timer.start_new(long_press_repeat, function()
+                    long_press_callback()
+                    return true
+                end)
+            end
+            return false
+        end)
+    end,
+    function()
+        if long_press_timer then
+            long_press_timer:stop()
+        end
+        if long_press then
+            long_press = false
+        else
+            short_press_callback()
+        end
         return false
     end)
 end
