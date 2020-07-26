@@ -159,15 +159,19 @@ return function()
             end
 
             -- TODO album art in notification and player
+            --      check metadata["mpris:artUrl"] path for album art path or compute one
+            --      default arbum art: current note but not a icon font and with transparency
             -- TODO progress bar in player (just below of album art and same width)
             if old_title ~= title then
-                if notification then
-                    naughty.replace_text(notification, "Now Playing", title.." by "..artist)
-                    naughty.reset_timeout(notification)
-                else
-                    notification = naughty.notify{title="Now Playing", text=title.." by "..artist, destroy = function()
-                        notification = nil
-                    end}
+                if widget.parent and widget.parent.control_popup and not widget.parent.control_popup.visible then
+                    if notification then
+                        naughty.replace_text(notification, "Now Playing", title.." by "..artist)
+                        naughty.reset_timeout(notification)
+                    else
+                        notification = naughty.notify{title="Now Playing", text=title.." by "..artist, destroy = function()
+                            notification = nil
+                        end}
+                    end
                 end
                 old_title = title
             end
@@ -182,7 +186,15 @@ return function()
         end
     end)
     mpris.on_player_removed(function(player)
-        if handled_player == player then handled_player = nil end
+        if handled_player == player then
+            handled_player = nil
+            for k,v in pairs(mpris.players) do                
+                handled_player = k
+                break
+            end
+            update_widget()
+            mpris.on_properties_changed(handled_player, update_widget)
+        end
     end)
 
     playpause_widget:buttons(gears.table.join(
