@@ -1,11 +1,13 @@
 local awful = require("awful")
 local prompt = require("util.prompt")
 local beautiful = require("beautiful")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local wibox = require("wibox")
 local gears = require("gears")
 local desktopapps = require("util.desktopapps")
 local helpers = require("util.helpers")
+
+-- TODO use my autoclose_popup here
 
 local applauncher = {}
 

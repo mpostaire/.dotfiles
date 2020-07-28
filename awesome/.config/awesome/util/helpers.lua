@@ -1,7 +1,22 @@
 local timer = require("gears.timer")
 local awful = require("awful")
+local gfs = require("gears.filesystem")
 
 local helpers = {}
+
+-- Convert encoded local URI to Unix paths.
+function helpers.uri_to_unix_path(input)
+    if type(input) ~= "string" then return nil end
+
+    if input:sub(1,7) == "file://" then
+        input = input:sub(8)
+    end
+
+    -- urldecode
+    input = input:gsub("%%(%x%x)", function(x) return string.char(tonumber(x, 16)) end)
+
+    return gfs.file_readable(input) and input or nil
+end
 
 function helpers.s_to_hms(seconds)
     if seconds <= 0 then
@@ -155,9 +170,7 @@ local tableAccents = {
 
 -- replace special chars by their normal counterpart
 function helpers.replace_special_chars(str)
-    local normalisedString = str:gsub("[%z\1-\127\194-\244][\128-\191]*", tableAccents)
-
-    return normalisedString
+    return str:gsub("[%z\1-\127\194-\244][\128-\191]*", tableAccents)
 end
 
 return helpers

@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local wibox = require("wibox")
 local gears = require("gears")
 local variables = require("config.variables")
-local color = require("themes.color")
+local color = require("themes.util.color")
 
 -- tags buttons widget mouse handling
 local taglist_buttons = gears.table.join(
@@ -85,7 +85,7 @@ local function make_taglist_icons(widget, tag, index, tags)
 end
 
 -- Place a widget for each screen
-awful.screen.connect_for_each_screen(function(s)
+screen.connect_signal("request::desktop_decoration", function(s)
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,

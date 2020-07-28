@@ -1,5 +1,5 @@
 local beautiful = require("beautiful")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local awful = require("awful")
 local base_panel_widget = require("widgets.panel.base")
 

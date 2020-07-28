@@ -12,3 +12,4 @@ zsh/.zsh/cache
 zsh/.zsh/ztupide
 polybar/.config/polybar/modules/datepid
 fonts/.local/share/fonts/.uuid
+gtk/.config/gtk-3.0/bookmarks

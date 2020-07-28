@@ -1,35 +1,35 @@
 local awful = require("awful")
+local ruled = require("ruled")
 local beautiful = require("beautiful")
-local bindings = require("config.bindings")
 
--- {{{ Rules
--- Rules to apply to new clients (through the "manage" signal).
-awful.rules.rules = {
+-- Rules to apply to new clients.
+ruled.client.connect_signal("request::rules", function()
     -- All clients will match this rule.
-    {
-        rule = {},
+    ruled.client.append_rule {
+        id         = "global",
+        rule       = { },
         properties = {
+            focus     = awful.client.focus.filter,
             border_width = beautiful.border_width,
             border_color = beautiful.border_normal,
-            focus = awful.client.focus.filter,
-            raise = true,
-            keys = bindings.clientkeys,
-            buttons = bindings.clientbuttons,
-            screen = awful.screen.preferred,
+            raise     = true,
+            screen    = awful.screen.preferred,
             placement = awful.placement.no_overlap + awful.placement.no_offscreen,
             size_hints_honor = true
         }
-    },
+    }
+    
     -- Floating clients.
-    {
+    ruled.client.append_rule {
+        id       = "floating",
         rule_any = {
             instance = {
                 "DTA", -- Firefox addon DownThemAll.
-                "copyq", -- Includes session name in class.
+                "copyq",
                 "pinentry",
                 "Browser" -- Firefox about window
             },
-            class = {
+            class    = {
                 "Arandr",
                 "Blueman-manager",
                 "Gpick",
@@ -44,58 +44,57 @@ awful.rules.rules = {
             },
             -- Note that the name property shown in xprop might be set slightly after creation of the client
             -- and the name shown there might not match defined rules here.
-            name = {
-                "Event Tester" -- xev.
+            name    = {
+                "Event Tester",  -- xev.
             },
-            role = {
-                "AlarmWindow", -- Thunderbird's calendar.
-                "ConfigManager", -- Thunderbird's about:config.
-                "pop-up" -- e.g. Google Chrome's (detached) Developer Tools.
+            role    = {
+                "AlarmWindow",    -- Thunderbird's calendar.
+                "ConfigManager",  -- Thunderbird's about:config.
+                "pop-up",         -- e.g. Google Chrome's (detached) Developer Tools.
             }
         },
-        properties = {floating = true}
-    },
+        properties = { floating = true }
+    }
+
     -- Add titlebars to normal clients and dialogs
-    {
-        rule_any = {
-            type = {"normal", "dialog"}
-        },
-        properties = {
-            show_titlebars = true
-        }
-    },
+    ruled.client.append_rule {
+        id         = "titlebars",
+        rule_any   = { type = { "normal", "dialog" } },
+        properties = { titlebars_enabled = true      }
+    }
+
     -- Dialog clients centered on screen
-    {
-        rule_any = {
-            type = {"dialog"}
-        },
-        properties = {
-            callback = function(c) awful.placement.centered(c) end
-        }
-    },
+    ruled.client.append_rule {
+        id         = "dialog_centered",
+        rule_any   = { type = { "dialog" } },
+        properties = { callback = function(c) awful.placement.centered(c) end }
+    }
+
     -- Vscode bug: its titlebar cannot be used to move window in awesomewm
     -- and its maximize/minimize button only works for maximizing so we force it to have one
-    {
+    ruled.client.append_rule {
         rule = {class = "Code"},
         properties = {
             show_titlebars = true,
         }
-    },
+    }
+
     -- URxvt size fix
-    {
+    ruled.client.append_rule {
         rule = {class = "URxvt"},
         properties = {
             size_hints_honor = false
         }
-    },
+    }
+
     -- Set Firefox to always map on the tag named "2" on screen 1.
-    {
-        rule = {class = "firefox"},
-        properties = {screen = 1, tag = "2"}
-    },
-    {
+    ruled.client.append_rule {
+        rule       = { class = "Firefox"     },
+        properties = { screen = 1, tag = "2" }
+    }
+
+    ruled.client.append_rule {
         rule = {class = "Steam"},
         properties = {tag = "6"}
     }
-}
--- }}}
+end)

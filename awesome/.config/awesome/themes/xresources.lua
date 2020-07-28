@@ -4,13 +4,13 @@ local dpi = xresources.apply_dpi
 local gears = require("gears")
 local naughty = require("naughty")
 local awful = require("awful")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local beautiful = require("beautiful")
 local variables = require("config.variables")
 local gfs = require("gears.filesystem")
 local themes_path = gfs.get_configuration_dir().."themes/"
 
-require("themes.wallpaper").set()
+require("themes.util.wallpaper").set()
 
 local theme = {}
 
@@ -76,7 +76,10 @@ theme.snap_border_width = dpi(3)
 
 -- {{{ notifications
 theme.notification_border_width = theme.border_width
+theme.notification_border_color = theme.border_normal
 theme.notification_margin = dpi(20)
+theme.notification_icon_size = dpi(64)
+theme.notification_max_width = dpi(512)
 -- these parameters needs to be manually overwritten as of now
 naughty.config.defaults.margin = theme.notification_margin
 naughty.config.defaults.border_width = theme.border_width

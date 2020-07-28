@@ -28,7 +28,7 @@ function wallpaper.set(wallpaper_path)
     wallpaper.path = wallpaper
 
     -- sets it for each screen
-    awful.screen.connect_for_each_screen(function(s)
+    screen.connect_signal("request::wallpaper", function(s)
         if wallpaper_path then
             local w = wallpaper_path
             -- If wallpaper_path is a function, call it with the screen

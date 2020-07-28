@@ -4,7 +4,7 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
-local color = require("themes.color")
+local color = require("themes.util.color")
 
 local icons = {
     prev = "",

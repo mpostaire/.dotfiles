@@ -2,8 +2,8 @@
 local dbus = require("dbus_proxy")
 
 local battery = {}
-
--- // TODO: handle cases where battery state is not "charging", "discharging" or "full"
+-- TODO: rewrite using lgi.require('UPowerGlib') (https://github.com/lexa/awesome_upower_battery/blob/master/init.lua)
+-- TODO: handle cases where battery state is not "charging", "discharging" or "full"
 local states = {
     [0] = "unknown",
     "charging",

@@ -4,7 +4,16 @@ My dotfiles.
 
 ## Installation
 
-requires awesomewm 4.3+, [awdctl](https://github.com/mpostaire/awdctl), i3lock-color, picom and zsh
+| Dependency | Usage |
+| - | - |
+| awesomewm git | awesomewm version my config is made for. |
+| [awdctl](https://github.com/mpostaire/awdctl) | Optional: used for volume and brightness control in my awesomewm config. |
+| i3lock-color | optional: lock screen. |
+| picom | optional: compositor used for window shadows/fading. |
+| zsh | optional: shell. |
+| redshift | optional: reduces eye strain. |
+
+Use GNU stow to install dotfiles.
 
 TODO
 

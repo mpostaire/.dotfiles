@@ -2,7 +2,7 @@ local awful = require("awful")
 local gears = require("gears")
 
 -- Place a widget for each screen
-awful.screen.connect_for_each_screen(function(s)
+screen.connect_signal("request::desktop_decoration", function(s)
     -- Create an imagebox widget which will contain an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     -- make my own implementation to allow margins (use tag.connect_signal("property::layout") to change icon)

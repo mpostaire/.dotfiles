@@ -12,16 +12,16 @@ local applauncher = require("popups.applauncher")
 local bindings = {}
 
 -- {{{ Mouse bindings
-_G.root.buttons(gears.table.join(
+awful.mouse.append_global_mousebindings({
     awful.button({ }, 3, rootmenu.launch),
-    awful.button({ }, 4, awful.tag.viewnext),
-    awful.button({ }, 5, awful.tag.viewprev)
-))
+    awful.button({ }, 4, awful.tag.viewprev),
+    awful.button({ }, 5, awful.tag.viewnext),
+})
 -- }}}
 
 -- {{{ Key bindings
-local globalkeys = gears.table.join(
-    awful.key({ variables.modkey,           }, "s",      hotkeys_popup.show_help,
+awful.keyboard.append_global_keybindings({
+    awful.key({ variables.modkey,           }, "s", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end,
               {description="show help", group="awesome"}),
     awful.key({ variables.modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
@@ -88,7 +88,7 @@ local globalkeys = gears.table.join(
     --     {description = "go back", group = "client"}),
 
     -- Standard program
-    awful.key({ variables.modkey,           }, "Return", function () awful.spawn(variables.terminal) end,
+    awful.key({ variables.modkey,           }, "Return", function() awful.spawn(variables.terminal) end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ variables.modkey,           }, "r", _G.awesome.restart,
               {description = "reload awesome", group = "awesome"}),
@@ -179,126 +179,147 @@ local globalkeys = gears.table.join(
     function()
         spawn.easy_async("xfce4-screenshooter -f", function() end)
     end,
-    {description = "take a screenshot", group = "launcher"})
-)
+    {description = "take a screenshot", group = "launcher"}),
+
+    -- Tag selection
+    awful.key {
+        modifiers   = { variables.modkey },
+        keygroup    = "numrow",
+        description = "only view tag",
+        group       = "tag",
+        on_press    = function (index)
+            local screen = awful.screen.focused()
+            local tag = screen.tags[index]
+            if tag then
+                tag:view_only()
+            end
+        end,
+    },
+    awful.key {
+        modifiers   = { variables.modkey, "Control" },
+        keygroup    = "numrow",
+        description = "toggle tag",
+        group       = "tag",
+        on_press    = function (index)
+            local screen = awful.screen.focused()
+            local tag = screen.tags[index]
+            if tag then
+                awful.tag.viewtoggle(tag)
+            end
+        end,
+    },
+    awful.key {
+        modifiers = { variables.modkey, "Shift" },
+        keygroup    = "numrow",
+        description = "move focused client to tag",
+        group       = "tag",
+        on_press    = function (index)
+            if client.focus then
+                local tag = client.focus.screen.tags[index]
+                if tag then
+                    client.focus:move_to_tag(tag)
+                end
+            end
+        end,
+    },
+    awful.key {
+        modifiers   = { variables.modkey, "Control", "Shift" },
+        keygroup    = "numrow",
+        description = "toggle focused client on tag",
+        group       = "tag",
+        on_press    = function (index)
+            if client.focus then
+                local tag = client.focus.screen.tags[index]
+                if tag then
+                    client.focus:toggle_tag(tag)
+                end
+            end
+        end,
+    },
+
+    -- Tag layout selection
+    awful.key {
+        modifiers   = {variables.modkey },
+        keygroup    = "numpad",
+        description = "select layout directly",
+        group       = "layout",
+        on_press    = function (index)
+            local t = awful.screen.focused().selected_tag
+            if t then
+                t.layout = t.layouts[index] or t.layout
+            end
+        end,
+    }
+})
 
 -- this is used in rules.lua
-bindings.clientkeys = gears.table.join(
-    -- awful.key({ variables.modkey,           }, "f",
-    --     function (c)
-    --         c.fullscreen = not c.fullscreen
-    --         c:raise()
-    --     end,
-    --     {description = "toggle fullscreen", group = "client"}),
-    awful.key({ variables.modkey, "Control" }, "c", function(c) clientmenu.launch(c, true) end,
-              {description = "open control menu", group = "client"}),
-    awful.key({ variables.modkey }, "q",      function (c) c:kill()                         end,
-              {description = "close", group = "client"}),
-    awful.key({ variables.modkey, "Shift"   }, "q", function(c)
-                    if c.pid then
-                        spawn.easy_async("kill -9 "..c.pid, function() end)
-                    end
-                end,
-              {description = "kill", group = "client"}),
-    awful.key({ variables.modkey }, "f",  awful.client.floating.toggle                     ,
-              {description = "toggle floating", group = "client"}),
-    awful.key({ variables.modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
-              {description = "move to master", group = "client"}),
-    awful.key({ variables.modkey,           }, "o",      function (c) c:move_to_screen()               end,
-              {description = "move to screen", group = "client"}),
-    awful.key({ variables.modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
-              {description = "toggle keep on top", group = "client"})
-    -- awful.key({ variables.modkey,           }, "n",
-    --     function (c)
-    --         -- The client currently has the input focus, so it cannot be
-    --         -- minimized, since minimized clients can't have the focus.
-    --         c.minimized = true
-    --     end ,
-    --     {description = "minimize", group = "client"}),
-    -- awful.key({ variables.modkey,           }, "m",
-    --     function (c)
-    --         c.maximized = not c.maximized
-    --         c:raise()
-    --     end ,
-    --     {description = "(un)maximize", group = "client"})
-    -- awful.key({ variables.modkey, "Control" }, "m",
-    --     function (c)
-    --         c.maximized_vertical = not c.maximized_vertical
-    --         c:raise()
-    --     end ,
-    --     {description = "(un)maximize vertically", group = "client"}),
-    -- awful.key({ variables.modkey, "Shift"   }, "m",
-    --     function (c)
-    --         c.maximized_horizontal = not c.maximized_horizontal
-    --         c:raise()
-    --     end ,
-    --     {description = "(un)maximize horizontally", group = "client"})
-)
-
--- Bind all key numbers to tags.
--- Be careful: we use keycodes to make it work on any keyboard layout.
--- This should map on the top row of your keyboard, usually 1 to 9.
-for i = 1, 9 do
-    globalkeys = gears.table.join(globalkeys,
-        -- View tag only.
-        awful.key({ variables.modkey }, "#" .. i + 9,
-                  function ()
-                        local screen = awful.screen.focused()
-                        local tag = screen.tags[i]
-                        if tag then
-                           tag:view_only()
+client.connect_signal("request::default_keybindings", function()
+    awful.keyboard.append_client_keybindings({
+        -- awful.key({ variables.modkey,           }, "f",
+        --     function (c)
+        --         c.fullscreen = not c.fullscreen
+        --         c:raise()
+        --     end,
+        --     {description = "toggle fullscreen", group = "client"}),
+        awful.key({ variables.modkey, "Control" }, "c", function(c) clientmenu.launch(c, true) end,
+                {description = "open control menu", group = "client"}),
+        awful.key({ variables.modkey }, "q",      function (c) c:kill()                         end,
+                {description = "close", group = "client"}),
+        awful.key({ variables.modkey, "Shift"   }, "q", function(c)
+                        if c.pid then
+                            spawn.easy_async("kill -9 "..c.pid, function() end)
                         end
-                  end,
-                  {description = "view tag #"..i, group = "tag"}),
-        -- Toggle tag display.
-        awful.key({ variables.modkey, "Control" }, "#" .. i + 9,
-                  function ()
-                      local screen = awful.screen.focused()
-                      local tag = screen.tags[i]
-                      if tag then
-                         awful.tag.viewtoggle(tag)
-                      end
-                  end,
-                  {description = "toggle tag #" .. i, group = "tag"}),
-        -- Move client to tag.
-        awful.key({ variables.modkey, "Shift" }, "#" .. i + 9,
-                  function ()
-                      if _G.client.focus then
-                          local tag = _G.client.focus.screen.tags[i]
-                          if tag then
-                            _G.client.focus:move_to_tag(tag)
-                          end
-                     end
-                  end,
-                  {description = "move focused client to tag #"..i, group = "tag"}),
-        -- Toggle tag on focused client.
-        awful.key({ variables.modkey, "Control", "Shift" }, "#" .. i + 9,
-                  function ()
-                      if _G.client.focus then
-                          local tag = _G.client.focus.screen.tags[i]
-                          if tag then
-                            _G.client.focus:toggle_tag(tag)
-                          end
-                      end
-                  end,
-                  {description = "toggle focused client on tag #" .. i, group = "tag"})
-    )
-end
+                    end,
+                {description = "kill", group = "client"}),
+        awful.key({ variables.modkey }, "f",  awful.client.floating.toggle                     ,
+                {description = "toggle floating", group = "client"}),
+        awful.key({ variables.modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
+                {description = "move to master", group = "client"}),
+        awful.key({ variables.modkey,           }, "o",      function (c) c:move_to_screen()               end,
+                {description = "move to screen", group = "client"}),
+        awful.key({ variables.modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
+                {description = "toggle keep on top", group = "client"})
+        -- awful.key({ variables.modkey,           }, "n",
+        --     function (c)
+        --         -- The client currently has the input focus, so it cannot be
+        --         -- minimized, since minimized clients can't have the focus.
+        --         c.minimized = true
+        --     end ,
+        --     {description = "minimize", group = "client"}),
+        -- awful.key({ variables.modkey,           }, "m",
+        --     function (c)
+        --         c.maximized = not c.maximized
+        --         c:raise()
+        --     end ,
+        --     {description = "(un)maximize", group = "client"})
+        -- awful.key({ variables.modkey, "Control" }, "m",
+        --     function (c)
+        --         c.maximized_vertical = not c.maximized_vertical
+        --         c:raise()
+        --     end ,
+        --     {description = "(un)maximize vertically", group = "client"}),
+        -- awful.key({ variables.modkey, "Shift"   }, "m",
+        --     function (c)
+        --         c.maximized_horizontal = not c.maximized_horizontal
+        --         c:raise()
+        --     end ,
+        --     {description = "(un)maximize horizontally", group = "client"})
+    })
+end)
 
--- this is used in rules.lua
-bindings.clientbuttons = gears.table.join(
-    awful.button({ }, 1, function (c)
-        c:emit_signal("request::activate", "mouse_click", {raise = true})
-    end),
-    awful.button({ variables.modkey }, 1, function (c)
-        c:emit_signal("request::activate", "mouse_click", {raise = true})
-        awful.mouse.client.move(c)
-    end),
-    awful.button({ variables.modkey }, 3, function (c)
-        c:emit_signal("request::activate", "mouse_click", {raise = true})
-        awful.mouse.client.resize(c)
-    end)
-)
+client.connect_signal("request::default_mousebindings", function()
+    awful.mouse.append_client_mousebindings({
+        awful.button({ }, 1, function (c)
+            c:activate { context = "mouse_click" }
+        end),
+        awful.button({ variables.modkey }, 1, function (c)
+            c:activate { context = "mouse_click", action = "mouse_move"  }
+        end),
+        awful.button({ variables.modkey }, 3, function (c)
+            c:activate { context = "mouse_click", action = "mouse_resize"}
+        end),
+    })
+end)
 
 -- Set keys
 _G.root.keys(globalkeys)

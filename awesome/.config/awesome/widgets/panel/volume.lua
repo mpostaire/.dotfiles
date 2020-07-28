@@ -1,6 +1,6 @@
 require("popups.volume") -- show popup
 local beautiful = require("beautiful")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local awful = require("awful")
 local gears = require("gears")
 local alsa = require("util.alsa")

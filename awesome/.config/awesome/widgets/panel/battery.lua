@@ -1,5 +1,5 @@
 local beautiful = require("beautiful")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local naughty = require("naughty")
 local base_panel_widget = require("widgets.panel.base")
 local battery = require("util.battery")
@@ -72,32 +72,32 @@ return function()
         for k,_ in pairs(changed) do
             if k == "State" then
                 if battery.state == "discharging" then
-                    naughty.notify {
+                    naughty.notification {
                         title = "Batterie en décharge",
-                        text = helpers.s_to_hms(battery.time_to_empty).." restantes avant décharge complète"
+                        message = helpers.s_to_hms(battery.time_to_empty).." restantes avant décharge complète"
                     }
                 elseif battery.state == "charging" then
-                    naughty.notify {
+                    naughty.notification {
                         title = "Batterie en charge",
-                        text = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
+                        message = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
                     }
                 elseif battery.state == "full" then
-                    naughty.notify {
+                    naughty.notification {
                         title = "Batterie chargée",
-                        text = "Vous pouvez débrancher l'alimentation"
+                        message = "Vous pouvez débrancher l'alimentation"
                     }
                 end
             elseif k == "Percentage" and battery.state == "discharging" then
                 if battery.percentage < 10 and not critical_battery_notification_sent then
-                    naughty.notify {
+                    naughty.notification {
                         title = "Batterie critique",
-                        text = "Branchez l'alimentation",
+                        message = "Branchez l'alimentation",
                     }
                     critical_battery_notification_sent = true
                 elseif battery.percentage < 20 and not low_battery_notification_sent then
-                    naughty.notify {
+                    naughty.notification {
                         title = "Batterie basse",
-                        text = "Branchez l'alimentation",
+                        message = "Branchez l'alimentation",
                     }
                     low_battery_notification_sent = true
                 else

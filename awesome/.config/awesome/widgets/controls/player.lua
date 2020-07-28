@@ -2,12 +2,13 @@ local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
+local gfs = gears.filesystem
 local naughty = require("naughty")
 local mpris = require("util.mpris")
 local helpers = require("util.helpers")
 
 local icons = {
-    note = "",
+    albumart = gfs.get_configuration_dir().."themes/icons/mpris_player_default.png",
     play = "",
     pause = "",
     prev = "",
@@ -49,7 +50,6 @@ return function()
                 align  = 'center',
                 markup = icons.play,
                 font = beautiful.icon_font,
-                forced_height = 22,
                 widget = wibox.widget.textbox
             },
             margins = 5,
@@ -71,12 +71,19 @@ return function()
         },
         widget = wibox.container.background
     }
+    local albumart_widget = wibox.widget {
+        id = 'albumart',
+        image = icons.albumart,
+        forced_height = 64,
+        forced_width = 64,
+        widget = wibox.widget.imagebox
+    }
 
     local widget = wibox.widget {
         {
-            markup = " "..icons.note.."   ",
-            font = helpers.change_font_size(beautiful.icon_font, 20),
-            widget = wibox.widget.textbox
+            albumart_widget,
+            right = 16,
+            widget = wibox.container.margin
         },
         {
             title_widget,
@@ -120,7 +127,7 @@ return function()
         playpause_widget.fg = beautiful.fg_normal
     end)
 
-    local handled_player, old_title, notification
+    local handled_player, old_title, old_albumart, notification
     local function update_widget()
         local metadata
         if not handled_player then
@@ -129,7 +136,7 @@ return function()
             metadata = mpris.players[handled_player].Metadata
         end
 
-        if not metadata then
+        if not metadata or next(metadata) == nil then
             playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
             
             title_widget.text = "Titre"
@@ -140,6 +147,8 @@ return function()
             if type(artist) == 'table' then
                 artist = metadata["xesam:artist"][1]
             end
+            local fileurl = helpers.uri_to_unix_path(metadata["xesam:url"])
+            local albumart = helpers.uri_to_unix_path(metadata["mpris:artUrl"])
     
             if mpris.players[handled_player].PlaybackStatus == "Playing" then
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.pause)
@@ -157,20 +166,29 @@ return function()
                 title_widget.text = "Titre"
                 artist_widget.text = "Artiste"
             end
-
-            -- TODO album art in notification and player
-            --      check metadata["mpris:artUrl"] path for album art path or compute one
-            --      default arbum art: current note but not a icon font and with transparency
+            
             -- TODO progress bar in player (just below of album art and same width)
+            -- TODO use https://github.com/cmus/cmus/pull/598 as starting point for a fork of cmus to add mpris:artUrl support
+            --      and xesam:url while we're at it. My fork should try to extract album art from file (and put it in ~/.cache/cmus/ALBUMART.png) or from dir
+            --      also add a .desktop in my fork to make a launcher entry
+            -- FIXME vlc bug described above is strange: notifiations are not affected so artist and title are correct!
+
+            if albumart then
+                if old_albumart ~= albumart then
+                    albumart_widget.image = albumart
+                end
+            else
+                albumart_widget.image = icons.albumart
+            end
+            old_albumart = albumart
+
             if old_title ~= title then
                 if widget.parent and widget.parent.control_popup and not widget.parent.control_popup.visible then
-                    if notification then
-                        naughty.replace_text(notification, "Now Playing", title.." by "..artist)
-                        naughty.reset_timeout(notification)
+                    if notification and not notification.is_expired then
+                        notification.message = title.." by "..artist
+                        notification.icon = albumart
                     else
-                        notification = naughty.notify{title="Now Playing", text=title.." by "..artist, destroy = function()
-                            notification = nil
-                        end}
+                        notification = naughty.notification {icon = albumart or icons.albumart, title="Now Playing", message=title.." by "..artist}
                     end
                 end
                 old_title = title
@@ -226,6 +244,7 @@ return function()
         end, 1, 0.1) -- tweak timeout value ?
     ))
 
+    -- FIXME: long keyboard press is laggy (when key released there is still some events to process use keygrabber ?)
     local next_long_keypress, prev_long_keypress = 0, 0
     local keys = gears.table.join(
         awful.key({ "Control" }, "KP_Divide", function() mpris.play_pause(handled_player) end,

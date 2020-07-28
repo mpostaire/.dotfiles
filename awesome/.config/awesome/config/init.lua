@@ -7,6 +7,9 @@ require("config.tags")
 -- rules
 require("config.rules")
 
+-- notifications
+require("config.notifications")
+
 -- bindings
 require("config.bindings")
 

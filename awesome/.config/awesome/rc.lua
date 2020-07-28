@@ -7,13 +7,16 @@ pcall(require, "luarocks.loader")
 
 local naughty = require("naughty")
 
+-- Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
-if _G.awesome.startup_errors then
-    naughty.notify({ preset = naughty.config.presets.critical,
-                     title = "Oops, there were errors during startup!",
-                     text = _G.awesome.startup_errors })
-end
+naughty.connect_signal("request::display_error", function(message, startup)
+    naughty.notification {
+        urgency = "critical",
+        title   = "Oops, an error happened"..(startup and " during startup!" or "!"),
+        message = message
+    }
+end)
 
 -- Handle runtime errors after startup
 do
@@ -23,12 +26,22 @@ do
         if in_error then return end
         in_error = true
 
-        naughty.notify({ preset = naughty.config.presets.critical,
-                         title = "Oops, an error happened!",
-                         text = tostring(err) })
+        naughty.notification {
+            urgency = "critical",
+            title = "Oops, an error happened!",
+            text = tostring(err)
+        }
         in_error = false
     end)
 end
+
+_G.awesome.connect_signal("debug::deprecation", function(hint, see, args)
+    naughty.notification {
+        urgency = "critical",
+        title = "Deprecated warning!",
+        text = tostring(hint)
+    }
+end)
 
 -- when a client is closed, another client will be focused
 require("awful.autofocus")

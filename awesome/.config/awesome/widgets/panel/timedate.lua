@@ -1,6 +1,6 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local base_panel_widget = require("widgets.panel.base")
 local calendar = require("widgets.controls.calendar")
 local weather = require("widgets.controls.weather")

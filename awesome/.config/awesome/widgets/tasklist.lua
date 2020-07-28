@@ -4,7 +4,7 @@ local dpi = require("beautiful.xresources").apply_dpi
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local clientmenu = require("popups.clientmenu")
-local color = require("themes.color")
+local color = require("themes.util.color")
 
 local bg_hover = color.lighten_by(beautiful.tasklist_bg_normal, 0.05)
 
@@ -33,7 +33,7 @@ local tasklist_buttons = gears.table.join(
 )
 
 -- Place a widget for each screen
-awful.screen.connect_for_each_screen(function(s)
+screen.connect_signal("request::desktop_decoration", function(s)
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
         screen  = s,

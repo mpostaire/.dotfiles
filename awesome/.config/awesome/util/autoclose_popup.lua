@@ -33,11 +33,9 @@ return function(args)
         end
 
         if is_mouse_in_popup(mouse) then
-            _G.mousegrabber.stop()
             return false
-        elseif mouse.buttons[1] or mouse.buttons[2] or mouse.buttons[3] then
+        elseif mouse.buttons[1] or mouse.buttons[2] or mouse.buttons[3] or mouse.buttons[4] or mouse.buttons[5] then
             popup.visible = false
-            _G.mousegrabber.stop()
             return false
         else
             return true

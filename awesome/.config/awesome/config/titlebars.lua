@@ -3,7 +3,7 @@ local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
 local clientmenu = require("popups.clientmenu")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local helpers = require("util.helpers")
 
 awful.titlebar.enable_tooltip = false

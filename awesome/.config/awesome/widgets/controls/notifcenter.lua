@@ -1,6 +1,6 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local helpers = require("util.helpers")
 
 -- // TODO make this a notification center (this is a placeholder for now)

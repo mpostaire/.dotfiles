@@ -1,6 +1,6 @@
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local color = require("themes.color")
+local color = require("themes.util.color")
 local awful = require("awful")
 local gears = require("gears")
 local applauncher = require("popups.applauncher")

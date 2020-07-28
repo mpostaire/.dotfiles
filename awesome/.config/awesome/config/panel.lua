@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local wibox = require("wibox")
 local widgets = require("widgets")
 
-awful.screen.connect_for_each_screen(function(s)
+screen.connect_signal("request::desktop_decoration", function(s)
     -- Create the wibox
     s.mywibox = awful.wibar({position = "top", screen = s})
 

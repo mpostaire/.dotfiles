@@ -7,7 +7,7 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 local submenu = {
     { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
     { "documentation", function()
-        awful.spawn.easy_async(variables.browser .. " https://awesomewm.org/doc/api/", function() end)
+        awful.spawn.easy_async(variables.browser .. " https://awesomewm.org/apidoc/", function() end)
         local screen = awful.screen.focused()
         local tag = screen.tags[2] -- TODO: automatic tag detection
         if tag then
