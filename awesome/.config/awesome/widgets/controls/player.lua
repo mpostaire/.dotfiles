@@ -74,14 +74,23 @@ return function()
     local albumart_widget = wibox.widget {
         id = 'albumart',
         image = icons.albumart,
-        forced_height = 64,
-        forced_width = 64,
         widget = wibox.widget.imagebox
     }
 
     local widget = wibox.widget {
         {
-            albumart_widget,
+            {
+                {
+                    albumart_widget,
+                    width = 64,
+                    height = 64,
+                    strategy = "max",
+                    widget = wibox.container.constraint
+                },
+                forced_width = 64,
+                forced_height = 64,
+                widget = wibox.container.place
+            },
             right = 16,
             widget = wibox.container.margin
         },
@@ -182,13 +191,18 @@ return function()
             end
             old_albumart = albumart
 
+            -- FIXME these notifications sometimes don't show up
             if old_title ~= title then
                 if widget.parent and widget.parent.control_popup and not widget.parent.control_popup.visible then
                     if notification and not notification.is_expired then
                         notification.message = title.." by "..artist
                         notification.icon = albumart
                     else
-                        notification = naughty.notification {icon = albumart or icons.albumart, title="Now Playing", message=title.." by "..artist}
+                        notification = naughty.notification {
+                            icon = albumart or icons.albumart,
+                            title="Now Playing",
+                            message=title.." by "..artist
+                        }
                     end
                 end
                 old_title = title
@@ -205,11 +219,7 @@ return function()
     end)
     mpris.on_player_removed(function(player)
         if handled_player == player then
-            handled_player = nil
-            for k,v in pairs(mpris.players) do                
-                handled_player = k
-                break
-            end
+            handled_player = next(mpris.players)
             update_widget()
             mpris.on_properties_changed(handled_player, update_widget)
         end

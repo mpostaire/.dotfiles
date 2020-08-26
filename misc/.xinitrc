@@ -31,7 +31,7 @@ fi
 xsetroot -cursor_name left_ptr
 
 # set the lockscreen
-xss-lock -- $HOME/.scripts/lock.sh &
+xss-lock -- $HOME/.scripts/lock.sh ~/Images/dog.jpeg &
 
 # dim the screen after 10 minutes of inactivity, lock 10 seconds later
 #xset s 600 10

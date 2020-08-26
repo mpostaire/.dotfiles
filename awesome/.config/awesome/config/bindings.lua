@@ -88,7 +88,7 @@ awful.keyboard.append_global_keybindings({
     --     {description = "go back", group = "client"}),
 
     -- Standard program
-    awful.key({ variables.modkey,           }, "Return", function() awful.spawn(variables.terminal) end,
+    awful.key({ variables.modkey,           }, "Return", function() spawn.easy_async(variables.terminal) end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ variables.modkey,           }, "r", _G.awesome.restart,
               {description = "reload awesome", group = "awesome"}),
@@ -136,7 +136,7 @@ awful.keyboard.append_global_keybindings({
     -- lock screen
     awful.key({ variables.modkey }, "l",
         function()
-            spawn.with_shell("loginctl lock-session", function() end)
+            spawn.easy_async("loginctl lock-session", function() end)
         end,
     {description = "raise lock screen", group = "launcher"}),
     awful.key({ "Control", "Mod1" }, "Delete", function()

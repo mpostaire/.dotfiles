@@ -10,7 +10,7 @@ local variables = require("config.variables")
 local gfs = require("gears.filesystem")
 local themes_path = gfs.get_configuration_dir().."themes/"
 
-require("themes.util.wallpaper").set()
+require("themes.util.wallpaper").set("~/Images/dog.jpeg", "fit")
 
 local theme = {}
 
@@ -80,6 +80,8 @@ theme.notification_border_color = theme.border_normal
 theme.notification_margin = dpi(20)
 theme.notification_icon_size = dpi(64)
 theme.notification_max_width = dpi(512)
+theme.notification_max_height = dpi(128)
+theme.notification_spacing = dpi(4)
 -- these parameters needs to be manually overwritten as of now
 naughty.config.defaults.margin = theme.notification_margin
 naughty.config.defaults.border_width = theme.border_width
@@ -147,6 +149,7 @@ theme.menu_fg_normal = theme.menu_fg_normal
 theme.menu_fg_focus = theme.bg_normal
 theme.menu_bg_normal = theme.menu_bg_normal
 theme.menu_bg_focus = theme.fg_normal
+theme.menu_border_color = theme.border_normal 
 
 -- You can add as many variables as
 -- you wish and access them by using

@@ -62,61 +62,57 @@ end
 dbus.Bus.SESSION:signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus',
                                     'NameOwnerChanged', nil, nil, Gio.DBusSignalFlags.NONE, name_owner_changed_callback)
 
-local function first_player()
-    for k,v in pairs(mpris.players) do return k end
-end
-
 function mpris.next(player)
-    if not player then player = first_player() end
+    if not player then player = next(mpris.players) end
     if player and mpris.players[player] then
         mpris.players[player]:Next()
     end
 end
 
 function mpris.previous(player)
-    if not player then player = first_player() end
+    if not player then player = next(mpris.players) end
     if player and mpris.players[player] then
         mpris.players[player]:Previous()
     end
 end
 
 function mpris.pause(player)
-    if not player then player = first_player() end
+    if not player then player = next(mpris.players) end
     if player and mpris.players[player] then
         mpris.players[player]:Pause()
     end
 end
 
 function mpris.play(player)
-    if not player then player = first_player() end
+    if not player then player = next(mpris.players) end
     if player and mpris.players[player] then
         mpris.players[player]:Play()
     end
 end
 
 function mpris.play_pause(player)
-    if not player then player = first_player() end
+    if not player then player = next(mpris.players) end
     if player and mpris.players[player] then
         mpris.players[player]:PlayPause()
     end
 end
 
 function mpris.seek(player, offset)
-    if not player then player = first_player() end
+    if not player then player = next(mpris.players) end
     if player and mpris.players[player] then
         mpris.players[player]:Seek(offset)
     end
 end
 
 function mpris.set_position(player, position)
-    if not player then player = first_player() end
+    if not player then player = next(mpris.players) end
     if player and mpris.players[player] then
         mpris.players[player]:SetPosition(position)
     end
 end
 
 function mpris.stop(player)
-    if not player then player = first_player() end
+    if not player then player = next(mpris.players) end
     if player and mpris.players[player] then
         mpris.players[player]:Stop()
     end

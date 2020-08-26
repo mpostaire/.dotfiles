@@ -1,23 +1,20 @@
 -- autostart
 require("config.autostart")
 
+-- bindings
+require("config.bindings")
+
 -- tags
 require("config.tags")
-
--- rules
-require("config.rules")
 
 -- notifications
 require("config.notifications")
 
--- bindings
-require("config.bindings")
-
 -- panel
 require("config.panel")
 
--- signals
-require("config.signals")
+-- client rules and behaviour
+require("config.clients")
 
 -- titlebars
 require("config.titlebars")

@@ -81,11 +81,15 @@ return function()
                         title = "Batterie en charge",
                         message = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
                     }
+                    critical_battery_notification_sent = false
+                    low_battery_notification_sent = false
                 elseif battery.state == "full" then
                     naughty.notification {
                         title = "Batterie chargée",
                         message = "Vous pouvez débrancher l'alimentation"
                     }
+                    critical_battery_notification_sent = false
+                    low_battery_notification_sent = false
                 end
             elseif k == "Percentage" and battery.state == "discharging" then
                 if battery.percentage < 10 and not critical_battery_notification_sent then
@@ -100,7 +104,7 @@ return function()
                         message = "Branchez l'alimentation",
                     }
                     low_battery_notification_sent = true
-                else
+                elseif battery.percentage >= 20 then
                     critical_battery_notification_sent = false
                     low_battery_notification_sent = false
                 end

@@ -43,9 +43,6 @@ _G.awesome.connect_signal("debug::deprecation", function(hint, see, args)
     }
 end)
 
--- when a client is closed, another client will be focused
-require("awful.autofocus")
-
 -- Themes define colours, icons, font and wallpapers.
 -- do not place this line below
 require("beautiful").init(require("themes.xresources"))

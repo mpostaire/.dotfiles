@@ -8,6 +8,7 @@ local desktopapps = require("util.desktopapps")
 local helpers = require("util.helpers")
 
 -- TODO use my autoclose_popup here
+-- FIXME quand query match pas, 1 nouveau caractère ajouté sur 2 permet de selectionner les items vides
 
 local applauncher = {}
 

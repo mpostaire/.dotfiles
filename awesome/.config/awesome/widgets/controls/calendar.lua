@@ -271,17 +271,3 @@ return function(args)
 
     return calendar_widget
 end
-
--- local keygrabber = function(mod, key, event)
---     if event == "release" then return end
-
---     if key == 'Up' or key == 'Right' then
---         calendar_next_month()
---     elseif key == 'Down' or key == 'Left' then
---         calendar_prev_month()
---     elseif key == 'Escape' then
---         calendar.toggle_calendar()
---     elseif mod[2] == variables.modkey and key == 'c' then
---         calendar.toggle_calendar()
---     end
--- end

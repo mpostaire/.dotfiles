@@ -8,6 +8,8 @@ return function()
     local widget = base_panel_widget{icon = icon, control_widget = player_control()}
     widget:show_label(false)
 
+    if mpris.player_count == 0 then widget.visible = false end
+
     mpris.on_player_added(function(player)
         if not widget.visible then widget.visible = true end
     end)

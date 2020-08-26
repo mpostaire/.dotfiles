@@ -8,8 +8,6 @@ local helpers = require("util.helpers")
 
 awful.titlebar.enable_tooltip = false
 
--- TODO make my own clientbutton widgets
-
 local icons = {
     "",
     "",
@@ -51,12 +49,13 @@ local gen_text_button = function (c, symbol, cmd, colors)
             left = 10,
             widget = wibox.container.margin
         },
-        buttons = awful.button({ }, 1, nil, function()
-            cmd(c, button)
-        end),
         bg = _G.client.focus == c and colors.bg_focus or colors.bg,
         widget = wibox.container.background
     }
+
+    button:add_button(awful.button({ }, 1, nil, function()
+        cmd(c, button)
+    end))
 
     button:connect_signal("mouse::enter", function()
         button.bg = colors.bg_hover

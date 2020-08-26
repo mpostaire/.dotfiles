@@ -1,10 +1,12 @@
 local gears = require("gears")
+local gfs = require("gears.filesystem")
+local variables = require("config.variables")
 
 local wallpaper = {}
 
 local set_called = false
 
-function wallpaper.set(wallpaper_path)
+function wallpaper.set(wallpaper_path, strategy, a, b)
     -- if no argument, we take wapplaper.path if it exists or we take a black screen
     if not wallpaper_path then
         wallpaper_path = wallpaper.path and wallpaper.path or "#000000"
@@ -35,7 +37,7 @@ function wallpaper.set(wallpaper_path)
             if type(w) == "function" then
                 w = w(s)
             end
-            gears.wallpaper.maximized(w, s, true)
+            gears.wallpaper[strategy or "maximized"](w, s, a, b)
         end
     end)
 end

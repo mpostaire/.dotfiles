@@ -11,12 +11,10 @@ black_alt=$(xrdb -query | grep "color15" | head -n1 | awk '{print $NF}')
 black=$(xrdb -query | grep "color0" | head -n1 | awk '{print $NF}')
 blank="#00000000"
 
-background=~/Images/lockscreen.png
-
-if [ ! -f $background ]; then
+if [ ! -f $1 ]; then
     background=""
 else
-    background="-i $background"
+    background="-i $1"
 fi
 
 # send lock signal to awesome (awesome can then stop its active keygrabber/mousegrabber)

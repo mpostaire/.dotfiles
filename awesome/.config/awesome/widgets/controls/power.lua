@@ -97,7 +97,7 @@ return function()
 
     lock:buttons(gears.table.join(
         awful.button({}, 1, function()
-            awful.spawn.easy_async_with_shell("loginctl lock-session", function() end)
+            awful.spawn.easy_async("loginctl lock-session", function() end)
             widget.parent.control_popup.visible = false
         end)
     ))
@@ -111,21 +111,21 @@ return function()
 
     suspend:buttons(gears.table.join(
         awful.button({}, 1, function()
-            awful.spawn.easy_async_with_shell("systemctl suspend", function() end)
+            awful.spawn.easy_async("systemctl suspend", function() end)
             widget.parent.control_popup.visible = false
         end)
     ))
 
     reboot:buttons(gears.table.join(
         awful.button({}, 1, function()
-            awful.spawn.easy_async_with_shell("systemctl reboot", function() end)
+            awful.spawn.easy_async("systemctl reboot", function() end)
             widget.parent.control_popup.visible = false
         end)
     ))
 
     poweroff:buttons(gears.table.join(
         awful.button({}, 1, function()
-            awful.spawn.easy_async_with_shell("systemctl -i poweroff", function() end)
+            awful.spawn.easy_async("systemctl -i poweroff", function() end)
             widget.parent.control_popup.visible = false
         end)
     ))
