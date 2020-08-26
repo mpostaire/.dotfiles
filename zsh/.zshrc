@@ -135,6 +135,7 @@ fix() {
 audio-dl() { youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s' $@ }
 
 alias "df=df -h"
+alias "cp=cp -i"
 
 # Cycle through history based on characters already typed on the line
 autoload -U up-line-or-beginning-search

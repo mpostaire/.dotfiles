@@ -15,6 +15,8 @@ local variables = require("config.variables")
 
 -- check if client 'c' is in selected tags
 local function selected_tags_filter(c)
+    -- Include sticky client too
+    if c.sticky then return true end
     for _,v in pairs(awful.screen.focused().selected_tags) do
         if c.first_tag == v then
             return true
@@ -70,7 +72,7 @@ local tasklist_buttons = gears.table.join(
 local appswitcher = awful.popup {
     widget = awful.widget.tasklist {
         screen = _G.mouse.screen,
-        filter = awful.widget.tasklist.filter.currenttags,
+        filter = selected_tags_filter,
         buttons = tasklist_buttons,
         layout = {
             -- spacing = 5,
@@ -145,5 +147,23 @@ awful.keygrabber {
         {{variables.altkey, 'Shift'}, 'Tab', focus_prev_client, nil, {description = 'reverse app switcher', group = 'client'}},
     },
 }
+
+-- client.connect_signal("manage", function(c)
+--     for client in awful.client.iterate(awful.widget.tasklist.filter.currenttags) do
+--         count = count + 1
+--     end
+
+--     appswitcher.widget.widget = wibox.widget {
+--         {
+--             text = '1',
+--             widget = wibox.widget.textbox
+--         },
+--         {
+--             text = '2',
+--             widget = wibox.widget.textbox
+--         },
+--         layout = wibox.layout.fixed.horizontal
+--     }
+-- end)
 
 return appswitcher
