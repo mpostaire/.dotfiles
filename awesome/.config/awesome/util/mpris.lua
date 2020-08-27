@@ -118,6 +118,13 @@ function mpris.stop(player)
     end
 end
 
+function mpris.open_uri(player, path)
+    if not player then player = next(mpris.players) end
+    if player and mpris.players[player] then
+        mpris.players[player]:OpenUri(path)
+    end
+end
+
 function mpris.on_player_added(func)
     table.insert(on_player_added_callbacks, func)
     -- exec callbacks (if needed) when we subscribe to this event (useful when players launched before awesomewm startup)
@@ -126,10 +133,10 @@ end
 function mpris.on_player_removed(func)
     table.insert(on_player_removed_callbacks, func)
 end
-function mpris.on_properties_changed(name, func)
-    if not name or not mpris.players[name] then return end
-    mpris.players[name]:on_properties_changed(function(p, changed, invalidated)
-        assert(p == mpris.players[name])
+function mpris.on_properties_changed(player, func)
+    if not player or not mpris.players[player] then return end
+    mpris.players[player]:on_properties_changed(function(p, changed, invalidated)
+        assert(p == mpris.players[player])
         func(changed, invalidated)
     end)
 end

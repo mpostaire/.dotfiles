@@ -136,7 +136,7 @@ return function()
         playpause_widget.fg = beautiful.fg_normal
     end)
 
-    local handled_player, old_title, old_albumart, notification
+    local handled_player, old_trackid, old_albumart, notification
     local function update_widget()
         local metadata
         if not handled_player then
@@ -150,37 +150,37 @@ return function()
             
             title_widget.text = "Titre"
             artist_widget.text = "Artiste"
-        else
-            local title = metadata["xesam:title"] or "Titre inconnu"
-            local artist = metadata["xesam:artist"] or "Artiste inconnu"
-            if type(artist) == 'table' then
-                artist = metadata["xesam:artist"][1]
-            end
-            local fileurl = helpers.uri_to_unix_path(metadata["xesam:url"])
-            local albumart = helpers.uri_to_unix_path(metadata["mpris:artUrl"])
-    
+        else            
             if mpris.players[handled_player].PlaybackStatus == "Playing" then
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.pause)
-    
-                title_widget.text = title
-                artist_widget.text = artist
             elseif mpris.players[handled_player].PlaybackStatus == "Paused" then
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
-    
-                title_widget.text = title
-                artist_widget.text = artist
             else
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
     
                 title_widget.text = "Titre"
                 artist_widget.text = "Artiste"
             end
+
+            local trackid = metadata["mpris:trackid"]
+            if trackid == old_trackid then return end
+            old_trackid = trackid
+
+            local title = metadata["xesam:title"] or "Titre inconnu"
+            local artist = metadata["xesam:artist"] or "Artiste inconnu"
+            if type(artist) == 'table' then
+                artist = metadata["xesam:artist"][1]
+            end
+            local filepath = helpers.uri_to_unix_path(metadata["xesam:url"])
+            local albumart = helpers.uri_to_unix_path(metadata["mpris:artUrl"])
+
+            title_widget.text = title
+            artist_widget.text = artist
             
             -- TODO progress bar in player (just below of album art and same width)
             -- TODO use https://github.com/cmus/cmus/pull/598 as starting point for a fork of cmus to add mpris:artUrl support
             --      and xesam:url while we're at it. My fork should try to extract album art from file (and put it in ~/.cache/cmus/ALBUMART.png) or from dir
             --      also add a .desktop in my fork to make a launcher entry
-            -- FIXME vlc bug described above is strange: notifiations are not affected so artist and title are correct!
 
             if albumart then
                 if old_albumart ~= albumart then
@@ -191,21 +191,17 @@ return function()
             end
             old_albumart = albumart
 
-            -- FIXME these notifications sometimes don't show up
-            if old_title ~= title then
-                if widget.parent and widget.parent.control_popup and not widget.parent.control_popup.visible then
-                    if notification and not notification.is_expired then
-                        notification.message = title.." by "..artist
-                        notification.icon = albumart
-                    else
-                        notification = naughty.notification {
-                            icon = albumart or icons.albumart,
-                            title="Now Playing",
-                            message=title.." by "..artist
-                        }
-                    end
+            if widget.parent and widget.parent.control_popup and not widget.parent.control_popup.visible then
+                if notification and not notification.is_expired then
+                    notification.message = title.." by "..artist
+                    notification.icon = albumart
+                else
+                    notification = naughty.notification {
+                        icon = albumart or icons.albumart,
+                        title = "Now Playing",
+                        message = title.." by "..artist
+                    }
                 end
-                old_title = title
             end
         end
     end
