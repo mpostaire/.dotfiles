@@ -38,12 +38,12 @@ return function(width)
     if not alsa.enabled then return nil end
     
     local slider_width = width or 150
-    -- we convert brightness value from [10,100] to [0,100] interval
+    -- we convert volume value from [10,100] to [0,100] interval
     local volume_value = ((alsa.volume - 10) / 90) * 100
 
-    local volume_slider = slider {
-        bar_left_color = color.white,
-        bar_right_color = beautiful.bg_focus,
+    local volume_slider = wibox.widget {
+        bar_active_color = color.white,
+        bar_color = beautiful.bg_focus,
         handle_color = beautiful.fg_normal,
         handle_shape = gears.shape.circle,
         handle_border_color = beautiful.fg_normal,
@@ -51,7 +51,9 @@ return function(width)
         value = volume_value,
         maximum = 100,
         forced_width = slider_width,
-        forced_height = 4
+        forced_height = 4,
+        bar_height = 4,
+        widget = wibox.widget.slider
     }
 
     local icon_widget = wibox.widget {
@@ -72,16 +74,15 @@ return function(width)
 
     widget._private.alsa_updating_value = false
     widget._private.mouse_updating_value = false
-    local handle = volume_slider.handle
-    handle:connect_signal("property::value", function()
-        -- if we are updating handle.value because alsa changed we do not want to change it again to prevent loops
+    volume_slider:connect_signal("property::value", function()
+        -- if we are updating volume_slider.value because alsa changed we do not want to change it again to prevent loops
         if widget._private.alsa_updating_value then
             widget._private.alsa_updating_value = false
             return
         else
             widget._private.mouse_updating_value = true
-            -- handle.value is changed to fit in the [10,100] interval
-            alsa.set_volume(((handle.value / 100) * 90) + 10)
+            -- volume_slider.value is changed to fit in the [10,100] interval
+            alsa.set_volume(((volume_slider.value / 100) * 90) + 10)
         end
     end)
 
@@ -93,7 +94,7 @@ return function(width)
             return
         end
         widget._private.alsa_updating_value = true
-        handle.value = ((alsa.volume - 10) / 90) * 100
+        volume_slider.value = ((alsa.volume - 10) / 90) * 100
     end)
 
     icon_widget:buttons(gears.table.join(
