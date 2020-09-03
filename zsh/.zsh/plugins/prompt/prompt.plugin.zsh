@@ -102,7 +102,7 @@ precmd() {
 
     async() {
         # save to temp file
-        printf "%s" "$(_prompt_git_info)" > "/tmp/zsh_prompt"
+        printf "%s" "$(_prompt_git_info)" > "/tmp/zsh_prompt_$$"
 
         # signal parent
         kill -s USR1 $$
@@ -122,9 +122,10 @@ precmd() {
 
 TRAPUSR1() {
     # read from temp file
-    RPROMPT="$(cat /tmp/zsh_prompt)${_prompt_retcode_rprompt}"
+    RPROMPT="$(cat /tmp/zsh_prompt_$$)${_prompt_retcode_rprompt}"
 
     # reset proc number
+    rm /tmp/zsh_prompt_$$
     _rprompt_async_proc=0
 
     # redisplay
