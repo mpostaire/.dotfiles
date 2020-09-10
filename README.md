@@ -24,6 +24,8 @@ TODO
 ## TODO
 
 ### high priority
+- make the applauncher keyboard input/scrollable list selection a standalone widget (e.g. to use in networkmanager widget). FIX weird bug
+
 - try a global background wibox for click outside events (have one wibox for all instances where we want click outside detection)
 
 - toggle show popup controls and keygrabber inside control_widgets

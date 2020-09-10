@@ -5,7 +5,6 @@ local beautiful = require("beautiful")
 local color = require("themes.util.color")
 local brightness = require("util.brightness")
 local helpers = require("util.helpers")
-local slider = require("widgets.slider")
 
 local icon = ""
 

@@ -88,7 +88,7 @@ awful.keyboard.append_global_keybindings({
     --     {description = "go back", group = "client"}),
 
     -- Standard program
-    awful.key({ variables.modkey,           }, "Return", function() spawn.easy_async(variables.terminal) end,
+    awful.key({ variables.modkey,           }, "Return", function() spawn.easy_async(variables.terminal, function() end) end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ variables.modkey,           }, "r", _G.awesome.restart,
               {description = "reload awesome", group = "awesome"}),

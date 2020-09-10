@@ -5,7 +5,6 @@ local color = require("themes.util.color")
 local awful = require("awful")
 local alsa = require("util.alsa")
 local helpers = require("util.helpers")
-local slider = require("widgets.slider")
 
 -- // FIXME sound mute + no move click on slider = slider graphics updates but not alsa
 --          this is caused by the fact that when we mute, alsa_updating_value is set to true

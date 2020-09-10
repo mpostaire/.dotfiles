@@ -7,6 +7,8 @@ local naughty = require("naughty")
 local mpris = require("util.mpris")
 local helpers = require("util.helpers")
 
+-- TODO multiple players support
+
 local icons = {
     albumart = gfs.get_configuration_dir().."themes/icons/mpris_player_default.png",
     play = "",
@@ -178,9 +180,6 @@ return function()
             artist_widget.text = artist
             
             -- TODO progress bar in player (just below of album art and same width)
-            -- TODO use https://github.com/cmus/cmus/pull/598 as starting point for a fork of cmus to add mpris:artUrl support
-            --      and xesam:url while we're at it. My fork should try to extract album art from file (and put it in ~/.cache/cmus/ALBUMART.png) or from dir
-            --      also add a .desktop in my fork to make a launcher entry
 
             if albumart then
                 if old_albumart ~= albumart then
