@@ -71,49 +71,65 @@ naughty.connect_signal("request::display", function(n)
     if visible_actions then
         actions_separator_spacing = dpi(15)
     end
+
+    local icon_widget = wibox.widget {
+        image = n.icon,
+        widget = wibox.widget.imagebox
+    }
+    n:connect_signal("property::icon", function()
+        icon_widget.image = n.icon
+    end)
     
     local notification_box = naughty.layout.box {
         notification = n,
+        border_width = beautiful.notification_border_width,
+        border_color = beautiful.notification_border_color,
         widget_template = {
             {
                 {
                     {
                         {
                             {
-                                naughty.widget.icon,
-                                visible = n.icon or false,
-                                right = beautiful.notification_margin,
-                                widget = wibox.container.margin
-                            },
-                            {
                                 {
-                                    {
-                                        markup = "<b>"..n.title.."</b>",
-                                        font = beautiful.notification_font,
-                                        widget = wibox.widget.textbox
-                                    },
-                                    naughty.widget.message,
-                                    spacing = dpi(4),
-                                    layout = wibox.layout.fixed.vertical
+                                    icon_widget,
+                                    strategy = "max",
+                                    width = beautiful.notification_icon_size or dpi(64),
+                                    height = beautiful.notification_icon_size or dpi(64),
+                                    widget = wibox.container.constraint
                                 },
-                                widget = wibox.container.place
+                                widget = wibox.container.place,
                             },
-                            layout = wibox.layout.fixed.horizontal,
+                            visible = n.icon or false,
+                            right = beautiful.notification_margin,
+                            widget = wibox.container.margin
                         },
                         {
-                            actions,
-                            visible = visible_actions,
-                            widget = wibox.container.background
+                            {
+                                align = "left",
+                                markup = "<b>"..n.title.."</b>",
+                                font = beautiful.notification_font,
+                                widget = wibox.widget.textbox
+                            },
+                            {
+                                align = "left",
+                                widget = naughty.widget.message,
+                            },
+                            spacing = dpi(4),
+                            layout = wibox.layout.fixed.vertical
                         },
-                        spacing_widget = actions_separator,
-                        spacing = actions_separator_spacing,
-                        layout = wibox.layout.fixed.vertical,
+                        layout = wibox.layout.fixed.horizontal,
                     },
-                    margins = beautiful.notification_margin,
-                    widget = wibox.container.margin,
+                    {
+                        actions,
+                        visible = visible_actions,
+                        widget = wibox.container.background
+                    },
+                    spacing_widget = actions_separator,
+                    spacing = actions_separator_spacing,
+                    layout = wibox.layout.fixed.vertical,
                 },
-                id = "background_role",
-                widget = naughty.container.background,
+                margins = beautiful.notification_margin,
+                widget = wibox.container.margin,
             },
             strategy = "max",
             forced_width = beautiful.notification_max_width or dpi(512),
@@ -121,7 +137,7 @@ naughty.connect_signal("request::display", function(n)
             widget = wibox.container.constraint,
         }
     }
-    
+
     notification_box:connect_signal("mouse::enter", function()
         notification_box.widget.height = n.screen.geometry.height - notification_box.y - (beautiful.notification_spacing or dpi(2))
     end)

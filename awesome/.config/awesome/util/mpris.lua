@@ -6,12 +6,8 @@ local Gio = require('lgi').Gio
 local mpris = {players = {}, player_count = 0}
 
 -- TODO: check if bugs below are still there because I rewrote this module
--- BUG: play() with rhythmbox only freezes awesome for 25 seconds! This is due to the notification being unable to find
+-- BUG: play() with rhythmbox freezes awesome for 25 seconds! This is due to the notification being unable to find
 -- covert art (rhythmbox file not found) a fix is to disable notifications in rhythmbox interface
--- BUG: vlc when next/prev is used, proxy.PlaybackStatus show 'Stopped' but should be 'Playing' (proxy is not updated)
--- BUG: when playlist is empty no player is visible.
---      when playlist just got empty player displays old metadata and disappear next update
---      when playlist is then filled the player don't show itself
 -- MEMLEAK ~ 5 Kb/s but I don't know why
 
 local manager_proxy = dbus.Proxy:new {
