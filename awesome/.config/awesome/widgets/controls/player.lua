@@ -174,21 +174,13 @@ return function()
                 artist = metadata["xesam:artist"][1]
             end
             local filepath = helpers.uri_to_unix_path(metadata["xesam:url"])
-            local albumart = helpers.uri_to_unix_path(metadata["mpris:artUrl"])
+            local albumart = helpers.uri_to_unix_path(metadata["mpris:artUrl"]) or icons.albumart
 
             title_widget.text = title
             artist_widget.text = artist
+            albumart_widget.image = albumart
             
             -- TODO progress bar in player (just below of album art and same width)
-
-            if albumart then
-                if old_albumart ~= albumart then
-                    albumart_widget.image = albumart
-                end
-            else
-                albumart_widget.image = icons.albumart
-            end
-            old_albumart = albumart
 
             if widget.parent and widget.parent.control_popup and not widget.parent.control_popup.visible then
                 if notification and not notification.is_expired then
@@ -196,7 +188,7 @@ return function()
                     notification.icon = albumart
                 else
                     notification = naughty.notification {
-                        icon = albumart or icons.albumart,
+                        icon = albumart,
                         title = "Now Playing",
                         message = title.." by "..artist
                     }
