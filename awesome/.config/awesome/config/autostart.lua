@@ -1,3 +1,5 @@
+-- TODO remake this to support xdg autostart specification
+
 local spawn = require("awful.spawn")
 
 -- because easy_async_with_shell is used, the & char may be not necessary

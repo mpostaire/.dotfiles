@@ -6,10 +6,6 @@ local beautiful = require("beautiful")
 local color = require("themes.util.color")
 local dpi = beautiful.xresources.apply_dpi
 
--- TODO expand notification on mouse::enter (see all text) while hovering disable timeout, close notification on mouse::leave
---      (when notif appears below cursor do not close on mouse::leave and do not expand: wait for
---      mouse to leave once and then run this logic)
-
 ruled.notification.connect_signal('request::rules', function()
     -- All notifications will match this rule.
     ruled.notification.append_rule {
@@ -53,6 +49,7 @@ naughty.connect_signal("request::display", function(n)
                     },
                     left = dpi(6),
                     right = dpi(6),
+                    top = dpi(10),
                     widget = wibox.container.margin
                 },
                 widget = wibox.container.place
@@ -79,6 +76,44 @@ naughty.connect_signal("request::display", function(n)
     n:connect_signal("property::icon", function()
         icon_widget.image = n.icon
     end)
+
+    local contents = wibox.widget {
+        {
+            {
+                {
+                    {
+                        icon_widget,
+                        strategy = "max",
+                        width = beautiful.notification_icon_size or dpi(64),
+                        height = beautiful.notification_icon_size or dpi(64),
+                        widget = wibox.container.constraint
+                    },
+                    widget = wibox.container.place,
+                },
+                visible = n.icon or false,
+                right = beautiful.notification_margin,
+                widget = wibox.container.margin
+            },
+            {
+                {
+                    align = "left",
+                    markup = "<b>"..n.title.."</b>",
+                    font = beautiful.notification_font,
+                    widget = wibox.widget.textbox
+                },
+                {
+                    align = "left",
+                    widget = naughty.widget.message,
+                },
+                spacing = dpi(4),
+                layout = wibox.layout.fixed.vertical
+            },
+            layout = wibox.layout.fixed.horizontal
+        },
+        strategy = "max",
+        height = beautiful.notification_max_height or dpi(128),
+        widget = wibox.container.constraint,
+    }
     
     local notification_box = naughty.layout.box {
         notification = n,
@@ -89,38 +124,7 @@ naughty.connect_signal("request::display", function(n)
         widget_template = {
             {
                 {
-                    {
-                        {
-                            {
-                                {
-                                    icon_widget,
-                                    strategy = "max",
-                                    width = beautiful.notification_icon_size or dpi(64),
-                                    height = beautiful.notification_icon_size or dpi(64),
-                                    widget = wibox.container.constraint
-                                },
-                                widget = wibox.container.place,
-                            },
-                            visible = n.icon or false,
-                            right = beautiful.notification_margin,
-                            widget = wibox.container.margin
-                        },
-                        {
-                            {
-                                align = "left",
-                                markup = "<b>"..n.title.."</b>",
-                                font = beautiful.notification_font,
-                                widget = wibox.widget.textbox
-                            },
-                            {
-                                align = "left",
-                                widget = naughty.widget.message,
-                            },
-                            spacing = dpi(4),
-                            layout = wibox.layout.fixed.vertical
-                        },
-                        layout = wibox.layout.fixed.horizontal,
-                    },
+                    contents,
                     {
                         actions,
                         visible = visible_actions,
@@ -133,15 +137,13 @@ naughty.connect_signal("request::display", function(n)
                 margins = beautiful.notification_margin,
                 widget = wibox.container.margin,
             },
-            strategy = "max",
             forced_width = beautiful.notification_max_width or dpi(512),
-            height = beautiful.notification_max_height or dpi(128),
             widget = wibox.container.constraint,
         }
     }
 
     notification_box:connect_signal("mouse::enter", function()
-        notification_box.widget.height = n.screen.geometry.height - notification_box.y - (beautiful.notification_spacing or dpi(2))
+        contents.height = n.screen.geometry.height - notification_box.y - (beautiful.notification_spacing or dpi(2))
     end)
 
     notification_box:connect_signal("mouse::leave", function()
