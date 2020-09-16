@@ -17,15 +17,14 @@ ruled.notification.connect_signal('request::rules', function()
         properties = {
             screen = awful.screen.preferred,
             implicit_timeout = 5,
-            hover_timeout = 0 -- TODO doesn't work
+            hover_timeout = 0 -- FIXME doesn't work
         }
     }
 
     -- Add a red background for urgent notifications.
-    -- FIXME this doesn't work
     ruled.notification.append_rule {
         rule       = { urgency = 'critical' },
-        properties = { bg = '#ff0000', fg = '#ffffff', timeout = 0 }
+        properties = { bg = color.red_alt, fg = '#FFFFFF', timeout = 0 }
     }
 end)
 
@@ -85,6 +84,8 @@ naughty.connect_signal("request::display", function(n)
         notification = n,
         border_width = beautiful.notification_border_width,
         border_color = beautiful.notification_border_color,
+        bg = n.bg,
+        fg = n.fg,
         widget_template = {
             {
                 {
