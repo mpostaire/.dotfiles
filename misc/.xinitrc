@@ -51,5 +51,5 @@ command -v numlockx > /dev/null && numlockx
 authentication_agent=/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 command -v $authentication_agent > /dev/null && $authentication_agent &
 
-# exec awesome >> ~/.cache/awesome/stdout 2>> ~/.cache/awesome/stderr
+# exec awesome > ~/.cache/awesome/stdout 2> ~/.cache/awesome/stderr
 exec awesome
