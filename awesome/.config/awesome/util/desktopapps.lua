@@ -35,34 +35,29 @@ for _,v in pairs(desktopapps.all_menu_dirs) do
 end
 desktopapps.all_menu_dirs = existent_paths
 
--- removes leading and trailing whitespaces from s
-local function trim(s)
-    return (s:gsub("^%s*(.-)%s*$", "%1"))
-end
-
 desktopapps.entries = {}
 local frequency_table
 
 -- returns all entries matching query
-function desktopapps.search(query, iteration_callback)
+function desktopapps.search(query, apps)
     if not query then query = "" end
-    query = helpers.replace_special_chars(trim(query)):lower()
+    query = helpers.replace_special_chars(helpers.trim(query)):lower()
 
     local ret = {}
 
-    for k,v in ipairs(desktopapps.entries) do
+    for k,v in ipairs(apps) do
         -- match when we find query in either one of the entry name, comment, generic name, keywords or categories
-        local match = helpers.replace_special_chars(v[1]):lower():find(query) or
-                      helpers.replace_special_chars(v[4]):lower():find(query) or
-                      helpers.replace_special_chars(v[5]):lower():find(query)
-        if not match and v[6] then
-            for _,keyword in pairs(v[6]) do
+        local match = helpers.replace_special_chars(v.title):lower():find(query) or
+                      helpers.replace_special_chars(v.description):lower():find(query) or
+                      helpers.replace_special_chars(v._generic_name):lower():find(query)
+        if not match and v._keywords then
+            for _,keyword in pairs(v._keywords) do
                 match = helpers.replace_special_chars(keyword):lower():find(query)
                 if match then break end
             end
         end
-        if not match and v[7] then
-            for _,category in pairs(v[7]) do
+        if not match and v._categories then
+            for _,category in pairs(v._categories) do
                 match = helpers.replace_special_chars(category):lower():find(query)
                 if match then break end
             end
@@ -70,7 +65,6 @@ function desktopapps.search(query, iteration_callback)
         if match then
             table.insert(ret, v)
         end
-        if iteration_callback then iteration_callback(k, match ~= nil, v) end
     end
 
     return ret
@@ -145,7 +139,7 @@ function desktopapps.build_list(callback)
                         end
                         local categories = entry.categories or nil
                         local frequency = frequency_table[name] or 0
-                        table.insert(result, { name, cmdline, icon, comment, generic_name, keywords, categories, frequency })
+                        table.insert(result, { title = name, cmd = cmdline, icon = icon, description = comment, _generic_name = generic_name, _keywords = keywords, _categories = categories, _frequency = frequency })
                         unique_entries[unique_key] = true
                     end
                 end
@@ -155,10 +149,10 @@ function desktopapps.build_list(callback)
             if dirs_parsed == #desktopapps.all_menu_dirs then
                 -- Sort entries by frequency and alphabetically (by name)
                 table.sort(result, function(a, b)
-                    if a[8] == b[8] then
-                        return helpers.replace_special_chars(a[1]):lower() < helpers.replace_special_chars(b[1]):lower()
+                    if a._frequency == b._frequency then
+                        return helpers.replace_special_chars(a.title):lower() < helpers.replace_special_chars(b.title):lower()
                     end
-                    return a[8] > b[8]
+                    return a._frequency > b._frequency
                 end)
 
                 desktopapps.entries = result

@@ -324,9 +324,8 @@ end
 -- @treturn number cur_pos
 -- @treturn number matches
 
---- The callback function to always call without arguments, regardless of
--- whether the prompt was cancelled.
--- @usage local function my_done_cb()
+--- The callback function to always call with input as argument if the prompt wasn't cancelled, none otherwise.
+-- @usage local function my_done_cb(input)
 --    -- do something
 -- end
 -- @callback done_callback
@@ -407,8 +406,8 @@ end
 -- saved, set nil to disable history
 -- @tparam[opt] function args.history_max Set the maximum entries in history
 -- file, 50 by default
--- @tparam[opt] function args.done_callback The callback function to always call
--- without arguments, regardless of whether the prompt was cancelled.
+-- @tparam[opt] function args.done_callback The callback function to always call with input
+-- as argument if the prompt wasn't cancelled, none otherwise.
 -- @tparam[opt] function args.changed_callback The callback function to call
 -- with command as argument when a command was changed.
 -- @tparam[opt] function args.keypressed_callback The callback function to call
@@ -504,7 +503,7 @@ function prompt.run(args)
         history_add(history_path, command_to_history)
         keygrabber.stop(grabber)
         if cb then cb(command) end
-        if done_callback then done_callback() end
+        if done_callback then done_callback(command) end
     end
 
     -- Update textbox
@@ -886,6 +885,8 @@ function prompt.stop()
     history_save(history_path)
     if done_callback then done_callback() end
 end
+
+_G.awesome.connect_signal("lock", prompt.stop)
 
 return prompt
 

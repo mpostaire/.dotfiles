@@ -22,6 +22,7 @@ ruled.notification.connect_signal('request::rules', function()
     }
 
     -- Add a red background for urgent notifications.
+    -- FIXME this doesn't work
     ruled.notification.append_rule {
         rule       = { urgency = 'critical' },
         properties = { bg = '#ff0000', fg = '#ffffff', timeout = 0 }

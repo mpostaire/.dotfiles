@@ -1,25 +1,22 @@
--- This is a popup that closes itself when a click outside is detected.
--- The 'spawn_button' argument is mandatory if a popup is to be launched via a mouse button (on click).
--- Do not specify 'spawn_button' if a popup is lauched without a mouse button.
+-- This is a wibox that closes itself when a click outside is detected.
+-- The 'spawn_button' argument is mandatory if a wibox is to be launched via a mouse button (on click).
+-- Do not specify 'spawn_button' if a wibox is lauched without a mouse button.
 -- You can change on the fly 'spawn_button' depending on the situation but you must follow these rules.
 
--- TODO: test variant with a transparent wibox that takes the entire screen behind the popup to capture mouse click on that wibox
---       should be a better, smarter solution (and with less bugs and strange behaviours) but maybe slower ?
-
-local awful = require("awful")
+local wibox = require("wibox")
 
 return function(args)
     local close_callback = args.close_callback
     args.close_callback = nil
-    local popup = awful.popup(args)
+    local w = wibox(args)
 
     local just_launched = false
 
-    local function is_mouse_in_popup(mouse)
-        if mouse.x > popup.x and
-            mouse.x < popup.x + popup.width and
-            mouse.y > popup.y and
-            mouse.y < popup.y + popup.height
+    local function is_mouse_in_wibox(mouse)
+        if mouse.x > w.x and
+            mouse.x < w.x + w.width and
+            mouse.y > w.y and
+            mouse.y < w.y + w.height
         then
             return true
         else
@@ -34,20 +31,20 @@ return function(args)
             return true
         end
 
-        if is_mouse_in_popup(mouse) then
+        if is_mouse_in_wibox(mouse) then
             return false
         elseif mouse.buttons[1] or mouse.buttons[2] or mouse.buttons[3] or mouse.buttons[4] or mouse.buttons[5] then
-            popup.visible = false
+            w.visible = false
             return false
         else
             return true
         end
     end
 
-    popup:connect_signal("property::visible", function()
-        if popup.visible then
-            -- we run mousegrabber now even if we didn't leave popup
-            -- this is because when a popup is showed it is not always
+    w:connect_signal("property::visible", function()
+        if w.visible then
+            -- we run mousegrabber now even if we didn't leave wibox
+            -- this is because when a wibox is showed it is not always
             -- under the mouse so the mouse::leave signal is not fired
             if not _G.mousegrabber.isrunning() then
                 just_launched = true
@@ -59,15 +56,15 @@ return function(args)
         end
     end)
 
-    popup.widget:connect_signal("mouse::leave", function()
-        if not _G.mousegrabber.isrunning() and popup.visible then
+    w:connect_signal("mouse::leave", function()
+        if not _G.mousegrabber.isrunning() and w.visible then
             _G.mousegrabber.run(grabber, "left_ptr")
         end
     end)
 
     _G.awesome.connect_signal("lock", function()
-        popup.visible = false
+        w.visible = false
     end)
 
-    return popup
+    return w
 end

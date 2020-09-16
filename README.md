@@ -25,7 +25,6 @@ TODO
 
 ### high priority
 - notification center
-- make the applauncher keyboard input/scrollable list selection a standalone widget (e.g. to use in networkmanager widget). FIX weird bug
 - notification when usb plugged/unplugged
 - network menu
 - clipboard so when a program is closed the content copied inside it is still useable

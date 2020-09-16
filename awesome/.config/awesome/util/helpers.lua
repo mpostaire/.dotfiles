@@ -173,4 +173,9 @@ function helpers.replace_special_chars(str)
     return str:gsub("[%z\1-\127\194-\244][\128-\191]*", tableAccents)
 end
 
+-- removes leading and trailing whitespaces from str
+function helpers.trim(str)
+    return (str:gsub("^%s*(.-)%s*$", "%1"))
+end
+
 return helpers

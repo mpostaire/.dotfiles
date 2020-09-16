@@ -145,12 +145,7 @@ awful.keyboard.append_global_keybindings({
     {description = "htop", group = "launcher"}),
 
     -- applauncher
-    awful.key({ variables.modkey }, "space", function()
-        applauncher.run(true, {
-            height = _G.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.border_width,
-            width = 500, icon_spacing = 8, icon_size = 36, y = beautiful.wibar_height - beautiful.border_width
-        })
-    end,
+    awful.key({ variables.modkey }, "space", applauncher.run,
     {description = "show the launcher menu", group = "launcher"}),
 
     -- laptop special keys

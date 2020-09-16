@@ -1,3 +1,6 @@
+-- notifications
+require("config.notifications")
+
 -- autostart
 require("config.autostart")
 
@@ -6,9 +9,6 @@ require("config.bindings")
 
 -- tags
 require("config.tags")
-
--- notifications
-require("config.notifications")
 
 -- panel
 require("config.panel")
