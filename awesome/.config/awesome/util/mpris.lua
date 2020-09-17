@@ -1,62 +1,16 @@
 local awful = require("awful")
 local gears = require("gears")
 local dbus = require("dbus_proxy")
-local Gio = require('lgi').Gio
+local helpers = require("util.helpers")
 
 local mpris = {players = {}, player_count = 0}
 
--- TODO: check if bugs below are still there because I rewrote this module
--- BUG: play() with rhythmbox freezes awesome for 25 seconds! This is due to the notification being unable to find
+-- TODO check if bugs below are still there because I rewrote this module
+-- BUG play() with rhythmbox freezes awesome for 25 seconds! This is due to the notification being unable to find
 -- covert art (rhythmbox file not found) a fix is to disable notifications in rhythmbox interface
--- MEMLEAK ~ 5 Kb/s but I don't know why
-
-local manager_proxy = dbus.Proxy:new {
-    bus = dbus.Bus.SESSION,
-    name = "org.freedesktop.DBus",
-    interface = "org.freedesktop.DBus",
-    path = "/org/freedesktop/DBus"
-}
+-- FIXME MEMLEAK ~ 5 Kb/s but I don't know why
 
 local on_player_added_callbacks, on_player_removed_callbacks = {}, {}
-
-local function get_mpris_proxy(name)
-    return dbus.Proxy:new {
-        bus = dbus.Bus.SESSION,
-        name = name,
-        interface = "org.mpris.MediaPlayer2.Player",
-        path = "/org/mpris/MediaPlayer2"
-    }
-end
-
-local dbus_names = manager_proxy:ListNames()
-local mpris_name_prefix = "org.mpris.MediaPlayer2."
-for _, name in pairs(dbus_names) do
-    if name:sub(1, #mpris_name_prefix) == mpris_name_prefix then
-        mpris.players[name] = get_mpris_proxy(name)
-        mpris.player_count = mpris.player_count + 1
-        for _,v in pairs(on_player_added_callbacks) do v(name) end
-    end
-end
-
-local function name_owner_changed_callback(conn, sender, object_path, interface_name, signal_name, user_data)
-    local name = user_data[1]
-    local new_owner = user_data[2]
-    local old_owner = user_data[3]
-
-    if name:sub(1, #mpris_name_prefix) == mpris_name_prefix then
-        if old_owner == "" then -- removed player
-            mpris.players[name] = nil
-            mpris.player_count = mpris.player_count - 1
-            for _,v in pairs(on_player_removed_callbacks) do v(name) end
-        elseif new_owner == "" then -- added player
-            mpris.players[name] = get_mpris_proxy(name)
-            mpris.player_count = mpris.player_count + 1
-            for _,v in pairs(on_player_added_callbacks) do v(name) end
-        end
-    end
-end
-dbus.Bus.SESSION:signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus',
-                                    'NameOwnerChanged', nil, nil, Gio.DBusSignalFlags.NONE, name_owner_changed_callback)
 
 function mpris.next(player)
     if not player then player = next(mpris.players) end
@@ -136,5 +90,28 @@ function mpris.on_properties_changed(player, func)
         func(changed, invalidated)
     end)
 end
+
+local function get_mpris_proxy(name)
+    return dbus.Proxy:new {
+        bus = dbus.Bus.SESSION,
+        name = name,
+        interface = "org.mpris.MediaPlayer2.Player",
+        path = "/org/mpris/MediaPlayer2"
+    }
+end
+
+local function on_name_added(name)
+    mpris.players[name] = get_mpris_proxy(name)
+    mpris.player_count = mpris.player_count + 1
+    for _,v in pairs(on_player_added_callbacks) do v(name) end
+end
+
+local function on_name_lost(name)
+    mpris.players[name] = nil
+    mpris.player_count = mpris.player_count - 1
+    for _,v in pairs(on_player_removed_callbacks) do v(name) end
+end
+
+helpers.dbus_watch_name("org.mpris.MediaPlayer2.", on_name_added, on_name_lost, true)
 
 return mpris

@@ -4,13 +4,13 @@ local gears = require("gears")
 local brightness = require("util.brightness")
 local base_panel_widget = require("widgets.panel.base")
 local brightness_control_widget = require("widgets.controls.brightness")
+local helpers = require("util.helpers")
 
 local icon = ""
 
 return function(show_label)
-    if not brightness.enabled then return nil end
-    
     local widget = base_panel_widget{icon = icon, control_widget = brightness_control_widget()}
+    widget.visible = false
 
     -- if nothing specified, we show the label
     if show_label == nil then
@@ -19,11 +19,18 @@ return function(show_label)
         widget:show_label(show_label)
     end
 
-    widget:update_label(math.floor(brightness.brightness) .. "%")
-
-    brightness.on_properties_changed(function()
+    local function update_widget()
         widget:update_label(math.floor(brightness.brightness) .. "%")
+    end
+
+    brightness.on_enabled(function()
+        update_widget()
+        widget.visible = brightness.enabled
     end)
+    brightness.on_disabled(function()
+        widget.visible = brightness.enabled
+    end)
+    brightness.on_properties_changed(update_widget)
 
     widget:buttons(gears.table.join(
         awful.button({}, 4, function()

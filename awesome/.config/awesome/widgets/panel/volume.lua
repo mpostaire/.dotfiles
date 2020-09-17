@@ -6,6 +6,7 @@ local gears = require("gears")
 local alsa = require("util.alsa")
 local base_panel_widget = require("widgets.panel.base")
 local volume_control_widget = require("widgets.controls.volume")
+local helpers = require("util.helpers")
 
 local icons = {
     low = "",
@@ -14,10 +15,9 @@ local icons = {
     muted = ""
 }
 
-return function(show_label)
-    if not alsa.enabled then return nil end
-    
+return function(show_label)   
     local widget = base_panel_widget{control_widget = volume_control_widget()}
+    widget.visible = false
 
     -- if nothing specified, we show the label
     if show_label == nil then
@@ -51,8 +51,13 @@ return function(show_label)
         widget:update(get_icon(), math.floor(alsa.volume) .. "%")
     end
 
-    update_widget()
-
+    alsa.on_enabled(function()
+        update_widget()
+        widget.visible = alsa.enabled
+    end)
+    alsa.on_disabled(function()
+        widget.visible = alsa.enabled
+    end)
     alsa.on_properties_changed(update_widget)
 
     widget:buttons(gears.table.join(

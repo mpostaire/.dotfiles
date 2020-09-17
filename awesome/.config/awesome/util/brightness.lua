@@ -1,12 +1,44 @@
 local awful = require("awful")
 local gears = require("gears")
 local dbus = require("dbus_proxy")
+local helpers = require("util.helpers")
 
 local brightness = {}
+brightness.enabled = false -- assume false at startup
+
+local on_properties_changed_callbacks, on_brightness_enabled_callbacks, on_brightness_disabled_callbacks = {}, {}, {}
 
 local proxy
-local function init_proxy()
-    proxy = dbus.Proxy:new(
+
+function brightness.set_brightness(value)
+    if not proxy then return end
+    proxy:SetBrightness(value)
+end
+
+function brightness.inc_brightness(value)
+    if not proxy then return end
+    proxy:IncBrightness(value)
+end
+
+function brightness.dec_brightness(value)
+    if not proxy then return end
+    proxy:DecBrightness(value)
+end
+
+function brightness.on_enabled(func)
+    table.insert(on_brightness_enabled_callbacks, func)
+    -- exec callbacks (if needed) when we subscribe to this event (useful when brightness available before awesomewm startup)
+    if brightness.enabled then func(k) end
+end
+function brightness.on_disabled(func)
+    table.insert(on_brightness_disabled_callbacks, func)
+end
+function brightness.on_properties_changed(func)
+    table.insert(on_properties_changed_callbacks, func)
+end
+
+local function get_proxy()
+    return dbus.Proxy:new(
         {
             bus = dbus.Bus.SESSION,
             name = "fr.mpostaire.awdctl",
@@ -16,49 +48,37 @@ local function init_proxy()
     )
 end
 
-if pcall(init_proxy) then
+local function on_name_added(name)
+    proxy = get_proxy()
+    proxy:on_properties_changed(function (p, changed, invalidated)
+        assert(p == proxy)
+        local call_callback = false
+        for k,v in pairs(changed) do
+            if k == "Percentage" then
+                brightness.brightness = v
+                call_callback = true
+            end
+        end
+    
+        if call_callback then
+            for _,v in pairs(on_properties_changed_callbacks) do
+                v()
+            end
+        end
+    end)    
+    brightness.brightness = proxy.Percentage
     brightness.enabled = true
-else
+    for _,v in pairs(on_brightness_enabled_callbacks) do v() end
+end
+
+local function on_name_lost(name)
+    proxy = nil
+    brightness.brightness = nil
     brightness.enabled = false
-    return brightness
+    for _,v in pairs(on_brightness_disabled_callbacks) do v() end
 end
 
-local on_properties_changed_callbacks = {}
-
-proxy:on_properties_changed(function (p, changed, invalidated)
-    assert(p == proxy)
-    local call_callback = false
-    for k,v in pairs(changed) do
-        if k == "Percentage" then
-            brightness.brightness = v
-            call_callback = true
-        end
-    end
-
-    if call_callback then
-        for _,v in pairs(on_properties_changed_callbacks) do
-            v()
-        end
-    end
-end)
-
-brightness.brightness = proxy.Percentage
-
-function brightness.set_brightness(value)
-    proxy:SetBrightness(value)
-end
-
-function brightness.inc_brightness(value)
-    proxy:IncBrightness(value)
-end
-
-function brightness.dec_brightness(value)
-    proxy:DecBrightness(value)
-end
-
-function brightness.on_properties_changed(func)
-    table.insert(on_properties_changed_callbacks, func)
-end
+helpers.dbus_watch_name("fr.mpostaire.awdctl", on_name_added, on_name_lost)
 
 local keys = gears.table.join(
     awful.key({}, "XF86MonBrightnessUp", function()

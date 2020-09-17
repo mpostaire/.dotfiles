@@ -31,7 +31,6 @@ return function()
     local function get_icon()
         if network.state == 'wifi' then
             widget:set_icon_color(beautiful.fg_normal)
-            -- require("naughty").notify{text=tostring(network.strength)}
             if not network.strength then
                 return icons[network.state][0] -- temp check if this is correct (I did this as a quick fix whithout a thougt about it)
             elseif network.strength < 20 then

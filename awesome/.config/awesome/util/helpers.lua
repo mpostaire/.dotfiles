@@ -1,6 +1,9 @@
 local timer = require("gears.timer")
 local awful = require("awful")
 local gfs = require("gears.filesystem")
+local gtable = require("gears.table")
+local dbus = require("dbus_proxy")
+local Gio = require('lgi').Gio
 
 local helpers = {}
 
@@ -177,5 +180,57 @@ end
 function helpers.trim(str)
     return (str:gsub("^%s*(.-)%s*$", "%1"))
 end
+
+local dbus_watched_names = {}
+
+local manager_proxy = dbus.Proxy:new {
+    bus = dbus.Bus.SESSION,
+    name = "org.freedesktop.DBus",
+    interface = "org.freedesktop.DBus",
+    path = "/org/freedesktop/DBus"
+}
+
+local function name_owner_changed_callback(conn, sender, object_path, interface_name, signal_name, user_data)
+    local name = user_data[1]
+    local new_owner = user_data[2]
+    local old_owner = user_data[3]
+
+    for _,v in pairs(dbus_watched_names) do
+        if (v.is_prefix and name:sub(1, #v.name) == v.name) or (not v.is_prefix and v.name == name) then
+            if old_owner == "" then -- lost name
+                if v.name_lost_callback then v.name_lost_callback(name) end
+            elseif new_owner == "" then -- added name
+                if v.name_added_callback then v.name_added_callback(name) end
+            end
+        end
+    end
+end
+
+dbus.Bus.SESSION:signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus',
+                                    'NameOwnerChanged', nil, nil, Gio.DBusSignalFlags.NONE, name_owner_changed_callback)
+
+function helpers.dbus_watch_name(name, name_added_callback, name_lost_callback, is_prefix)
+    if not name_added_callback and not name_lost_callback then return end
+
+    local data = {
+        name = name,
+        name_lost_callback = name_lost_callback,
+        name_added_callback = name_added_callback,
+        is_prefix = is_prefix
+    }
+
+    -- check if the name is already available, so we can fire the name_added_callback
+    if data.name_added_callback then
+        local dbus_names = manager_proxy:ListNames()
+        for _, name in pairs(dbus_names) do
+            if (data.is_prefix and name:sub(1, #data.name) == data.name) or (not data.is_prefix and data.name == name) then
+                data.name_added_callback(name)
+            end
+        end
+    end
+
+    table.insert(dbus_watched_names, data)
+end
+
 
 return helpers

@@ -164,7 +164,7 @@ return function()
         end)
     end)
 
-    -- // TODO when connection is back up from a state where it was down, update widget
+    -- TODO when connection is back up from a state where it was down, update widget
     -- it can also update widget after a suspend because a suspend change network state
     -- network.on_properties_changed(function()
     --     timer:emit_signal("timeout")

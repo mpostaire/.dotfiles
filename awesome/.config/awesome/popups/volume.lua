@@ -6,8 +6,6 @@ local gears = require("gears")
 local alsa = require("util.alsa")
 local helpers = require("util.helpers")
 
-if not alsa.enabled then return end
-
 local volume_popup = {}
 
 local icons = {
@@ -31,39 +29,42 @@ local function get_icon()
     end
 end
 
-local progressbar = wibox.widget {
-    max_value = 100,
-    value = alsa.volume,
-    forced_height = 6,
-    forced_width = 0,
-    color = beautiful.fg_normal,
-    background_color = beautiful.border_normal,
-    widget = wibox.widget.progressbar
-}
-
-local icon_widget = wibox.widget {
-    markup = get_icon(),
-    font = helpers.change_font_size(beautiful.icon_font, 128),
-    widget = wibox.widget.textbox
-}
-
-local popup = awful.popup {
-    widget = {
-        {
-            icon_widget,
-            progressbar,
-            spacing = 8,
-            layout = wibox.layout.fixed.vertical
+local popup, progressbar, icon_widget
+local function build_popup()
+    progressbar = wibox.widget {
+        max_value = 100,
+        value = alsa.volume,
+        forced_height = 6,
+        forced_width = 0,
+        color = beautiful.fg_normal,
+        background_color = beautiful.border_normal,
+        widget = wibox.widget.progressbar
+    }
+    
+    icon_widget = wibox.widget {
+        markup = get_icon(),
+        font = helpers.change_font_size(beautiful.icon_font, 128),
+        widget = wibox.widget.textbox
+    }
+    
+    popup = awful.popup {
+        widget = {
+            {
+                icon_widget,
+                progressbar,
+                spacing = 8,
+                layout = wibox.layout.fixed.vertical
+            },
+            margins = beautiful.notification_margin,
+            widget = wibox.container.margin
         },
-        margins = beautiful.notification_margin,
-        widget = wibox.container.margin
-    },
-    border_color = beautiful.border_normal,
-    border_width = beautiful.border_width,
-    ontop = true,
-    placement = awful.placement.centered,
-    visible = false
-}
+        border_color = beautiful.border_normal,
+        border_width = beautiful.border_width,
+        ontop = true,
+        placement = awful.placement.centered,
+        visible = false
+    }
+end
 
 volume_popup.timer = gears.timer {
     timeout   = 1,
@@ -74,6 +75,8 @@ volume_popup.timer = gears.timer {
 }
 
 function volume_popup.show()
+    if not popup or not popup.enabled then return end
+
     if popup.visible then
         volume_popup.timer:again()
     else
@@ -90,6 +93,13 @@ function volume_popup.show()
     end
 end
 
+alsa.on_enabled(function()
+    if not popup then build_popup() end
+    popup.enabled = alsa.enabled
+end)
+alsa.on_disabled(function()
+    popup.enabled = alsa.enabled
+end)
 alsa.on_properties_changed(function()
     volume_popup.show()
 end)

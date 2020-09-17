@@ -3,7 +3,7 @@ local dbus = require("dbus_proxy")
 -- TODO: strength of current connection, list of all visible connections + their strength
 --       functions to rescan, disable/enable networking, disable/enable wifi, connect to another connection
 
--- //TODO rewrite this with lgi.NM ? (check libnm lua documentation)
+-- TODO rewrite this with lgi.NM ? (check libnm lua documentation)
 
 local network = {}
 
@@ -63,7 +63,7 @@ local function set_active_connection_proxy()
         }
     )
 
-    -- //FIXME this is wrong it can be a false one
+    -- FIXME this is wrong it can be a false one
     -- to get the true one get connection_proxy.Devices[1]
     -- then with this device get ActiveAccessPoint
     access_point_proxy = dbus.Proxy:new(
