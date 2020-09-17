@@ -1,7 +1,6 @@
 local menu_utils = require("menubar.utils")
 local gears = require("gears")
 local gfs = require("gears.filesystem")
-local utils = require("menubar.utils")
 local helpers = require("util.helpers")
 local variables = require("config.variables")
 
@@ -16,7 +15,14 @@ menu_utils.terminal = variables.terminal
 local function get_xdg_menu_dirs()
     local dirs = gfs.get_xdg_data_dirs()
     table.insert(dirs, 1, gfs.get_xdg_data_home())
-    return gears.table.map(function(dir) return dir .. 'applications/' end, dirs)
+    return gears.table.map(function(dir)
+        local apps_dir = dir .. 'applications/'
+        if gears.filesystem.dir_readable(apps_dir) then
+            return apps_dir
+        else
+            return nil
+        end
+    end, dirs)
 end
 
 --- Specifies all directories where menubar should look for .desktop
@@ -25,15 +31,6 @@ desktopapps.all_menu_dirs = get_xdg_menu_dirs()
 
 -- Add support for NixOS systems too
 table.insert(desktopapps.all_menu_dirs, string.format("%s/.nix-profile/share/applications", os.getenv("HOME")))
-
--- Remove non existent paths in order to avoid issues
-local existent_paths = {}
-for _,v in pairs(desktopapps.all_menu_dirs) do
-    if gfs.is_dir(v) then
-        table.insert(existent_paths, v)
-    end
-end
-desktopapps.all_menu_dirs = existent_paths
 
 desktopapps.entries = {}
 local frequency_table
@@ -76,7 +73,7 @@ local function load_frequency_table()
     end
     frequency_table = {}
     local count_file_name = gfs.get_cache_dir() .. "/menu_count_file"
-    local count_file = io.open(count_file_name, "r")
+    local count_file = assert(io.open(count_file_name, "r"))
     if count_file then
         for line in count_file:lines() do
             local name, count = string.match(line, "([^;]+);([^;]+)")
@@ -121,17 +118,17 @@ function desktopapps.build_list(callback)
     local short_locale = string.sub(variables.locale, 1, 2)
 
     for _, dir in ipairs(desktopapps.all_menu_dirs) do
-        utils.parse_dir(dir, function(entries)
+        menu_utils.parse_dir(dir, function(entries)
             entries = entries or {}
             for _, entry in ipairs(entries) do
                 -- Check whether to include program in the menu
                 if entry.show and entry.Name and entry.cmdline then
                     local unique_key = entry.Name .. '\0' .. entry.cmdline
                     if not unique_entries[unique_key] then
-                        local name = utils.rtrim(entry.Name) or ""
-                        local cmdline = utils.rtrim(entry.cmdline) or ""
+                        local name = menu_utils.rtrim(entry.Name) or ""
+                        local cmdline = menu_utils.rtrim(entry.cmdline) or ""
                         local icon = entry.icon_path or nil
-                        local comment = utils.rtrim(entry.Comment) or ""
+                        local comment = menu_utils.rtrim(entry.Comment) or ""
                         local generic_name = entry['GenericName'] or ""
                         local keywords = entry['Keywords['..short_locale..']'] or nil
                         if keywords then
