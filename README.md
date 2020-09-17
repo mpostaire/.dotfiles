@@ -27,7 +27,6 @@ TODO
 - notification center
 - notification when usb plugged/unplugged
 - network menu
-- clipboard so when a program is closed the content copied inside it is still useable
 - redo alt tab menu
 
 ### low priority
@@ -36,5 +35,4 @@ TODO
 - Add cursor, icons and gtk theme (remake gtk colors so the are more like my color scheme).
 - Better install script.
 - make calendar days clickable + linked to a calendar app (maybe: make calendar widget side panel with events for the day + notifs like gnome calendar)
-
 - bluetooth widget
