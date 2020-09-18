@@ -7,49 +7,35 @@ local helpers = require("util.helpers")
 
 local icons = {
     charging = {
-        "",
-        "",
-        "",
-        "",
-        ""
+        critical = "",
+        low = "",
+        normal = "",
+        high = "",
+        full = ""
     },
     discharging = {
-        "",
-        "",
-        "",
-        "",
-        ""
-    },
-    full = ""
+        critical = "",
+        low = "",
+        normal = "",
+        high = "",
+        full = ""
+    }
 }
+icons["fully-charged"] = icons.charging
 
-return function()
-    if not battery.enabled then return nil end
-    
+return function()  
     local widget = base_panel_widget()
+    widget.visible = false
 
     local function get_icon()
-        local icon
-        if battery.state == "full" then
-            icon = icons.full
-        elseif battery.percentage >= 0 and battery.percentage < 20 then
-            icon = icons[battery.state][1]
-        elseif battery.percentage >= 20 and battery.percentage < 40 then
-            icon = icons[battery.state][2]
-        elseif battery.percentage >= 40 and battery.percentage < 60 then
-            icon = icons[battery.state][3]
-        elseif battery.percentage >= 60 and battery.percentage < 80 then
-            icon = icons[battery.state][4]
-        elseif battery.percentage >= 80 and battery.percentage <= 100 then
-            icon = icons[battery.state][5]
-        end
+        local icon = icons[battery.state][battery.level]
 
-        if battery.state == "charging" then
-            widget:set_icon_color(color.yellow)
-        elseif battery.state == "discharging" and battery.percentage < 20 then
-            widget:set_icon_color(color.red)
-        elseif battery.state == "full" then
+        if battery.state == "fully-charged" then
             widget:set_icon_color(color.green)
+        elseif battery.state == "charging" then
+            widget:set_icon_color(color.yellow)
+        elseif battery.state == "discharging" and battery.level == "critical" then
+            widget:set_icon_color(color.red)
         else
             widget:set_icon_color(beautiful.fg_normal)
         end
@@ -62,53 +48,54 @@ return function()
     end
 
     -- we update once so the widget is not empty at creation
-    widget:update(get_icon(), get_text())
+    if battery.enabled then
+        widget:update(get_icon(), get_text())
+        widget.visible = true
+    end
 
     local low_battery_notification_sent = false
     local critical_battery_notification_sent = false
-    battery.on_properties_changed(function(changed)
+    battery.on_properties_changed(function()
+        if not battery.enabled then return end
+        widget.visible = battery.enabled
+
         widget:update(get_icon(), get_text())
 
-        for k,_ in pairs(changed) do
-            if k == "State" then
-                if battery.state == "discharging" then
-                    naughty.notification {
-                        title = "Batterie en décharge",
-                        message = helpers.s_to_hms(battery.time_to_empty).." restantes avant décharge complète"
-                    }
-                elseif battery.state == "charging" then
-                    naughty.notification {
-                        title = "Batterie en charge",
-                        message = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
-                    }
-                    critical_battery_notification_sent = false
-                    low_battery_notification_sent = false
-                elseif battery.state == "full" then
-                    naughty.notification {
-                        title = "Batterie chargée",
-                        message = "Vous pouvez débrancher l'alimentation"
-                    }
-                    critical_battery_notification_sent = false
-                    low_battery_notification_sent = false
-                end
-            elseif k == "Percentage" and battery.state == "discharging" then
-                if battery.percentage < 10 and not critical_battery_notification_sent then
-                    naughty.notification {
-                        title = "Batterie critique",
-                        message = "Branchez l'alimentation",
-                    }
-                    critical_battery_notification_sent = true
-                elseif battery.percentage < 20 and not low_battery_notification_sent then
-                    naughty.notification {
-                        title = "Batterie basse",
-                        message = "Branchez l'alimentation",
-                    }
-                    low_battery_notification_sent = true
-                elseif battery.percentage >= 20 then
-                    critical_battery_notification_sent = false
-                    low_battery_notification_sent = false
-                end
+        if battery.state == "discharging" then
+            if battery.level == "critical" and not critical_battery_notification_sent then
+                naughty.notification {
+                    title = "Batterie critique",
+                    message = "Branchez l'alimentation",
+                }
+                critical_battery_notification_sent = true
+            elseif battery.level == "low" and not low_battery_notification_sent then
+                naughty.notification {
+                    title = "Batterie basse",
+                    message = "Branchez l'alimentation",
+                }
+                low_battery_notification_sent = true
+            else
+                naughty.notification {
+                    title = "Batterie en décharge",
+                    message = helpers.s_to_hms(battery.time_to_empty).." restantes avant décharge complète"
+                }
+                critical_battery_notification_sent = false
+                low_battery_notification_sent = false
             end
+        elseif battery.state == "fully-charged" then
+            naughty.notification {
+                title = "Batterie chargée",
+                message = "Vous pouvez débrancher l'alimentation"
+            }
+            critical_battery_notification_sent = false
+            low_battery_notification_sent = false
+        else
+            naughty.notification {
+                title = "Batterie en charge",
+                message = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
+            }
+            critical_battery_notification_sent = false
+            low_battery_notification_sent = false
         end
     end)
 

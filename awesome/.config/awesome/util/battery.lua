@@ -1,93 +1,66 @@
--- This module supports only one battery. Unknown behaviour when more than one is used.
-local dbus = require("dbus_proxy")
+local lgi = require("lgi")
+
+local success, upower = pcall(lgi.require, 'UPowerGlib')
+if not success then return { enabled = false } end
 
 local battery = {}
--- TODO: rewrite using lgi.require('UPowerGlib') (https://github.com/lexa/awesome_upower_battery/blob/master/init.lua)
--- TODO: handle cases where battery state is not "charging", "discharging" or "full"
-local states = {
-    [0] = "unknown",
-    "charging",
-    "discharging",
-    "empty",
-    "full",
-    "pending_charge",
-    "pending_discharge"
-}
 
 local on_properties_changed_callbacks = {}
 
--- For now get only the first battery device
-local function get_first_battery_proxy()
-    local proxy
-    local function init_proxy()
-        proxy = dbus.Proxy:new(
-            {
-                bus = dbus.Bus.SYSTEM,
-                name = "org.freedesktop.UPower",
-                interface = "org.freedesktop.UPower",
-                path = "/org/freedesktop/UPower"
-            }
-        )
-    end
+local device = upower.Client():get_display_device()
 
-    if not pcall(init_proxy) then
-        return
-    end
+battery.enabled = device and device.is_present or false
 
-    local devices = proxy:EnumerateDevices()
-    for _, v in ipairs(devices) do
-        local device_proxy = dbus.Proxy:new(
-            {
-                bus = dbus.Bus.SYSTEM,
-                name = "org.freedesktop.UPower",
-                interface = "org.freedesktop.UPower.Device",
-                path = v
-            }
-        )
-        if device_proxy.Type == 2 then
-            return device_proxy
-        end
+local function get_state(state)
+    if state == "pending-charge" then
+        state = "charging"
+    elseif state == "empty" or state == "pending-discharge" then
+        state = "discharging"
     end
-
-    proxy = nil
+    return state
 end
 
-local proxy = get_first_battery_proxy()
-if proxy then
-    battery.enabled = true
-else
-    battery.enabled = false
-    return battery
+local function get_level(level)
+    if level == "none" then
+        if device.percentage > 80 then
+            level = "full"
+        elseif device.percentage > 60 then
+            level = "high"
+        elseif device.percentage > 40 then
+            level = "normal"
+        elseif device.percentage > 20 then
+            level = "low"
+        else
+            level = "critical"
+        end
+    end
+    return level
 end
 
-proxy:on_properties_changed(function (p, changed, invalidated)
-    assert(p == proxy)
-    local call_callback = false
-    for k, v in pairs(changed) do
-        if k == "Percentage" then
-            battery.percentage = v
-            call_callback = true
-        elseif k == "State" then
-            battery.state = states[v]
-            call_callback = true
-        elseif k == "TimeToFull" then
-            battery.time_to_full = v
-            call_callback = true
-        elseif k == "TimeToEmpty" then
-            battery.time_to_empty = v
-            call_callback = true
-        end
+battery.percentage = device.percentage
+battery.state = get_state(device.state_to_string(device.state))
+battery.time_to_full = device.time_to_full
+battery.time_to_empty = device.time_to_empty
+battery.level = get_level(device.level_to_string(device.battery_level))
+
+function device:on_notify()
+    local state = get_state(device.state_to_string(device.state))
+    local level = get_level(device.level_to_string(device.battery_level))
+    battery.time_to_full = device.time_to_full
+    battery.time_to_empty = device.time_to_empty
+
+    if device.percentage ~= battery.percentage then
+        battery.percentage = device.percentage
+    elseif state ~= battery.state then
+        battery.state = state
+    elseif device.is_present ~= battery.enabled then
+        battery.enabled = device.is_present
+    elseif level ~= battery.level then
+        battery.level = level
     end
 
-    if call_callback then
-        for _,v in pairs(on_properties_changed_callbacks) do
-            v(changed)
-        end
-    end
-end)
-
-battery.percentage, battery.state = proxy.Percentage, states[proxy.State]
-battery.time_to_full, battery.time_to_empty = proxy.TimeToFull, proxy.TimeToEmpty
+    for _,v in pairs(on_properties_changed_callbacks) do v() end
+end
 
 function battery.on_properties_changed(func)
     table.insert(on_properties_changed_callbacks, func)
