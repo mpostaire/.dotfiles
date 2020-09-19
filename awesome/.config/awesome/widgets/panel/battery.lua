@@ -55,6 +55,8 @@ return function()
 
     local low_battery_notification_sent = false
     local critical_battery_notification_sent = false
+    local discharging_notificaton_sent = false
+    local charging_notification_sent = false
     battery.on_properties_changed(function()
         if not battery.enabled then return end
         widget.visible = battery.enabled
@@ -74,13 +76,15 @@ return function()
                     message = "Branchez l'alimentation",
                 }
                 low_battery_notification_sent = true
-            else
+            elseif not discharging_notificaton_sent then
                 naughty.notification {
                     title = "Batterie en décharge",
                     message = helpers.s_to_hms(battery.time_to_empty).." restantes avant décharge complète"
                 }
                 critical_battery_notification_sent = false
                 low_battery_notification_sent = false
+                discharging_notificaton_sent = true
+                charging_notification_sent = false
             end
         elseif battery.state == "fully-charged" then
             naughty.notification {
@@ -89,13 +93,15 @@ return function()
             }
             critical_battery_notification_sent = false
             low_battery_notification_sent = false
-        else
+        elseif not charging_notification_sent then
             naughty.notification {
                 title = "Batterie en charge",
                 message = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
             }
             critical_battery_notification_sent = false
             low_battery_notification_sent = false
+            charging_notification_sent = true
+            discharging_notificaton_sent = false
         end
     end)
 
