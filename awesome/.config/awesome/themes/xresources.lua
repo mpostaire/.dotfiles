@@ -123,15 +123,6 @@ theme.tasklist_fg_minimize = theme.white_alt
 -- Example:
 --theme.taglist_bg_focus = "#ff0000"
 
--- Generate taglist squares:
-local taglist_square_size = dpi(4)
-theme.taglist_squares_sel = theme_assets.taglist_squares_sel(
-    taglist_square_size, theme.fg_normal
-)
-theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
-    taglist_square_size, theme.fg_normal
-)
-
 -- Variables set for theming notifications:
 -- notification_font
 -- notification_[bg|fg]
@@ -208,6 +199,10 @@ theme.awesome_icon = theme_assets.awesome_icon(
 
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
-theme.icon_theme = "Adwaita"
+local lgi = require("lgi")
+local success, Gtk = pcall(lgi.require, "Gtk")
+if success then
+    theme.icon_theme = Gtk.Settings.get_default()["gtk-icon-theme-name"] or "Adwaita"
+end
 
 return theme
