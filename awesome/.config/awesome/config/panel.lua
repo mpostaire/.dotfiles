@@ -21,7 +21,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
                 wibox.container.margin(_, 4),
-                wibox.widget.systray(),
+                widgets.systray(true),
                 -- widgets.archupdates(true), -- it stresses me so it's disabled for now :)
                 widgets.network(),
                 widgets.timedate("%H:%M"),

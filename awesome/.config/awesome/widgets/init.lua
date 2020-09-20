@@ -13,4 +13,5 @@ return {
     launcher = require("widgets.panel.launcher"),
     power = require("widgets.panel.power"),
     player = require("widgets.panel.player"),
+    systray = require("widgets.systray")
 }
