@@ -95,9 +95,9 @@ local function on_name_lost(name)
     for _,v in pairs(on_alsa_disabled_callbacks) do v() end
 end
 
-helpers.dbus_watch_name("fr.mpostaire.awdctl", on_name_added, on_name_lost)
+helpers.dbus_watch_name_or_prefix("fr.mpostaire.awdctl", on_name_added, on_name_lost)
 
-local keys = gears.table.join(
+awful.keyboard.append_global_keybindings({
     awful.key({}, "XF86AudioRaiseVolume", function()
         alsa.inc_volume(5)
     end,
@@ -110,8 +110,6 @@ local keys = gears.table.join(
         alsa.dec_volume(5)
     end,
     {description = "volume down", group = "multimedia"})
-)
-
-_G.root.keys(gears.table.join(_G.root.keys(), keys))
+})
 
 return alsa

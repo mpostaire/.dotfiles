@@ -316,8 +316,4 @@ client.connect_signal("request::default_mousebindings", function()
     })
 end)
 
--- Set keys
-_G.root.keys(globalkeys)
--- }}}
-
 return bindings

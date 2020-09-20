@@ -78,7 +78,7 @@ local function on_name_lost(name)
     for _,v in pairs(on_brightness_disabled_callbacks) do v() end
 end
 
-helpers.dbus_watch_name("fr.mpostaire.awdctl", on_name_added, on_name_lost)
+helpers.dbus_watch_name_or_prefix("fr.mpostaire.awdctl", on_name_added, on_name_lost)
 
 local keys = gears.table.join(
     awful.key({}, "XF86MonBrightnessUp", function()

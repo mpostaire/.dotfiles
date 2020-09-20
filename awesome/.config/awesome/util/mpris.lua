@@ -112,6 +112,6 @@ local function on_name_lost(name)
     for _,v in pairs(on_player_removed_callbacks) do v(name) end
 end
 
-helpers.dbus_watch_name("org.mpris.MediaPlayer2.", on_name_added, on_name_lost, true)
+helpers.dbus_watch_name_or_prefix("org.mpris.MediaPlayer2.", on_name_added, on_name_lost, true)
 
 return mpris

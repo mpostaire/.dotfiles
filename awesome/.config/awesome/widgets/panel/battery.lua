@@ -25,7 +25,6 @@ icons["fully-charged"] = icons.charging
 
 return function()  
     local widget = base_panel_widget()
-    widget.visible = false
 
     local function get_icon()
         local icon = icons[battery.state][battery.level]
@@ -51,58 +50,55 @@ return function()
     if battery.enabled then
         widget:update(get_icon(), get_text())
         widget.visible = true
+    else
+        widget.visible = false
     end
 
-    local low_battery_notification_sent = false
-    local critical_battery_notification_sent = false
-    local discharging_notificaton_sent = false
-    local charging_notification_sent = false
-    battery.on_properties_changed(function()
-        if not battery.enabled then return end
-        widget.visible = battery.enabled
+    battery.on_percentage_changed(function()
+        widget:update_label(get_text())
+    end)
 
-        widget:update(get_icon(), get_text())
+    battery.on_state_changed(function()
+        widget:update_icon(get_icon())
 
         if battery.state == "discharging" then
-            if battery.level == "critical" and not critical_battery_notification_sent then
-                naughty.notification {
-                    title = "Batterie critique",
-                    message = "Branchez l'alimentation",
-                }
-                critical_battery_notification_sent = true
-            elseif battery.level == "low" and not low_battery_notification_sent then
-                naughty.notification {
-                    title = "Batterie basse",
-                    message = "Branchez l'alimentation",
-                }
-                low_battery_notification_sent = true
-            elseif not discharging_notificaton_sent then
-                naughty.notification {
-                    title = "Batterie en décharge",
-                    message = helpers.s_to_hms(battery.time_to_empty).." restantes avant décharge complète"
-                }
-                critical_battery_notification_sent = false
-                low_battery_notification_sent = false
-                discharging_notificaton_sent = true
-                charging_notification_sent = false
-            end
+            naughty.notification {
+                title = "Batterie en décharge",
+                message = helpers.s_to_hms(battery.time_to_empty).." restantes avant décharge complète"
+            }
+        elseif battery.state == "charging" then
+            naughty.notification {
+                title = "Batterie en charge",
+                message = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
+            }
         elseif battery.state == "fully-charged" then
             naughty.notification {
                 title = "Batterie chargée",
                 message = "Vous pouvez débrancher l'alimentation"
             }
-            critical_battery_notification_sent = false
-            low_battery_notification_sent = false
-        elseif not charging_notification_sent then
-            naughty.notification {
-                title = "Batterie en charge",
-                message = helpers.s_to_hms(battery.time_to_full).." restantes avant charge complète"
-            }
-            critical_battery_notification_sent = false
-            low_battery_notification_sent = false
-            charging_notification_sent = true
-            discharging_notificaton_sent = false
         end
+    end)
+    
+    battery.on_level_changed(function()
+        widget:update_icon(get_icon())
+
+        if battery.state ~= "discharging" then return end
+
+        if battery.level == "low" then
+            naughty.notification {
+                title = "Batterie basse",
+                message = "Branchez l'alimentation",
+            }
+        elseif battery.level == "critical" then       
+            naughty.notification {
+                title = "Batterie critique",
+                message = "Branchez l'alimentation",
+            }
+        end
+    end)
+
+    battery.on_enabled_changed(function()
+        widget.visible = battery.enabled
     end)
 
     return widget

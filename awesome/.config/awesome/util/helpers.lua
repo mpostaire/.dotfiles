@@ -3,7 +3,10 @@ local awful = require("awful")
 local gfs = require("gears.filesystem")
 local gtable = require("gears.table")
 local dbus = require("dbus_proxy")
-local Gio = require('lgi').Gio
+local lgi = require("lgi")
+local Gio = lgi.Gio
+local success_gtk, Gtk = pcall(lgi.require, "Gtk")
+local success_gdk, Gdk = pcall(lgi.require, "Gdk")
 
 local helpers = {}
 
@@ -181,6 +184,45 @@ function helpers.trim(str)
     return (str:gsub("^%s*(.-)%s*$", "%1"))
 end
 
+if success_gdk and success_gdk then
+    local get_icon_cache = {}
+
+    local function get_icon_uncached(name, theme_path)
+        local icon_theme
+        if theme_path then
+            icon_theme = Gtk.IconTheme()
+            local icon_search_path = icon_theme:get_default():get_search_path()
+            for _,path in pairs(icon_search_path) do
+                icon_theme:append_search_path(path)
+            end
+            icon_theme:append_search_path(theme_path)
+            icon_theme:set_screen(Gdk.Screen.get_default())
+        else
+            icon_theme = Gtk.IconTheme.get_default()
+        end
+    
+        local icon_info
+        if icon_theme then
+            icon_info = icon_theme:lookup_icon_for_scale(name, 22, 1, Gtk.IconLookupFlags.GENERIC_FALLBACK)
+            if icon_info then
+                return icon_info:get_filename()
+            end
+        end
+    
+        return nil
+    end
+
+    helpers.get_icon = function(name, theme_path)
+        local key = name..theme_path
+        if not get_icon_cache[key] and get_icon_cache[key] ~= false then
+            get_icon_cache[key] = get_icon_uncached(name, theme_path)
+        end
+        return get_icon_cache[key]
+    end
+else
+    helpers.get_icon = require("menubar.utils").lookup_icon
+end
+
 local dbus_watched_names = {}
 
 local manager_proxy = dbus.Proxy:new {
@@ -190,10 +232,10 @@ local manager_proxy = dbus.Proxy:new {
     path = "/org/freedesktop/DBus"
 }
 
-local function name_owner_changed_callback(conn, sender, object_path, interface_name, signal_name, user_data)
-    local name = user_data[1]
-    local new_owner = user_data[2]
-    local old_owner = user_data[3]
+local function name_owner_changed_callback(conn, sender, object_path, interface_name, signal_name, parameters, user_data)
+    local name = parameters[1]
+    local new_owner = parameters[2]
+    local old_owner = parameters[3]
 
     for _,v in pairs(dbus_watched_names) do
         if (v.is_prefix and name:sub(1, #v.name) == v.name) or (not v.is_prefix and v.name == name) then
@@ -207,9 +249,9 @@ local function name_owner_changed_callback(conn, sender, object_path, interface_
 end
 
 dbus.Bus.SESSION:signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus',
-                                    'NameOwnerChanged', nil, nil, Gio.DBusSignalFlags.NONE, name_owner_changed_callback)
+                                    'NameOwnerChanged', "/org/freedesktop/DBus", nil, Gio.DBusSignalFlags.NONE, name_owner_changed_callback)
 
-function helpers.dbus_watch_name(name, name_added_callback, name_lost_callback, is_prefix)
+function helpers.dbus_watch_name_or_prefix(name, name_added_callback, name_lost_callback, is_prefix)
     if not name_added_callback and not name_lost_callback then return end
 
     local data = {
@@ -232,5 +274,20 @@ function helpers.dbus_watch_name(name, name_added_callback, name_lost_callback, 
     table.insert(dbus_watched_names, data)
 end
 
+function helpers.change_cursor_on_hover(widget, cursor)
+    local old_cursor, old_wibox
+    widget:connect_signal("mouse::enter", function()
+        -- Hm, no idea how to get the wibox from this signal's arguments...
+        local w = _G.mouse.current_wibox
+        old_cursor, old_wibox = w.cursor, w
+        w.cursor = cursor or "hand2"
+    end)
+    widget:connect_signal("mouse::leave", function()
+        if old_wibox then
+            old_wibox.cursor = old_cursor
+            old_wibox = nil
+        end
+    end)
+end
 
 return helpers

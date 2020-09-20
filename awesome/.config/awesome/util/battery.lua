@@ -5,7 +5,8 @@ if not success then return { enabled = false } end
 
 local battery = {}
 
-local on_properties_changed_callbacks = {}
+local on_percentage_changed_callbacks, on_state_changed_callbacks,
+        on_enabled_changed_callbacks, on_level_changed_callbacks = {}, {}, {}, {}
 
 local device = upower.Client():get_display_device()
 
@@ -51,19 +52,30 @@ function device:on_notify()
 
     if device.percentage ~= battery.percentage then
         battery.percentage = device.percentage
+        for _,v in pairs(on_percentage_changed_callbacks) do v() end
     elseif state ~= battery.state then
         battery.state = state
+        for _,v in pairs(on_state_changed_callbacks) do v() end
     elseif device.is_present ~= battery.enabled then
         battery.enabled = device.is_present
+        for _,v in pairs(on_enabled_changed_callbacks) do v() end
     elseif level ~= battery.level then
         battery.level = level
+        for _,v in pairs(on_level_changed_callbacks) do v() end
     end
-
-    for _,v in pairs(on_properties_changed_callbacks) do v() end
 end
 
-function battery.on_properties_changed(func)
-    table.insert(on_properties_changed_callbacks, func)
+function battery.on_percentage_changed(func)
+    table.insert(on_percentage_changed_callbacks, func)
+end
+function battery.on_state_changed(func)
+    table.insert(on_state_changed_callbacks, func)
+end
+function battery.on_enabled_changed(func)
+    table.insert(on_enabled_changed_callbacks, func)
+end
+function battery.on_level_changed(func)
+    table.insert(on_level_changed_callbacks, func)
 end
 
 return battery
