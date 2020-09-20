@@ -33,11 +33,14 @@ naughty.connect_signal("request::display", function(n)
         widget = wibox.widget.separator
     }
 
+    local visible_actions = n.actions and #n.actions > 0
+    local actions_height = visible_actions and dpi(20) or 0
     local actions = wibox.widget {
         notification = n,
         base_layout = wibox.widget {
             spacing_widget = actions_separator,
             spacing = dpi(15),
+            forced_height = actions_height,
             layout = wibox.layout.flex.horizontal
         },
         widget_template = {
@@ -63,7 +66,6 @@ naughty.connect_signal("request::display", function(n)
         widget = naughty.list.actions
     }
 
-    local visible_actions = n.actions and #n.actions > 0
     local actions_separator_spacing = 0
     if visible_actions then
         actions_separator_spacing = dpi(15)
@@ -143,11 +145,14 @@ naughty.connect_signal("request::display", function(n)
     }
 
     notification_box:connect_signal("mouse::enter", function()
-        contents.height = n.screen.geometry.height - notification_box.y - (beautiful.notification_spacing or dpi(2))
+        contents.height = n.screen.geometry.height - notification_box.y - (actions_height > 0 and actions_height + dpi(15) or 0)
+                            - (beautiful.notification_spacing or dpi(4)) - 2 * (beautiful.notification_margin or 0)
     end)
 
     notification_box:connect_signal("mouse::leave", function()
-        if n.urgency ~= "critical" then
+        if n.urgency == "critical" then
+            contents.height = beautiful.notification_max_height or dpi(128)
+        else
             n:destroy(2, false)
             n.is_expired = true
         end
