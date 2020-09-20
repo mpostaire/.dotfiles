@@ -27,7 +27,7 @@ return function(include_legacy_systray)
     local id_index = {}
 
     systray.on_sni_added(function(sni)
-        local icon = helpers.get_icon(sni._private.proxy.IconName, sni._private.proxy.IconThemePath)
+        local icon = helpers.get_icon(sni.icon, sni.icon_theme)
         local icon_widget = wibox.widget {
             image = icon,
             widget = wibox.widget.imagebox
@@ -45,8 +45,12 @@ return function(include_legacy_systray)
         index = index + 1
         id_index[sni.id] = index
 
-        sni.on_icon_changed(function(icon)
-            icon_widget.image = helpers.get_icon(icon, sni._private.proxy.IconThemePath)
+        sni.on_new_icon(function(icon)
+            icon_widget.image = icon
+        end)
+
+        sni.on_new_status(function(status)
+            item.visible = status
         end)
     end)
 

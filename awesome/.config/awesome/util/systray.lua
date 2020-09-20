@@ -1,33 +1,50 @@
 local dbus = require("dbus_proxy")
 local lgi = require("lgi")
+local helpers = require("util.helpers")
 local Gio = lgi.Gio
 local GObject = lgi.GObject
 local GVariant = lgi.GLib.Variant
 
--- TODO make this async (using call() instead of call_async) and better handling even if this works
--- now it takes 1.3-2.0 % of cpu while animating the dropbox icon
-local function get_icon(proxy, callback)
-    Gio.DBusProxy.call(
-        proxy,
-        "org.freedesktop.DBus.Properties.Get",
-        GVariant("(ss)", {"org.kde.StatusNotifierItem", "IconName"}),
-        Gio.DBusCallFlags.NONE,
-        -1,
-        nil,
-        callback
-    )
-end
-
 local systray = { snis = {} }
 
 local on_sni_added_callbacks, on_sni_removed_callbacks = {}, {}
+
+local function dbus_proxy_get_prop(proxy, interface, property, callback)
+    Gio.DBusProxy.call(
+        proxy._proxy,
+        "org.freedesktop.DBus.Properties.Get",
+        GVariant("(ss)", {interface, property }),
+        Gio.DBusCallFlags.NONE,
+        -1,
+        nil,
+        function(source_object, res, user_data)
+            local ret = Gio.DBusProxy.call_finish(proxy._proxy, res)
+            callback(ret)
+        end
+    )
+end
+
+local function get_status(status)
+    if status == "NeedsAttention" then return 2 end
+    if status == "Active" then return 1 end
+    if status == "Passive" then return 0 end
+    return -1
+end
+
+local function get_icon(icon, attention_icon, icon_theme, status)
+    if status == 1 then
+        return helpers.get_icon(icon, icon_theme)
+    elseif status == 2 then
+        return helpers.get_icon(attention_icon, icon_theme)
+    end
+    return nil
+end
 
 local function remove_sni(id, watch_name_id, service, connection)
     local keys = { }
     for k, _ in pairs(systray.snis) do
         table.insert(keys, k)
     end
-    systray.snis[id]._private.proxy = nil -- useless ? I don't really understand lua gc
     systray.snis[id] = nil
 
     Gio.bus_unwatch_name(watch_name_id)
@@ -56,9 +73,9 @@ local function remove_sni(id, watch_name_id, service, connection)
 end
 
 local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
-    systray.snis[id] = { id = id, _private = { on_icon_changed_callbacks = {} } }
-
-    systray.snis[id]._private.proxy = dbus.Proxy:new(
+    local on_icon_changed_callbacks, on_status_changed_callbacks = {}, {}
+    
+    local item_proxy = dbus.Proxy:new(
         {
             bus = dbus.Bus.SESSION,
             name = sni_bus_name,
@@ -66,21 +83,76 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
             path = sni_obj_path
         }
     )
+    
+    local status = get_status(item_proxy.Status)
+    local icon = item_proxy.IconName
+    local attention_icon = item_proxy.AttentionIconName
+    local icon_theme = item_proxy.IconThemePath
 
-    systray.snis[id]._private.proxy:connect_signal(
-        function (p, x, y)
-            assert(p == systray.snis[id]._private.proxy)
-            get_icon(systray.snis[id]._private.proxy._proxy, function(source_object, res, user_data)
-                local ret = Gio.DBusProxy.call_finish(systray.snis[id]._private.proxy._proxy, res)
-                for _,v in pairs(systray.snis[id]._private.on_icon_changed_callbacks) do v(ret.value[1].value) end
-            end)            
+    item_proxy:connect_signal(
+        function(p)
+            assert(p == item_proxy)
+            dbus_proxy_get_prop(item_proxy, "org.kde.StatusNotifierItem", "IconThemePath", function(ret)
+                local value = ret.value[1].value
+                if value ~= icon_theme then
+                    icon_theme = value
+                    if status >= 1 then
+                        for _,v in pairs(on_icon_changed_callbacks) do v(get_icon(icon, attention_icon, icon_theme, status)) end
+                    end
+                end
+            end)
+        end,
+        "NewIconThemePath"
+    )
+
+    item_proxy:connect_signal(
+        function(p)
+            assert(p == item_proxy)
+            dbus_proxy_get_prop(item_proxy, "org.kde.StatusNotifierItem", "IconName", function(ret)
+                local value = ret.value[1].value
+                if value ~= icon then
+                    icon = value
+                    if status >= 1 then
+                        for _,v in pairs(on_icon_changed_callbacks) do v(get_icon(icon, attention_icon, icon_theme, status)) end
+                    end
+                end
+            end)
         end,
         "NewIcon"
     )
 
-    systray.snis[id].on_icon_changed = function(func)
-        table.insert(systray.snis[id]._private.on_icon_changed_callbacks, func)
-    end
+    item_proxy:connect_signal(
+        function(p)
+            assert(p == item_proxy)
+            dbus_proxy_get_prop(item_proxy, "org.kde.StatusNotifierItem", "AttentionIconName", function(ret)
+                local value = ret.value[1].value
+                if value ~= attention_icon then
+                    attention_icon = value
+                    if status >= 1 then
+                        for _,v in pairs(on_icon_changed_callbacks) do v(get_icon(icon, attention_icon, icon_theme, status)) end
+                    end
+                end
+            end)
+        end,
+        "NewAttentionIcon"
+    )
+
+    item_proxy:connect_signal(
+        function(p)
+            assert(p == item_proxy)
+            dbus_proxy_get_prop(item_proxy, "org.kde.StatusNotifierItem", "Status", function(ret)
+                local value = get_status(ret.value[1].value)
+                if value ~= status then
+                    status = value
+                    if status >= 1 then
+                        for _,v in pairs(on_icon_changed_callbacks) do v(get_icon(icon, attention_icon, icon_theme, status)) end
+                    end
+                    for _,v in pairs(on_status_changed_callbacks) do v(status >= 1) end
+                end
+            end)
+        end,
+        "NewStatus"
+    )
 
     watch_name_id = Gio.bus_watch_name(
         Gio.BusType.SESSION,
@@ -92,6 +164,17 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
         end)
     )
 
+    systray.snis[id] = {
+        id = id,
+        on_new_icon = function(func)
+            table.insert(on_icon_changed_callbacks, func)
+            func(get_icon(icon, attention_icon, icon_theme, status))
+        end,
+        on_new_status = function(func)
+            table.insert(on_status_changed_callbacks, func)
+            func(status >= 1)
+        end
+    }
     for _,v in pairs(on_sni_added_callbacks) do v(systray.snis[id]) end
 end
 

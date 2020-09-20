@@ -213,6 +213,7 @@ if success_gdk and success_gdk then
     end
 
     helpers.get_icon = function(name, theme_path)
+        if not name then return nil end
         local key = name..theme_path
         if not get_icon_cache[key] and get_icon_cache[key] ~= false then
             get_icon_cache[key] = get_icon_uncached(name, theme_path)
