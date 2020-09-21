@@ -1,5 +1,7 @@
 local wibox = require("wibox")
-local dpi = require("beautiful").xresources.apply_dpi
+local awful = require("awful")
+local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 local helpers = require("util.helpers")
 local systray = require("util.systray")
 
@@ -8,19 +10,24 @@ return function(include_legacy_systray)
         layout = wibox.layout.fixed.horizontal
     }
 
+    local legacy_tray
+    if include_legacy_systray then
+        legacy_tray = wibox.widget {
+            wibox.widget.systray() or nil,
+            top = dpi(4),
+            bottom = dpi(4),
+            widget = wibox.container.margin
+        }
+    end
+
     local widget = wibox.widget {
         {
-            {
-                include_legacy_systray and wibox.widget.systray() or nil, -- legacy
-                item_container,
-                spacing = dpi(4),
-                layout = wibox.layout.fixed.horizontal
-            },
-            widget = wibox.container.background
+            legacy_tray,
+            item_container,
+            spacing = beautiful.systray_icon_spacing and beautiful.systray_icon_spacing / 2 or dpi(6),
+            layout = wibox.layout.fixed.horizontal
         },
-        top = dpi(4),
-        bottom = dpi(4),
-        widget = wibox.container.margin
+        widget = wibox.container.background
     }
 
     local index = 0
@@ -33,10 +40,35 @@ return function(include_legacy_systray)
             widget = wibox.widget.imagebox
         }
         local item = wibox.widget {
-            icon_widget,
-            left = dpi(6),
-            right = dpi(6),
+            {
+                icon_widget,
+                top = dpi(4),
+                bottom = dpi(4),
+                widget = wibox.container.margin
+            },
+            left = beautiful.systray_icon_spacing and beautiful.systray_icon_spacing / 2 or dpi(6),
+            right = beautiful.systray_icon_spacing and beautiful.systray_icon_spacing / 2 or dpi(6),
             widget = wibox.container.margin
+        }
+
+        -- scroll deltas are arbitrarily set to 32 cause I don't know of a way to get them
+        widget:buttons {
+            awful.button({}, 2, function(arg)
+                local coords = mouse.coords()
+                sni.secondary_activate(coords.x, coords.y)
+            end),
+            awful.button({}, 4, function()
+                sni.scroll(-32, "vertical")
+            end),
+            awful.button({}, 5, function()
+                sni.scroll(32, "vertical")
+            end),
+            awful.button({}, 6, function()
+                sni.scroll(-32, "horizontal")
+            end),
+            awful.button({}, 7, function()
+                sni.scroll(32, "horizontal")
+            end)
         }
 
         helpers.change_cursor_on_hover(item, "hand2")

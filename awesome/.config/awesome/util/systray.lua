@@ -5,6 +5,9 @@ local Gio = lgi.Gio
 local GObject = lgi.GObject
 local GVariant = lgi.GLib.Variant
 
+-- MEMLEAK proxies created in add_sni() may not be garbage collected ?
+-- TODO dbusmenu support
+
 local systray = { snis = {} }
 
 local on_sni_added_callbacks, on_sni_removed_callbacks = {}, {}
@@ -75,15 +78,24 @@ end
 local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
     local on_icon_changed_callbacks, on_status_changed_callbacks = {}, {}
     
-    local item_proxy = dbus.Proxy:new(
-        {
-            bus = dbus.Bus.SESSION,
-            name = sni_bus_name,
-            interface = "org.kde.StatusNotifierItem",
-            path = sni_obj_path
-        }
-    )
-    
+    local item_proxy = dbus.Proxy:new {
+        bus = dbus.Bus.SESSION,
+        name = sni_bus_name,
+        interface = "org.kde.StatusNotifierItem",
+        path = sni_obj_path
+    }
+
+    local menu_proxy = dbus.Proxy:new {
+        bus = dbus.Bus.SESSION,
+        name = sni_bus_name,
+        interface = "com.canonical.dbusmenu",
+        path = item_proxy.Menu
+    }
+
+    -- only prop of this proxy that may be useful (array of paths to use for icon lookup)
+    local menu_icon_themes = menu_proxy.IconThemePath
+
+
     local status = get_status(item_proxy.Status)
     local icon = item_proxy.IconName
     local attention_icon = item_proxy.AttentionIconName
@@ -166,6 +178,12 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
 
     systray.snis[id] = {
         id = id,
+        scroll = function(delta, orientation)
+            item_proxy:Scroll(delta, orientation)
+        end,
+        secondary_activate = function(x, y)
+            item_proxy:SecondaryActivate(x, y)
+        end,
         on_new_icon = function(func)
             table.insert(on_icon_changed_callbacks, func)
             func(get_icon(icon, attention_icon, icon_theme, status))

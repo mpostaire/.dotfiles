@@ -108,6 +108,8 @@ theme.tasklist_font_urgent = "DejaVu Sans Mono Bold 10"
 theme.tasklist_fg_minimize = theme.white_alt
 -- }}}
 
+theme.systray_icon_spacing = dpi(12)
+
 -- theme.taglist_fg_focus = red
 
 -- There are other variable sets
