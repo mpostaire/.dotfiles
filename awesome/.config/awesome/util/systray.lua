@@ -6,11 +6,61 @@ local GObject = lgi.GObject
 local GVariant = lgi.GLib.Variant
 
 -- MEMLEAK proxies created in add_sni() may not be garbage collected ?
--- TODO dbusmenu support
+
+-- TODO optimize this so it should be able to update elements without a complete rebuild
+local function build_menu(layout, proxy)
+    local id = layout[1]
+    local properties = layout[2]
+    local submenu = layout[3]
+
+    local root = {
+        "???",
+        function()
+            proxy:Event(id, "clicked", GVariant("i", 0), 0)
+        end
+    } -- TODO set default properties here to be overwritten in loop below
+    for prop, value in pairs(properties) do
+        if prop == "type" and value == "separator" then
+            root[1] = "------"
+            break
+        end
+
+        if prop == "label" and value ~= "" then
+            root[1] = value
+        elseif prop == "children-display" and value == "submenu" and submenu then
+            root[2] = {}
+            for _, item in ipairs(submenu) do
+                table.insert(root[2], build_menu(item, proxy))
+            end
+        elseif prop == "icon-name" and value ~= "" then
+            -- print(value)
+            root[3] = helpers.get_icon(value, _, 32)
+        end
+    end
+
+    -- if we are at the upmost root, we return directly its submenus
+    if id == 0 then return root[2] end
+    return root
+end
+
 
 local systray = { snis = {} }
 
 local on_sni_added_callbacks, on_sni_removed_callbacks = {}, {}
+
+local menu_default_props = {
+    type = "standard",
+    label = "",
+    enabled = true,
+    visible = true,
+    ["icon-name"] = "",
+    ["icon-data"] = nil,
+    shortcut = nil,
+    ["toggle-type"] = "",
+    ["toggle-state"] = -1,
+    ["children-display"] = "",
+    disposition = "normal"
+}
 
 local function dbus_proxy_get_prop(proxy, interface, property, callback)
     Gio.DBusProxy.call(
@@ -27,14 +77,14 @@ local function dbus_proxy_get_prop(proxy, interface, property, callback)
     )
 end
 
-local function get_status(status)
+local function item_get_status(status)
     if status == "NeedsAttention" then return 2 end
     if status == "Active" then return 1 end
     if status == "Passive" then return 0 end
     return -1
 end
 
-local function get_icon(icon, attention_icon, icon_theme, status)
+local function item_get_icon(icon, attention_icon, icon_theme, status)
     if status == 1 then
         return helpers.get_icon(icon, icon_theme)
     elseif status == 2 then
@@ -44,11 +94,11 @@ local function get_icon(icon, attention_icon, icon_theme, status)
 end
 
 local function remove_sni(id, watch_name_id, service, connection)
+    systray.snis[id] = nil
     local keys = { }
     for k, _ in pairs(systray.snis) do
         table.insert(keys, k)
     end
-    systray.snis[id] = nil
 
     Gio.bus_unwatch_name(watch_name_id)
 
@@ -76,8 +126,8 @@ local function remove_sni(id, watch_name_id, service, connection)
 end
 
 local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
-    local on_icon_changed_callbacks, on_status_changed_callbacks = {}, {}
-    
+    local on_icon_changed_callbacks, on_status_changed_callbacks, on_show_menu_callbacks = {}, {}, {}
+
     local item_proxy = dbus.Proxy:new {
         bus = dbus.Bus.SESSION,
         name = sni_bus_name,
@@ -85,18 +135,7 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
         path = sni_obj_path
     }
 
-    local menu_proxy = dbus.Proxy:new {
-        bus = dbus.Bus.SESSION,
-        name = sni_bus_name,
-        interface = "com.canonical.dbusmenu",
-        path = item_proxy.Menu
-    }
-
-    -- only prop of this proxy that may be useful (array of paths to use for icon lookup)
-    local menu_icon_themes = menu_proxy.IconThemePath
-
-
-    local status = get_status(item_proxy.Status)
+    local status = item_get_status(item_proxy.Status)
     local icon = item_proxy.IconName
     local attention_icon = item_proxy.AttentionIconName
     local icon_theme = item_proxy.IconThemePath
@@ -109,7 +148,7 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
                 if value ~= icon_theme then
                     icon_theme = value
                     if status >= 1 then
-                        for _,v in pairs(on_icon_changed_callbacks) do v(get_icon(icon, attention_icon, icon_theme, status)) end
+                        for _,v in pairs(on_icon_changed_callbacks) do v(item_get_icon(icon, attention_icon, icon_theme, status)) end
                     end
                 end
             end)
@@ -125,7 +164,7 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
                 if value ~= icon then
                     icon = value
                     if status >= 1 then
-                        for _,v in pairs(on_icon_changed_callbacks) do v(get_icon(icon, attention_icon, icon_theme, status)) end
+                        for _,v in pairs(on_icon_changed_callbacks) do v(item_get_icon(icon, attention_icon, icon_theme, status)) end
                     end
                 end
             end)
@@ -141,7 +180,7 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
                 if value ~= attention_icon then
                     attention_icon = value
                     if status >= 1 then
-                        for _,v in pairs(on_icon_changed_callbacks) do v(get_icon(icon, attention_icon, icon_theme, status)) end
+                        for _,v in pairs(on_icon_changed_callbacks) do v(item_get_icon(icon, attention_icon, icon_theme, status)) end
                     end
                 end
             end)
@@ -153,11 +192,11 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
         function(p)
             assert(p == item_proxy)
             dbus_proxy_get_prop(item_proxy, "org.kde.StatusNotifierItem", "Status", function(ret)
-                local value = get_status(ret.value[1].value)
+                local value = item_get_status(ret.value[1].value)
                 if value ~= status then
                     status = value
                     if status >= 1 then
-                        for _,v in pairs(on_icon_changed_callbacks) do v(get_icon(icon, attention_icon, icon_theme, status)) end
+                        for _,v in pairs(on_icon_changed_callbacks) do v(item_get_icon(icon, attention_icon, icon_theme, status)) end
                     end
                     for _,v in pairs(on_status_changed_callbacks) do v(status >= 1) end
                 end
@@ -165,6 +204,19 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
         end,
         "NewStatus"
     )
+
+    -- TODO handle case where there is no menu
+    local menu_proxy = dbus.Proxy:new {
+        bus = dbus.Bus.SESSION,
+        name = sni_bus_name,
+        interface = "com.canonical.dbusmenu",
+        path = item_proxy.Menu
+    }
+
+    local menu_layout = menu_proxy:GetLayout(0, -1, {})
+
+    -- only prop of this proxy that may be useful (array of paths to use for icon lookup)
+    -- local menu_icon_themes = menu_proxy.IconThemePath
 
     watch_name_id = Gio.bus_watch_name(
         Gio.BusType.SESSION,
@@ -186,13 +238,25 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
         end,
         on_new_icon = function(func)
             table.insert(on_icon_changed_callbacks, func)
-            func(get_icon(icon, attention_icon, icon_theme, status))
+            func(item_get_icon(icon, attention_icon, icon_theme, status))
         end,
         on_new_status = function(func)
             table.insert(on_status_changed_callbacks, func)
             func(status >= 1)
+        end,
+        on_show_menu = function(func)
+            table.insert(on_show_menu_callbacks, func)
+        end,
+        activate = function(x, y)
+            local need_update = menu_proxy:AboutToShow(0)
+            if need_update then
+                menu_layout = menu_proxy:GetLayout(0, -1, {})
+            end
+            local menu_items = build_menu(menu_layout[2], menu_proxy)
+            for _,v in pairs(on_show_menu_callbacks) do v(menu_items, x, y) end
         end
     }
+
     for _,v in pairs(on_sni_added_callbacks) do v(systray.snis[id]) end
 end
 

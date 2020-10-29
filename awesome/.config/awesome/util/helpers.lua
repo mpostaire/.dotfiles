@@ -187,7 +187,7 @@ end
 if success_gdk and success_gdk then
     local get_icon_cache = {}
 
-    local function get_icon_uncached(name, theme_path)
+    local function get_icon_uncached(name, theme_path, size)
         local icon_theme
         if theme_path then
             icon_theme = Gtk.IconTheme()
@@ -203,7 +203,7 @@ if success_gdk and success_gdk then
     
         local icon_info
         if icon_theme then
-            icon_info = icon_theme:lookup_icon_for_scale(name, 22, 1, Gtk.IconLookupFlags.GENERIC_FALLBACK)
+            icon_info = icon_theme:lookup_icon_for_scale(name, size, 1, Gtk.IconLookupFlags.GENERIC_FALLBACK)
             if icon_info then
                 return icon_info:get_filename()
             end
@@ -212,11 +212,12 @@ if success_gdk and success_gdk then
         return nil
     end
 
-    helpers.get_icon = function(name, theme_path)
+    helpers.get_icon = function(name, theme_path, size)
         if not name then return nil end
-        local key = name..theme_path
+        local s = size or 22
+        local key = name..(theme_path or "")..tostring(s)
         if not get_icon_cache[key] and get_icon_cache[key] ~= false then
-            get_icon_cache[key] = get_icon_uncached(name, theme_path)
+            get_icon_cache[key] = get_icon_uncached(name, theme_path, s)
         end
         return get_icon_cache[key]
     end
@@ -249,8 +250,14 @@ local function name_owner_changed_callback(conn, sender, object_path, interface_
     end
 end
 
-dbus.Bus.SESSION:signal_subscribe('org.freedesktop.DBus', 'org.freedesktop.DBus',
-                                    'NameOwnerChanged', "/org/freedesktop/DBus", nil, Gio.DBusSignalFlags.NONE, name_owner_changed_callback)
+dbus.Bus.SESSION:signal_subscribe(
+    'org.freedesktop.DBus',
+    'org.freedesktop.DBus',
+    'NameOwnerChanged',
+    "/org/freedesktop/DBus",
+    nil,
+    Gio.DBusSignalFlags.NONE, name_owner_changed_callback
+)
 
 function helpers.dbus_watch_name_or_prefix(name, name_added_callback, name_lost_callback, is_prefix)
     if not name_added_callback and not name_lost_callback then return end
