@@ -4,6 +4,9 @@ local gfs = require("gears.filesystem")
 local helpers = require("util.helpers")
 local variables = require("config.variables")
 
+-- TODO make desktopapps.entries a dictionnary were keys are the .desktop filename and values are the parsed properties.
+--      for easy access to implement LauncherEntry spec
+
 local desktopapps = {}
 
 -- Expecting a wm_name of awesome omits too many applications and tools
@@ -127,7 +130,7 @@ function desktopapps.build_list(callback)
                     if not unique_entries[unique_key] then
                         local name = menu_utils.rtrim(entry.Name) or ""
                         local cmdline = menu_utils.rtrim(entry.cmdline) or ""
-                        local icon = entry.icon_path or nil
+                        local icon = helpers.get_icon(entry.Icon, _, 64) or entry.icon_path or nil
                         local comment = menu_utils.rtrim(entry.Comment) or ""
                         local generic_name = entry['GenericName'] or ""
                         local keywords = entry['Keywords['..short_locale..']'] or nil
