@@ -1,4 +1,3 @@
-local gears = require("gears")
 local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
@@ -95,7 +94,7 @@ end
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
 _G.client.connect_signal("request::titlebars", function(c)
     -- buttons for the titlebar
-    local buttons = gears.table.join(
+    local buttons = {
         awful.button({ }, 1, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})
 
@@ -110,7 +109,7 @@ _G.client.connect_signal("request::titlebars", function(c)
             c:emit_signal("request::activate", "titlebar", {raise = true})
             clientmenu.launch(c)
         end)
-    )
+    }
 
     local left_contents = {
         buttons = awful.button({ }, 1, function()

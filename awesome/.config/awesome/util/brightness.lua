@@ -1,5 +1,4 @@
 local awful = require("awful")
-local gears = require("gears")
 local dbus = require("dbus_proxy")
 local helpers = require("util.helpers")
 
@@ -80,7 +79,7 @@ end
 
 helpers.dbus_watch_name_or_prefix("fr.mpostaire.awdctl", on_name_added, on_name_lost)
 
-local keys = gears.table.join(
+local keys = {
     awful.key({}, "XF86MonBrightnessUp", function()
         brightness.inc_brightness(5)
     end,
@@ -89,8 +88,8 @@ local keys = gears.table.join(
         brightness.dec_brightness(5)
     end,
     {description = "brightness down", group = "other"})
-)
+}
 
-_G.root.keys(gears.table.join(_G.root.keys(), keys))
+awful.keyboard.append_global_keybindings(keys)
 
 return brightness

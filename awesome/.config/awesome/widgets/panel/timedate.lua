@@ -48,16 +48,16 @@ return function(format)
 
     _G.awesome.connect_signal("unlock", function() textclock:force_update() end)
 
-    -- widget:buttons(gears.table.join(
+    -- widget:buttons({
     --     awful.button({}, 1, calendar.toggle_calendar)
-    -- ))
+    -- })
 
-    -- local widget_keys = gears.table.join(
+    -- local widget_keys = {
     --     awful.key({ variables.modkey }, "c", calendar.toggle_calendar,
     --     {description = "show the calendar menu", group = "launcher"})
-    -- )
+    -- }
 
-    -- _G.root.keys(gears.table.join(_G.root.keys(), widget_keys))
+    -- awful.keyboard.append_global_keybindings(widget_keys)
 
     return widget
 end

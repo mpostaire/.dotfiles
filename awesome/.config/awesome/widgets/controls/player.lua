@@ -1,8 +1,7 @@
 local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
-local gears = require("gears")
-local gfs = gears.filesystem
+local gfs = require("gears.filesystem")
 local naughty = require("naughty")
 local mpris = require("util.mpris")
 local helpers = require("util.helpers")
@@ -212,7 +211,7 @@ return function()
         end
     end)
 
-    playpause_widget:buttons(gears.table.join(
+    playpause_widget:buttons({
         awful.button({}, 1, function()
             mpris.play_pause(handled_player)
             if mpris.players[handled_player].PlaybackStatus == "Playing" then
@@ -221,29 +220,29 @@ return function()
                 playpause_widget:get_children_by_id('icon')[1]:set_markup_silently(icons.play)
             end
         end)
-    ))
+    })
 
-    prev_widget:buttons(gears.table.join(
+    prev_widget:buttons({
         helpers.long_press_click({}, 1, function()
             mpris.previous(handled_player)
         end,
         function()
             mpris.seek(handled_player, -1e7) -- TODO 10 secs now but in % of song duration after ?
         end, 1, 0.1) -- tweak timeout value ?
-    ))
+    })
 
-    next_widget:buttons(gears.table.join(
+    next_widget:buttons({
         helpers.long_press_click({}, 1, function()
             mpris.next(handled_player)
         end,
         function()
             mpris.seek(handled_player, 1e7) -- TODO 10 secs now but in % of song duration after ?
         end, 1, 0.1) -- tweak timeout value ?
-    ))
+    })
 
     -- FIXME: long keyboard press is laggy (when key released there is still some events to process use keygrabber ?)
     local next_long_keypress, prev_long_keypress = 0, 0
-    local keys = gears.table.join(
+    local keys = {
         awful.key({ "Control" }, "KP_Divide", function() mpris.play_pause(handled_player) end,
         {description = "music player pause", group = "multimedia"}),
         awful.key({ "Control" }, "KP_Right",
@@ -274,9 +273,9 @@ return function()
             prev_long_keypress = 0
         end,
         {description = "music player go backward/previous", group = "multimedia"})
-    )
+    }
 
-    _G.root.keys(gears.table.join(_G.root.keys(), keys))
+    awful.keyboard.append_global_keybindings(keys)
 
     widget.type = "control_widget"
 

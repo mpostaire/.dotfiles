@@ -1,6 +1,5 @@
 require("popups.brightness") -- show popup
 local awful = require("awful")
-local gears = require("gears")
 local brightness = require("util.brightness")
 local base_panel_widget = require("widgets.panel.base")
 local brightness_control_widget = require("widgets.controls.brightness")
@@ -32,7 +31,7 @@ return function(show_label)
     end)
     brightness.on_properties_changed(update_widget)
 
-    widget:buttons(gears.table.join(
+    widget:buttons({
         awful.button({}, 4, function()
             brightness.inc_brightness(5)
         end),
@@ -40,7 +39,7 @@ return function(show_label)
             brightness.dec_brightness(5)
         end),
         widget:buttons()
-    ))
+    })
 
     return widget
 end

@@ -105,7 +105,7 @@ ruled.client.connect_signal("request::rules", function()
 end)
 
 -- Signal function to execute when a new client appears.
-_G.client.connect_signal("manage", function(c)
+_G.client.connect_signal("request::manage", function(c)
     -- Set the windows at the slave,
     -- i.e. put it at the end of others instead of setting it master.
     if not _G.awesome.startup then awful.client.setslave(c) end
@@ -194,7 +194,7 @@ _G.tag.connect_signal("property::layout", handle_everything)
 
 _G.tag.connect_signal("property::selected", handle_everything)
 
-_G.client.connect_signal("manage", function(c)
+_G.client.connect_signal("request::manage", function(c)
     -- c.was_maximized = false
     local shown_tiled_clients = awful.screen.focused().tiled_clients
 
@@ -218,7 +218,7 @@ _G.client.connect_signal("manage", function(c)
     end
 end)
 
-_G.client.connect_signal("unmanage", function(c)
+_G.client.connect_signal("request::unmanage", function(c)
     local shown_tiled_clients = awful.screen.focused().tiled_clients
 
     -- hide borders if last client and not floating

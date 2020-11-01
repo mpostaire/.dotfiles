@@ -1,5 +1,4 @@
 local awful = require("awful")
-local gears = require("gears")
 local dbus = require("dbus_proxy")
 local helpers = require("util.helpers")
 

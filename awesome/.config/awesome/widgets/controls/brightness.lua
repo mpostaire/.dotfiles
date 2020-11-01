@@ -61,14 +61,14 @@ return function(width)
             end
         end)
 
-        private.brightness_slider:buttons(gears.table.join(
+        private.brightness_slider:buttons({
             awful.button({}, 4, function()
                 brightness.inc_brightness(5)
             end),
             awful.button({}, 5, function()
                 brightness.dec_brightness(5)
             end)
-        ))
+        })
 
         private.widget.type = "control_widget"
     end

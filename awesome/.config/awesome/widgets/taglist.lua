@@ -6,7 +6,7 @@ local variables = require("config.variables")
 local color = require("themes.util.color")
 
 -- tags buttons widget mouse handling
-local taglist_buttons = gears.table.join(
+local taglist_buttons = {
     awful.button({ }, 1, function(t) t:view_only() end),
     awful.button({ variables.modkey }, 1, function(t)
         if _G.client.focus then
@@ -21,7 +21,7 @@ local taglist_buttons = gears.table.join(
     end),
     awful.button({ }, 4, function(t) awful.tag.viewnext(t.screen) end),
     awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
-)
+}
 
 local icon_colors = {
     mouse_hovering = {
@@ -84,10 +84,8 @@ local function make_taglist_icons(widget, tag, index, tags)
 
 end
 
--- Place a widget for each screen
-screen.connect_signal("request::desktop_decoration", function(s)
-    -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist {
+return function(s)
+    return awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.all,
         buttons = taglist_buttons,
@@ -138,4 +136,4 @@ screen.connect_signal("request::desktop_decoration", function(s)
             update_callback = make_taglist_icons,
         },
     }
-end)
+end

@@ -2,7 +2,6 @@ require("popups.volume") -- show popup
 local beautiful = require("beautiful")
 local color = require("themes.util.color")
 local awful = require("awful")
-local gears = require("gears")
 local alsa = require("util.alsa")
 local base_panel_widget = require("widgets.panel.base")
 local volume_control_widget = require("widgets.controls.volume")
@@ -60,7 +59,7 @@ return function(show_label)
     end)
     alsa.on_properties_changed(update_widget)
 
-    widget:buttons(gears.table.join(
+    widget:buttons({
         awful.button({}, 2, function()
             alsa.toggle_volume()
         end),
@@ -71,7 +70,7 @@ return function(show_label)
             alsa.dec_volume(5)
         end),
         widget:buttons()
-    ))
+    })
 
     return widget
 end

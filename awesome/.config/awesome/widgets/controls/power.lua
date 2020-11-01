@@ -1,4 +1,3 @@
-local gears = require("gears")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local awful = require("awful")
@@ -95,40 +94,40 @@ return function()
         layout = wibox.layout.flex.horizontal
     }
 
-    lock:buttons(gears.table.join(
+    lock:buttons({
         awful.button({}, 1, function()
             awful.spawn.easy_async("loginctl lock-session", function() end)
             widget.parent.control_popup.visible = false
         end)
-    ))
+    })
 
-    disconnect:buttons(gears.table.join(
+    disconnect:buttons({
         awful.button({}, 1, function()
             _G.awesome.quit()
             widget.parent.control_popup.visible = false
         end)
-    ))
+    })
 
-    suspend:buttons(gears.table.join(
+    suspend:buttons({
         awful.button({}, 1, function()
             awful.spawn.easy_async("systemctl suspend", function() end)
             widget.parent.control_popup.visible = false
         end)
-    ))
+    })
 
-    reboot:buttons(gears.table.join(
+    reboot:buttons({
         awful.button({}, 1, function()
             awful.spawn.easy_async("systemctl reboot", function() end)
             widget.parent.control_popup.visible = false
         end)
-    ))
+    })
 
-    poweroff:buttons(gears.table.join(
+    poweroff:buttons({
         awful.button({}, 1, function()
             awful.spawn.easy_async("systemctl -i poweroff", function() end)
             widget.parent.control_popup.visible = false
         end)
-    ))
+    })
 
     lock:connect_signal("mouse::enter", function()
         lock.bg = beautiful.fg_normal

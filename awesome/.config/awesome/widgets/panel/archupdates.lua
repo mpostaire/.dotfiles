@@ -67,13 +67,13 @@ return function(show_label)
     return archupdates_widget
 end
 
--- archupdates_widget:buttons(gears.table.join(
+-- archupdates_widget:buttons({
 --     awful.button({}, 1, function() notification:toggle() end),
 --     awful.button({}, 2, function()
 --         notification:set_markup(get_title(), "Recherche en cours...")
 --         text_widget_timer:emit_signal("timeout")
 --     end)
--- ))
+-- })
 
 -- local function get_message()
 --     local content, suffix

@@ -2,7 +2,6 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local color = require("themes.util.color")
 local wibox = require("wibox")
-local gears = require("gears")
 local helpers = require("util.helpers")
 local prompt = require("util.prompt")
 local autoclose_wibox = require("util.autoclose_wibox")
@@ -14,10 +13,10 @@ local function default_query_filter(query, items)
     local ret = {}
     
     for _,item in ipairs(items) do
-        local description = item.description and item.description or ""
-        -- match when we find query in either one of the item title or description
-        local match = helpers.replace_special_chars(item.title):lower():find(query) or
-                      helpers.replace_special_chars(description):lower():find(query)
+        local comment = item.Comment and item.Comment or ""
+        -- match when we find query in either one of the item Name or Comment
+        local match = helpers.replace_special_chars(item.Name):lower():find(query) or
+                      helpers.replace_special_chars(comment):lower():find(query)
         if match then
             table.insert(ret, item)
         end
@@ -110,8 +109,8 @@ return function(args)
                 local item_background = items_container.children[selected_widget]
                 item_background.bg = beautiful.bg_normal
                 item_background.fg = beautiful.fg_normal
-                local description_textbox = items_container.children[selected_widget].widget.widget.second.children[2]
-                description_textbox.markup = '<i><span foreground="'..color.white_alt..'">'..description_textbox.text..'</span></i>'
+                local comment_textbox = items_container.children[selected_widget].widget.widget.second.children[2]
+                comment_textbox.markup = '<i><span foreground="'..color.white_alt..'">'..comment_textbox.text..'</span></i>'
             end
     
             -- we mark the new selected_widget as the index
@@ -123,12 +122,12 @@ return function(args)
                 local item_background = items_container.children[selected_widget]
                 item_background.bg = beautiful.fg_normal
                 item_background.fg = beautiful.bg_normal
-                local description_textbox = items_container.children[selected_widget].widget.widget.second.children[2]
-                description_textbox.markup = '<i><span foreground="'..beautiful.bg_normal..'">'..description_textbox.text..'</span></i>'
+                local comment_textbox = items_container.children[selected_widget].widget.widget.second.children[2]
+                comment_textbox.markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment_textbox.text..'</span></i>'
             end
         end
     
-        local description_font = helpers.change_font_size(beautiful.font, 9)
+        local comment_font = helpers.change_font_size(beautiful.font, 9)
         for i = 1, max_showed_item_count do
             table.insert(icon_widgets, wibox.widget.imagebox())
             local widget = wibox.widget {
@@ -146,7 +145,7 @@ return function(args)
                             },
                             {
                                 align = 'left',
-                                font = description_font,
+                                font = comment_font,
                                 widget = wibox.widget.textbox
                             },
                             layout = wibox.layout.flex.vertical
@@ -160,7 +159,7 @@ return function(args)
                 },
                 widget = wibox.container.background
             }
-            widget:buttons(gears.table.join(
+            widget:buttons({
                 awful.button({}, 1, function()
                     if not widget.position_index then return end
                     if selected_widget ~= i then select_widget(i) return end
@@ -168,7 +167,7 @@ return function(args)
                     prompt.stop()
                     popup._private.hide()
                 end)
-            ))
+            })
             widget:connect_signal("mouse::enter", function()
                 if widget.position_index then select_widget(i) end
             end)
@@ -182,19 +181,19 @@ return function(args)
                 local item = filtered_items[scrollbar.value + i]
                 local item_widget_background = items_container.children[i]
                 local item_widget = item_widget_background.widget.widget
-                if item.icon then
+                if item.Icon then
                     item_widget.first.widget = icon_widgets[i]
-                    icon_widgets[i].image = item.icon
+                    icon_widgets[i].image = item.Icon
                 else
                     item_widget.first.widget = icon_placeholder
                 end
-                local title_description_textboxes = item_widget.second
-                title_description_textboxes.children[1].text = item.title
-                local description = item.description and item.description or ""
+                local name_comment_textboxes = item_widget.second
+                name_comment_textboxes.children[1].text = item.Name
+                local comment = item.Comment and item.Comment or ""
                 if i == selected_widget then
-                    title_description_textboxes.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..description..'</span></i>'
+                    name_comment_textboxes.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
                 else
-                    title_description_textboxes.children[2].markup = '<i><span foreground="'..color.white_alt..'">'..description..'</span></i>'
+                    name_comment_textboxes.children[2].markup = '<i><span foreground="'..color.white_alt..'">'..comment..'</span></i>'
                 end
                 item_widget_background.position_index = scrollbar.value + i
             end
@@ -221,19 +220,19 @@ return function(args)
                     local item_widget_background = items_container.children[count]
                     local item_widget = item_widget_background.widget.widget
                     local item_widget_first = item_widget.first
-                    if item.icon then
+                    if item.Icon then
                         item_widget_first.widget = icon_widgets[count]
-                        item_widget_first.widget.image = item.icon
+                        item_widget_first.widget.image = item.Icon
                     else
                         item_widget_first.widget = icon_placeholder
                     end
                     local item_widget_second = item_widget.second
-                    item_widget_second.children[1].text = item.title
-                    local description = item.description and item.description or ""
+                    item_widget_second.children[1].text = item.Name
+                    local comment = item.Comment and item.Comment or ""
                     if count == selected_widget then
-                        item_widget_second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..description..'</span></i>'
+                        item_widget_second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
                     else
-                        item_widget_second.children[2].markup = '<i><span foreground="'..color.white_alt..'">'..description..'</span></i>'
+                        item_widget_second.children[2].markup = '<i><span foreground="'..color.white_alt..'">'..comment..'</span></i>'
                     end
                     item_widget_background.position_index = count
                     item_widget_background.item = item
@@ -294,7 +293,7 @@ return function(args)
                                 left = scrollbar_spacing,
                                 widget = wibox.container.margin
                             },
-                            buttons = gears.table.join(
+                            buttons = {
                                 awful.button({}, 4, function()
                                     if scrollbar.value == 0 then return end
                                     scrollbar.value = scrollbar.value - 1
@@ -305,7 +304,7 @@ return function(args)
                                     scrollbar.value = scrollbar.value + 1
                                     -- scrollbar:emit_signal("widget::redraw_needed")
                                 end)
-                            ),
+                            },
                             -- forced_height = layout_height,
                             layout = wibox.layout.align.horizontal,
                         },

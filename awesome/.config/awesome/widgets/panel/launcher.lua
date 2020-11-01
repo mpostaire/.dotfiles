@@ -2,7 +2,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local color = require("themes.util.color")
 local awful = require("awful")
-local gears = require("gears")
 local applauncher = require("popups.applauncher")
 
 local icon = beautiful.theme_assets.awesome_icon(
@@ -27,14 +26,14 @@ return function()
         widget = wibox.container.margin
     }
 
-    widget:buttons(gears.table.join(
+    widget:buttons({
         awful.button({}, 1, function()
             applauncher.run(true, {
                 height = _G.mouse.screen.geometry.height - beautiful.wibar_height + beautiful.border_width,
                 width = 500, icon_spacing = 8, icon_size = 36, y = beautiful.wibar_height - beautiful.border_width
             })
         end)
-    ))
+    })
 
     local old_cursor, old_wibox
     widget:connect_signal("mouse::enter", function()

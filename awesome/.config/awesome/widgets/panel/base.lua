@@ -123,9 +123,9 @@ return function(args)
         widget.control_popup = make_popup(control_widget)
         -- we hide it this way because we want it to be visible by default to calculate its position
         widget.control_popup.visible = false
-        widget:buttons(gears.table.join(
+        widget:buttons({
             awful.button({}, popup_spawn_button, toggle_popup)
-        ))
+        })
     else
         widget._private.popup_enabled = false
     end

@@ -1,4 +1,3 @@
-local gears = require("gears")
 local awful = require("awful")
 local spawn = require("awful.spawn")
 local beautiful = require("beautiful")

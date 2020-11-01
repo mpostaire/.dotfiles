@@ -3,7 +3,6 @@
 
 local beautiful = require("beautiful")
 local awful = require("awful")
-local gears = require("gears")
 local color = require("themes.util.color")
 local variables = require("config.variables")
 local network = require("util.network")
@@ -68,12 +67,12 @@ return function()
     -- we update once so the widget is not empty at creation
     widget:update(get_icon(), get_text())
 
-    -- local widget_keys = gears.table.join(
+    -- local widget_keys = {
     --     awful.key({ variables.modkey }, "w", rofi.network_menu,
     --                 {description = "show the network menu", group = "launcher"})
-    -- )
+    -- }
 
-    -- _G.root.keys(gears.table.join(_G.root.keys(), widget_keys))
+    -- awful.keyboard.append_global_keybindings(widget_keys)
 
     return widget
 end

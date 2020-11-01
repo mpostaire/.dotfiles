@@ -14,10 +14,10 @@ screen.connect_signal("request::desktop_decoration", function(s)
             { -- Left widgets
                 layout = wibox.layout.fixed.horizontal,
                 widgets.launcher(),
-                s.mytaglist,
+                widgets.taglist(s),
                 wibox.container.margin(_, 4)
             },
-            s.mytasklist, -- Middle widget
+            widgets.tasklist(s), -- Middle widget
             { -- Right widgets
                 layout = wibox.layout.fixed.horizontal,
                 wibox.container.margin(_, 4),
@@ -31,7 +31,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 widgets.battery(),
                 widgets.power(),
                 wibox.container.margin(_, 4),
-                s.mylayoutbox
+                widgets.layoutbox(s)
             },
         },
         bottom = beautiful.border_width,

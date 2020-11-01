@@ -1,7 +1,3 @@
-require("widgets.taglist")
-require("widgets.tasklist")
-require("widgets.layoutbox")
-
 return {
     -- panel widgets
     timedate = require("widgets.panel.timedate"),
@@ -13,5 +9,8 @@ return {
     launcher = require("widgets.panel.launcher"),
     power = require("widgets.panel.power"),
     player = require("widgets.panel.player"),
-    systray = require("widgets.systray")
+    systray = require("widgets.systray"),
+    tasklist = require("widgets.tasklist"),
+    taglist = require("widgets.taglist"),
+    layoutbox = require("widgets.layoutbox")
 }

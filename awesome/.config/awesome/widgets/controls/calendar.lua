@@ -1,7 +1,6 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local gears = require("gears")
 local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
 local color = require("themes.util.color")
@@ -172,16 +171,16 @@ return function(args)
         generate_days(day_widgets, month, year)
     end
 
-    prev_widget:buttons(gears.table.join(
+    prev_widget:buttons({
         awful.button({}, 1, calendar_prev_month)
-    ))
-    next_widget:buttons(gears.table.join(
+    })
+    next_widget:buttons({
         awful.button({}, 1, calendar_next_month)
-    ))
-    calendar_grid_widget:buttons(gears.table.join(
+    })
+    calendar_grid_widget:buttons({
         awful.button({}, 5, calendar_prev_month),
         awful.button({}, 4, calendar_next_month)
-    ))
+    })
 
     local old_cursor, old_wibox
     next_widget:connect_signal("mouse::enter", function()
@@ -238,12 +237,12 @@ return function(args)
         generate_days(day_widgets, month, year)
     end
 
-    month_widget:buttons(gears.table.join(
+    month_widget:buttons({
         awful.button({}, 1, function()
             init_current_month()
             month_widget:set_markup_silently('<span foreground="'..green_hover..'">'..month_widget.text..'</span>')
         end)
-    ))
+    })
 
     local calendar_widget = calendar_grid_widget
     if left_widget then

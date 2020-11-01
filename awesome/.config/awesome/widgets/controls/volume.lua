@@ -86,20 +86,20 @@ return function(width)
             end
         end)
 
-        private.icon_widget:buttons(gears.table.join(
+        private.icon_widget:buttons({
             awful.button({}, 1, function()
                 alsa.toggle_volume()
             end)
-        ))
+        })
     
-        private.volume_slider:buttons(gears.table.join(
+        private.volume_slider:buttons({
             awful.button({}, 4, function()
                 alsa.inc_volume(5)
             end),
             awful.button({}, 5, function()
                 alsa.dec_volume(5)
             end)
-        ))
+        })
 
         private.widget.type = "control_widget"
     end

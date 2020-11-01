@@ -10,7 +10,6 @@ local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local dpi = require("beautiful.xresources").apply_dpi
-local gears = require("gears")
 local variables = require("config.variables")
 
 -- check if client 'c' is in selected tags
@@ -57,7 +56,7 @@ local function selected_tags_client_count()
 end
 
 -- appswitcher mouse handling
-local tasklist_buttons = gears.table.join(
+local tasklist_buttons = {
     awful.button({variables.altkey}, 1, function (c)
         if c ~= _G.client.focus then
             focus_client(c)
@@ -65,9 +64,9 @@ local tasklist_buttons = gears.table.join(
     end),
     awful.button({ }, 4, focus_next_client),
     awful.button({ }, 5, focus_prev_client)
-)
+}
 
--- TODO use client.connect_signal("manage", function(c) end) to update appswitcher
+-- TODO use client.connect_signal("request::manage", function(c) end) to update appswitcher
 
 local appswitcher = awful.popup {
     widget = awful.widget.tasklist {
@@ -148,7 +147,7 @@ awful.keygrabber {
     },
 }
 
--- client.connect_signal("manage", function(c)
+-- client.connect_signal("request::manage", function(c)
 --     for client in awful.client.iterate(awful.widget.tasklist.filter.currenttags) do
 --         count = count + 1
 --     end
