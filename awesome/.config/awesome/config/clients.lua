@@ -72,11 +72,7 @@ ruled.client.connect_signal("request::rules", function()
         properties = { callback = function(c) awful.placement.centered(c) end }
     }
 
-    -- TODO transient_for windows no titlebars and borders
-    -- TODO modal windows : their parent cannot be focused (if focus in parent transfer it to the modal window)
-
     -- Vscode bug: its titlebar cannot be used to move window in awesomewm
-    -- and its maximize/minimize button only works for maximizing so we force it to have one
     ruled.client.append_rule {
         rule = {class = "Code"},
         properties = {
@@ -104,6 +100,14 @@ ruled.client.connect_signal("request::rules", function()
     }
 end)
 
+-- these need to be separate functions for disconnect_signal()
+local function focus_modal(c)
+    c.modal_client:activate()
+end
+local function sync_modal_tag(c)
+    c:tags(c.modal_client:tags())
+end
+
 -- Signal function to execute when a new client appears.
 _G.client.connect_signal("request::manage", function(c)
     -- Set the windows at the slave,
@@ -116,6 +120,32 @@ _G.client.connect_signal("request::manage", function(c)
             -- Prevent clients from being unreachable after screen count changes.
             awful.placement.no_offscreen(c)
     end
+
+    -- force focus on the transient_for modal client when attempting to focus client that have a transient_for modal client
+    if c.modal and c.transient_for then
+        c.transient_for.modal_client = c
+        c.transient_for:connect_signal("focus", focus_modal)
+        
+        c.transient_for:connect_signal("tagged", sync_modal_tag)
+        c.transient_for:connect_signal("untagged", sync_modal_tag)
+
+        c:connect_signal("tagged", function()
+            c.transient_for:tags(c:tags())
+        end)
+        c:connect_signal("untagged", function()
+            if c.active then
+                c.transient_for:tags(c:tags())
+            end
+        end)
+        
+        -- tasklist.lua L.235
+        c:connect_signal("request::unmanage", function()
+            c.transient_for.modal_client = nil
+            c.transient_for:disconnect_signal("focus", focus_modal)
+            c.transient_for:disconnect_signal("tagged", sync_modal_tag)
+            c.transient_for:disconnect_signal("untagged", sync_modal_tag)
+        end)
+    end
 end)
 
 -- Enable sloppy focus, so that focus follows mouse except in floating layout.
@@ -126,6 +156,7 @@ _G.client.connect_signal("mouse::enter", function(c)
 end)
 
 _G.client.connect_signal("focus", function(c)
+    if c.modal_client then return end -- client having a transient_for modal client cannot be focused
     c.border_color = beautiful.border_focus
 end)
 _G.client.connect_signal("unfocus", function(c)
