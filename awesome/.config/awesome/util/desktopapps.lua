@@ -52,20 +52,20 @@ end
 local keys_getters
 do
     local ok = 1
-    local function get_string(kf, key)
-        return menu_utils.rtrim(kf:get_string("Desktop Entry", key))
+    local function get_string(kf, key, group)
+        return menu_utils.rtrim(kf:get_string(group, key))
     end
-    local function get_strings(kf, key)
-        return kf:get_string_list("Desktop Entry", key, nil)
+    local function get_strings(kf, key, group)
+        return kf:get_string_list(group, key, nil)
     end
-    local function get_localestring(kf, key)
-        return menu_utils.rtrim(kf:get_locale_string("Desktop Entry", key, nil))
+    local function get_localestring(kf, key, group)
+        return menu_utils.rtrim(kf:get_locale_string(group, key, nil))
     end
-    local function get_localestrings(kf, key)
-        return kf:get_locale_string_list("Desktop Entry", key, nil, nil)
+    local function get_localestrings(kf, key, group)
+        return kf:get_locale_string_list(group, key, nil, nil)
     end
-    local function get_boolean(kf, key)
-        return kf:get_boolean("Desktop Entry", key)
+    local function get_boolean(kf, key, group)
+        return kf:get_boolean(group, key)
     end
 
     keys_getters = {
@@ -121,10 +121,10 @@ local function parse_desktop_file(file)
     end
 
     for _, key in pairs(keyfile:get_keys("Desktop Entry")) do
-        local getter = keys_getters[key] or function(kf, k)
-            return kf:get_string("Desktop Entry", k)
+        local getter = keys_getters[key] or function(kf, k, group)
+            return kf:get_string(group, k)
         end
-        program[key] = getter(keyfile, key)
+        program[key] = getter(keyfile, key, "Desktop Entry")
     end
 
     -- In case the (required) 'Name' entry was not found
@@ -191,6 +191,58 @@ local function parse_desktop_file(file)
     end
 
     program.id = file:match("^.+/(.+).desktop$") -- remove path and keep filename without extension
+
+    if program.Actions then
+        local actions = program.Actions
+        program.Actions = {}
+        local count = 1
+        for k,v in ipairs(actions) do
+            local action = "Desktop Action "..v
+            if keyfile:has_group(action) then
+                -- -- This is a standard parse
+                -- program.Actions[v] = {}
+                -- for _,key in pairs(keyfile:get_keys(action)) do
+                --     local getter = keys_getters[key] or function(kf, k, group)
+                --         return kf:get_string(group, key)
+                --     end
+                --     program.Actions[v][key] = getter(keyfile, key, action)
+                -- end
+                
+                -- This is an awful.menu parse
+                program.Actions[count] = {}
+                local keys = keyfile:get_keys(action)
+                for _,key in pairs(keyfile:get_keys(action)) do
+                    local getter = keys_getters[key] or function(kf, k, group)
+                        return kf:get_string(group, key)
+                    end
+
+                    local value = getter(keyfile, key, action)
+                    if key == "Name" then
+                        program.Actions[count][1] = value
+                    elseif key == "Exec" then
+                        -- Substitute Exec special codes as specified in
+                        -- http://standards.freedesktop.org/desktop-entry-spec/1.1/ar01s06.html
+                        local cmdline = value:gsub('%%c', program.Name)
+                        cmdline = cmdline:gsub('%%[fuFU]', '')
+                        cmdline = cmdline:gsub('%%k', program.file)
+                        if program.Icon then
+                            cmdline = cmdline:gsub('%%i', '--icon ' .. program.Icon)
+                        else
+                            cmdline = cmdline:gsub('%%i', '')
+                        end
+                        if program.Terminal == true then
+                            cmdline = menu_utils.terminal .. ' -e ' .. cmdline
+                        end
+                        program.Actions[count][2] = cmdline
+                    elseif key == "Icon" then
+                        program.Actions[count][3] = helpers.get_icon(value, _, 64) or menu_utils.lookup_icon(value)
+                    end
+                end
+                
+                count = count + 1
+            end
+        end
+    end
 
     return program
 end
@@ -423,6 +475,8 @@ end
 
 -- TODO other cases (this works in most cases already)...
 function desktopapps.get_desktopapp_from_client(c)
+    if not c.class then return end
+    
     local class = c.class:lower()
     local class_dotless = class:gsub("%.", "")
     local class_dashless = class:gsub("%-", "")
