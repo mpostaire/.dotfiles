@@ -93,7 +93,8 @@ local function autostart_apps(autostart_dirs)
             
             if dirs_parsed == #autostart_dirs then
                 for _, cmd in pairs(result) do
-                    spawn.easy_async_with_shell(cmd, function() end)
+                    -- redirect output to prevents crashes when awesome is restarting (picom crashes wihout this)
+                    spawn.easy_async_with_shell(cmd.." > /dev/null 2> /dev/null", function() end)
                 end
             end
         end)
