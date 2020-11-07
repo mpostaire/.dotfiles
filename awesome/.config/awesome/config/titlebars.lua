@@ -5,6 +5,8 @@ local clientmenu = require("popups.clientmenu")
 local color = require("themes.util.color")
 local helpers = require("util.helpers")
 
+-- TODO firefox intall extension popup is skip_taskbar and transient_for (it has titlebars but shouldn't)
+
 awful.titlebar.enable_tooltip = false
 
 local icons = {
@@ -79,9 +81,6 @@ local gen_text_button = function (c, symbol, cmd, colors)
     return button
 end
 
-local function window_close(c)
-    c:kill()
-end
 local function window_maximize(c, widget)
     c.maximized = not c.maximized
     c:raise()
@@ -124,9 +123,9 @@ _G.client.connect_signal("request::titlebars", function(c)
     }
 
     local right_contents = {
-        gen_text_button(c, icons[4], window_minimize, buttons_colors),
-        gen_text_button(c, c.maximized and icons[3] or icons[2], window_maximize, buttons_colors),
-        gen_text_button(c, icons[1], window_close, close_colors),
+        not c.transient_for and gen_text_button(c, icons[4], window_minimize, buttons_colors) or nil,
+        not c.transient_for and gen_text_button(c, c.maximized and icons[3] or icons[2], window_maximize, buttons_colors) or nil,
+        gen_text_button(c, icons[1], c.kill, close_colors),
         layout = wibox.layout.fixed.horizontal
     }
 

@@ -107,6 +107,9 @@ end
 local function sync_modal_tag(c)
     c:tags(c.modal_client:tags())
 end
+local function sync_modal_minimized(c)
+    c.modal_client.minimized = c.minimized
+end
 
 -- Signal function to execute when a new client appears.
 _G.client.connect_signal("request::manage", function(c)
@@ -128,6 +131,7 @@ _G.client.connect_signal("request::manage", function(c)
         
         c.transient_for:connect_signal("tagged", sync_modal_tag)
         c.transient_for:connect_signal("untagged", sync_modal_tag)
+        c.transient_for:connect_signal("property::minimized", sync_modal_minimized)
 
         c:connect_signal("tagged", function()
             c.transient_for:tags(c:tags())
@@ -137,6 +141,10 @@ _G.client.connect_signal("request::manage", function(c)
                 c.transient_for:tags(c:tags())
             end
         end)
+        c:connect_signal("property::minimized", function()
+            c.transient_for.minimized = c.minimized
+        end)
+
         
         -- tasklist.lua L.235
         c:connect_signal("request::unmanage", function()
@@ -144,6 +152,7 @@ _G.client.connect_signal("request::manage", function(c)
             c.transient_for:disconnect_signal("focus", focus_modal)
             c.transient_for:disconnect_signal("tagged", sync_modal_tag)
             c.transient_for:disconnect_signal("untagged", sync_modal_tag)
+            c.transient_for:disconnect_signal("property::minimized", sync_modal_minimized)
         end)
     end
 end)
