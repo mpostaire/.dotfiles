@@ -482,17 +482,18 @@ function menu:add(args, index)
     else
         item._background:set_fg(item.theme.fg_normal)
         item._background:set_bg(item.theme.bg_normal)
-    end
 
-    -- Create bindings
-    item._background.buttons = {
-        button({}, 3, function () self:hide() end),
-        not item.disabled and button({}, 1, _, function()
+        -- Create bindings
+        local function on_click()
             local num = gtable.hasitem(self.items, item)
             self:item_enter(num, { mouse = true })
             self:exec(num, { exec = true, mouse = true })
-        end) or nil
-    }
+        end
+        item._background.buttons = {
+            button({}, 3, _, on_click),
+            button({}, 1, _, on_click)
+        }
+    end
 
     item._mouse = function ()
         local num = gtable.hasitem(self.items, item)
@@ -558,8 +559,8 @@ end
 -- @constructorfct awful.menu.entry
 function menu.entry(parent, args) -- luacheck: no unused args
     args = args or {}
-    args.visible = args[5] or args.visible
-    if not args.visible then return end
+    args.invisible = args[5] or args.invisible
+    if args.invisible then return end
     args.text = args[1] or args.text or ""
     args.cmd = args[2] or args.cmd
     args.icon = args[3] or args.icon

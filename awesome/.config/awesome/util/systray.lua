@@ -22,7 +22,7 @@ local function build_menu(layout, proxy)
         end,
         nil, -- icon
         false, -- disabled
-        true, -- visible
+        false, -- invisible
         false, -- separator
         -1, -- toggle-state
     } -- TODO set default properties here to be overwritten in loop below
@@ -45,7 +45,7 @@ local function build_menu(layout, proxy)
         elseif prop == "enabled" then
             root[4] = not value
         elseif prop == "visible" then
-            root[5] = value
+            root[5] = not value
         elseif prop == "toggle-state" then
             root[7] = value
         end
