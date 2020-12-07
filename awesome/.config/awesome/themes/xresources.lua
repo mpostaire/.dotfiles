@@ -14,22 +14,19 @@ require("themes.util.wallpaper").set("~/Images/dog.jpeg", "fit")
 
 local theme = {}
 
-theme.true_white = "#FFFFFF"
-
 theme.accent = color.blue
 
 theme.font          = "DejaVu Sans Mono 10"
 theme.nerd_font     = "DejaVuSansMono Nerd Font 10"
 theme.icon_font     = "Suru-Icons 12"
 
-theme.bg_normal     = color.black
-theme.bg_focus      = color.black_alt
+theme.bg_normal     = color.bg
+theme.bg_focus      = color.black
 theme.bg_urgent     = color.yellow
 theme.bg_minimize   = color.black
-theme.bg_systray    = color.black
 
-theme.fg_normal     = color.white
-theme.fg_focus      = color.true_white
+theme.fg_normal     = color.fg
+theme.fg_focus      = color.white
 theme.fg_urgent     = color.black
 theme.fg_minimize   = color.true_white
 
@@ -44,20 +41,20 @@ theme.column_count = 1
 theme.useless_gap   = dpi(0)
 theme.border_width  = dpi(2)
 --
-theme.border_normal = color.black_alt
+theme.border_normal = color.black
 theme.border_focus  = theme.accent
 theme.border_marked = "#91231c"
 
 -- {{{ taglist
 theme.taglist_fg_focus = theme.accent
-theme.taglist_fg_occupied = color.white
-theme.taglist_fg_empty = color.white_alt
-theme.taglist_fg_urgent = color.yellow
+theme.taglist_fg_occupied = color.fg
+theme.taglist_fg_empty = color.fg
+theme.taglist_fg_urgent = color.yellow_alt
 
-theme.taglist_bg_focus = color.black
-theme.taglist_bg_occupied = color.black
-theme.taglist_bg_empty = color.black
-theme.taglist_bg_urgent = color.black
+theme.taglist_bg_focus = color.bg
+theme.taglist_bg_occupied = color.bg
+theme.taglist_bg_empty = color.bg
+theme.taglist_bg_urgent = color.bg
 -- }}}
 
 -- {{{ titlebar
@@ -69,7 +66,7 @@ theme.titlebar_fg_focus = theme.fg_focus
 -- }}}
 
 -- {{{ snap
-theme.snap_bg = color.yellow
+theme.snap_bg = color.yellow_alt
 theme.snap_shape = gears.shape.rectangle
 theme.snap_border_width = dpi(3)
 -- }}}
@@ -89,7 +86,7 @@ naughty.config.defaults.border_width = theme.border_width
 
 -- {{{ hotkeys popup
 theme.hotkeys_modifiers_fg = color.white_alt
-theme.hotkeys_border_color = color.black_alt
+theme.hotkeys_border_color = theme.border_normal
 -- }}}
 
 -- {{{ wibar
@@ -102,10 +99,11 @@ theme.tasklist_fg_normal = theme.fg_normal
 theme.tasklist_bg_normal = theme.bg_normal
 theme.tasklist_fg_focus = theme.fg_focus
 theme.tasklist_bg_focus = theme.bg_focus
-theme.tasklist_fg_urgent = color.yellow
+theme.tasklist_fg_urgent = color.yellow_alt
 theme.tasklist_bg_urgent = theme.bg_normal
 theme.tasklist_font_urgent = "DejaVu Sans Mono Bold 10"
-theme.tasklist_fg_minimize = theme.white_alt
+theme.tasklist_fg_minimize = color.white_alt
+-- theme.tasklist_disable_task_name = true
 -- }}}
 
 theme.systray_icon_spacing = dpi(12)
@@ -134,73 +132,81 @@ theme.systray_icon_spacing = dpi(12)
 -- Variables set for theming the menu:
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
-theme.menu_submenu_icon = themes_path.."icons/submenu.png"
-theme.menu_submenu = '▶'
+-- theme.menu_submenu_icon = themes_path.."icons/submenu.png"
+-- theme.menu_checked_icon = themes_path.."icons/checked.png"
+-- theme.menu_unchecked_icon = themes_path.."icons/unchecked.png"
+theme.menu_submenu = '⯈'
+theme.menu_checked = ''
+theme.menu_unchecked = ''
 theme.menu_height = dpi(25)
-theme.menu_width = dpi(250)
-theme.menu_fg_normal = theme.menu_fg_normal
+theme.menu_max_width = dpi(500)
+theme.menu_fg_normal = theme.fg_normal
 theme.menu_fg_focus = theme.bg_normal
+theme.menu_fg_disabled = color.darken_by(theme.menu_fg_normal, 0.4)
 theme.menu_bg_normal = theme.menu_bg_normal
 theme.menu_bg_focus = theme.fg_normal
+theme.menu_bg_disabled = theme.menu_bg_normal
 theme.menu_border_color = theme.border_normal 
+theme.menu_separator_span_ratio = 1
+theme.menu_separator_thickness = dpi(1)
+theme.menu_separator_spacing = dpi(0)
 
 -- You can add as many variables as
 -- you wish and access them by using
 -- beautiful.variable in your rc.lua
 --theme.bg_widget = "#cc0000"
 
--- Define the image to load
-theme.titlebar_close_button_normal = themes_path.."icons/titlebar/close_normal.png"
-theme.titlebar_close_button_focus  = themes_path.."icons/titlebar/close_focus.png"
+-- -- Define the image to load
+-- theme.titlebar_close_button_normal = themes_path.."icons/titlebar/close_normal.png"
+-- theme.titlebar_close_button_focus  = themes_path.."icons/titlebar/close_focus.png"
 
-theme.titlebar_minimize_button_normal = themes_path.."icons/titlebar/minimize_normal.png"
-theme.titlebar_minimize_button_focus  = themes_path.."icons/titlebar/minimize_focus.png"
+-- theme.titlebar_minimize_button_normal = themes_path.."icons/titlebar/minimize_normal.png"
+-- theme.titlebar_minimize_button_focus  = themes_path.."icons/titlebar/minimize_focus.png"
 
-theme.titlebar_ontop_button_normal_inactive = themes_path.."icons/titlebar/ontop_normal_inactive.png"
-theme.titlebar_ontop_button_focus_inactive  = themes_path.."icons/titlebar/ontop_focus_inactive.png"
-theme.titlebar_ontop_button_normal_active = themes_path.."icons/titlebar/ontop_normal_active.png"
-theme.titlebar_ontop_button_focus_active  = themes_path.."icons/titlebar/ontop_focus_active.png"
+-- theme.titlebar_ontop_button_normal_inactive = themes_path.."icons/titlebar/ontop_normal_inactive.png"
+-- theme.titlebar_ontop_button_focus_inactive  = themes_path.."icons/titlebar/ontop_focus_inactive.png"
+-- theme.titlebar_ontop_button_normal_active = themes_path.."icons/titlebar/ontop_normal_active.png"
+-- theme.titlebar_ontop_button_focus_active  = themes_path.."icons/titlebar/ontop_focus_active.png"
 
-theme.titlebar_sticky_button_normal_inactive = themes_path.."icons/titlebar/sticky_normal_inactive.png"
-theme.titlebar_sticky_button_focus_inactive  = themes_path.."icons/titlebar/sticky_focus_inactive.png"
-theme.titlebar_sticky_button_normal_active = themes_path.."icons/titlebar/sticky_normal_active.png"
-theme.titlebar_sticky_button_focus_active  = themes_path.."icons/titlebar/sticky_focus_active.png"
+-- theme.titlebar_sticky_button_normal_inactive = themes_path.."icons/titlebar/sticky_normal_inactive.png"
+-- theme.titlebar_sticky_button_focus_inactive  = themes_path.."icons/titlebar/sticky_focus_inactive.png"
+-- theme.titlebar_sticky_button_normal_active = themes_path.."icons/titlebar/sticky_normal_active.png"
+-- theme.titlebar_sticky_button_focus_active  = themes_path.."icons/titlebar/sticky_focus_active.png"
 
-theme.titlebar_floating_button_normal_inactive = themes_path.."icons/titlebar/floating_normal_inactive.png"
-theme.titlebar_floating_button_focus_inactive  = themes_path.."icons/titlebar/floating_focus_inactive.png"
-theme.titlebar_floating_button_normal_active = themes_path.."icons/titlebar/floating_normal_active.png"
-theme.titlebar_floating_button_focus_active  = themes_path.."icons/titlebar/floating_focus_active.png"
+-- theme.titlebar_floating_button_normal_inactive = themes_path.."icons/titlebar/floating_normal_inactive.png"
+-- theme.titlebar_floating_button_focus_inactive  = themes_path.."icons/titlebar/floating_focus_inactive.png"
+-- theme.titlebar_floating_button_normal_active = themes_path.."icons/titlebar/floating_normal_active.png"
+-- theme.titlebar_floating_button_focus_active  = themes_path.."icons/titlebar/floating_focus_active.png"
 
-theme.titlebar_maximized_button_normal_inactive = themes_path.."icons/titlebar/maximized_normal_inactive.png"
-theme.titlebar_maximized_button_focus_inactive  = themes_path.."icons/titlebar/maximized_focus_inactive.png"
-theme.titlebar_maximized_button_normal_active = themes_path.."icons/titlebar/maximized_normal_active.png"
-theme.titlebar_maximized_button_focus_active  = themes_path.."icons/titlebar/maximized_focus_active.png"
+-- theme.titlebar_maximized_button_normal_inactive = themes_path.."icons/titlebar/maximized_normal_inactive.png"
+-- theme.titlebar_maximized_button_focus_inactive  = themes_path.."icons/titlebar/maximized_focus_inactive.png"
+-- theme.titlebar_maximized_button_normal_active = themes_path.."icons/titlebar/maximized_normal_active.png"
+-- theme.titlebar_maximized_button_focus_active  = themes_path.."icons/titlebar/maximized_focus_active.png"
 
 -- You can use your own layout icons like this:
-theme.layout_fairh = themes_path.."icons/layouts/fairh.png"
-theme.layout_fairv = themes_path.."icons/layouts/fairv.png"
-theme.layout_floating  = themes_path.."icons/layouts/floating.png"
-theme.layout_magnifier = themes_path.."icons/layouts/magnifier.png"
-theme.layout_max = themes_path.."icons/layouts/max.png"
-theme.layout_fullscreen = themes_path.."icons/layouts/fullscreen.png"
-theme.layout_tilebottom = themes_path.."icons/layouts/tilebottom.png"
-theme.layout_tileleft   = themes_path.."icons/layouts/tileleft.png"
-theme.layout_tile = themes_path.."icons/layouts/tile.png"
-theme.layout_tiletop = themes_path.."icons/layouts/tiletop.png"
-theme.layout_spiral  = themes_path.."icons/layouts/spiral.png"
-theme.layout_dwindle = themes_path.."icons/layouts/dwindle.png"
-theme.layout_cornernw = themes_path.."icons/layouts/cornernw.png"
-theme.layout_cornerne = themes_path.."icons/layouts/cornerne.png"
-theme.layout_cornersw = themes_path.."icons/layouts/cornersw.png"
-theme.layout_cornerse = themes_path.."icons/layouts/cornerse.png"
+theme.layout_fairh = gears.color.recolor_image(themes_path.."icons/layouts/fairh.png", color.fg)
+theme.layout_fairv = gears.color.recolor_image(themes_path.."icons/layouts/fairv.png", color.fg)
+theme.layout_floating  = gears.color.recolor_image(themes_path.."icons/layouts/floating.png", color.fg)
+theme.layout_magnifier = gears.color.recolor_image(themes_path.."icons/layouts/magnifier.png", color.fg)
+theme.layout_max = gears.color.recolor_image(themes_path.."icons/layouts/max.png", color.fg)
+theme.layout_fullscreen = gears.color.recolor_image(themes_path.."icons/layouts/fullscreen.png", color.fg)
+theme.layout_tilebottom = gears.color.recolor_image(themes_path.."icons/layouts/tilebottom.png", color.fg)
+theme.layout_tileleft   = gears.color.recolor_image(themes_path.."icons/layouts/tileleft.png", color.fg)
+theme.layout_tile = gears.color.recolor_image(themes_path.."icons/layouts/tile.png", color.fg)
+theme.layout_tiletop = gears.color.recolor_image(themes_path.."icons/layouts/tiletop.png", color.fg)
+theme.layout_spiral  = gears.color.recolor_image(themes_path.."icons/layouts/spiral.png", color.fg)
+theme.layout_dwindle = gears.color.recolor_image(themes_path.."icons/layouts/dwindle.png", color.fg)
+theme.layout_cornernw = gears.color.recolor_image(themes_path.."icons/layouts/cornernw.png", color.fg)
+theme.layout_cornerne = gears.color.recolor_image(themes_path.."icons/layouts/cornerne.png", color.fg)
+theme.layout_cornersw = gears.color.recolor_image(themes_path.."icons/layouts/cornersw.png", color.fg)
+theme.layout_cornerse = gears.color.recolor_image(themes_path.."icons/layouts/cornerse.png", color.fg)
 
 -- Generate Awesome icon:
 theme.awesome_icon = theme_assets.awesome_icon(
-    theme.menu_height, theme.fg_focus, theme.bg_normal
+    theme.menu_height or dpi(25), theme.fg_focus, theme.bg_normal
 )
 
--- Define the icon theme for application icons. If not set then the icons
--- from /usr/share/icons and /usr/share/icons/hicolor will be used.
+-- Define the icon theme for application icons. Tries to find the current Gtk icon theme or defaults to Adwaita
 local lgi = require("lgi")
 local success, Gtk = pcall(lgi.require, "Gtk")
 if success then

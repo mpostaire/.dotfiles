@@ -1,10 +1,4 @@
 -- This is a popup that closes itself when a click outside is detected.
--- The 'spawn_button' argument is mandatory if a popup is to be launched via a mouse button (on click).
--- Do not specify 'spawn_button' if a popup is lauched without a mouse button.
--- You can change on the fly 'spawn_button' depending on the situation but you must follow these rules.
-
--- TODO: test variant with a transparent wibox that takes the entire screen behind the popup to capture mouse click on that wibox
---       should be a better, smarter solution (and with less bugs and strange behaviours) but maybe slower ?
 
 local awful = require("awful")
 
@@ -13,13 +7,20 @@ return function(args)
     args.close_callback = nil
     local popup = awful.popup(args)
 
+    popup.root = args.parent and args.parent.root or popup
+    if popup.root == popup then
+        popup.children = {}
+    else
+        popup.root.children[#popup.root.children + 1] = popup
+    end
+
     local just_launched = false
 
-    local function is_mouse_in_popup(mouse)
-        if mouse.x > popup.x and
-            mouse.x < popup.x + popup.width and
-            mouse.y > popup.y and
-            mouse.y < popup.y + popup.height
+    local function is_mouse_in_popup(mouse, p)
+        if p.visible and mouse.x > p.x and
+            mouse.x < p.x + p.width and
+            mouse.y > p.y and
+            mouse.y < p.y + p.height
         then
             return true
         else
@@ -27,46 +28,76 @@ return function(args)
         end
     end
 
+    local function is_mouse_in_popup_or_children(mouse)
+        if is_mouse_in_popup(mouse, popup.root) then
+            return true
+        end
+        for _,v in ipairs(popup.root.children) do
+            if is_mouse_in_popup(mouse, v) then
+                return true
+            end
+        end
+    end
+
     local function grabber(mouse)
-        if not args.spawn_button or not mouse.buttons[args.spawn_button] then
+        local should_stop = is_mouse_in_popup_or_children(mouse)
+
+        if not mouse.buttons[1] and not mouse.buttons[2] and not mouse.buttons[3] then
             just_launched = false
-        elseif mouse.buttons[args.spawn_button] and just_launched then
+        elseif not should_stop and (mouse.buttons[1] or mouse.buttons[2] or mouse.buttons[3]) and just_launched then
             return true
         end
 
-        if is_mouse_in_popup(mouse) then
+        if should_stop then
             return false
         elseif mouse.buttons[1] or mouse.buttons[2] or mouse.buttons[3] or mouse.buttons[4] or mouse.buttons[5] then
-            popup.visible = false
+            popup.root.visible = false
+            if popup.root.children then
+                for _,v in ipairs(popup.root.children) do
+                    v.visible = false
+                end
+            end
             return false
         else
             return true
         end
     end
 
-    popup:connect_signal("property::visible", function()
-        if popup.visible then
-            -- we run mousegrabber now even if we didn't leave popup
-            -- this is because when a popup is showed it is not always
-            -- under the mouse so the mouse::leave signal is not fired
-            if not _G.mousegrabber.isrunning() then
-                just_launched = true
-                _G.mousegrabber.run(grabber, "left_ptr")
+    if popup.root == popup then
+        popup:connect_signal("property::visible", function()
+            if popup.visible then
+                -- we run mousegrabber now even if we didn't leave popup
+                -- this is because when a popup is showed it is not always
+                -- under the mouse so the mouse::leave signal is not fired
+                if not _G.mousegrabber.isrunning() then
+                    just_launched = true
+                    _G.mousegrabber.run(grabber, "left_ptr")
+                end
+            else
+                _G.mousegrabber.stop()
             end
-        else
-            _G.mousegrabber.stop()
-            if close_callback then close_callback() end
-        end
-    end)
+        end)
+
+        _G.awesome.connect_signal("lock", function()
+            if not popup.root.visible then return end
+            popup.root.visible = false
+            if popup.root.children then
+                for _,v in ipairs(popup.root.children) do
+                    v.visible = false
+                end
+            end
+        end)
+    end
 
     popup.widget:connect_signal("mouse::leave", function()
         if not _G.mousegrabber.isrunning() and popup.visible then
             _G.mousegrabber.run(grabber, "left_ptr")
         end
     end)
-
-    _G.awesome.connect_signal("lock", function()
-        popup.visible = false
+    popup:connect_signal("property::visible", function()
+        if not popup.visible then
+            if close_callback then close_callback() end
+        end
     end)
 
     return popup

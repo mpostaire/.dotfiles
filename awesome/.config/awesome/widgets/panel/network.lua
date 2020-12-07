@@ -47,7 +47,7 @@ return function()
             widget:set_icon_color(beautiful.fg_normal)
             return icons[network.state]
         else
-            widget:set_icon_color(color.white_alt)
+            widget:set_icon_color(beautiful.fg_normal)
             return icons[network.state]
         end
     end

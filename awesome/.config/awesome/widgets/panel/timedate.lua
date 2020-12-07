@@ -10,7 +10,7 @@ local icon = ""
 
 return function(format)
     local separator = wibox.widget {
-        color = color.black_alt,
+        color = color.black,
         span_ratio = 0.9,
         orientation = "horizontal",
         widget = wibox.widget.separator

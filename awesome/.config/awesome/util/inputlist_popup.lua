@@ -32,7 +32,6 @@ return function(args)
     local popup = autoclose_wibox {
         ontop = true,
         type = "normal",
-        border_color = color.black_alt,
         close_callback = prompt.stop
     }
     popup._private = {}
@@ -68,8 +67,8 @@ return function(args)
         local layout_height = icon_size * max_showed_item_count
     
         local scrollbar = wibox.widget {
-            bar_color = color.black_alt,
-            handle_color = beautiful.fg_normal,
+            bar_color = color.bg,
+            handle_color = beautiful.bg,
             value = 0,
             forced_height = 10,
             forced_width = 0,
@@ -110,7 +109,7 @@ return function(args)
                 item_background.bg = beautiful.bg_normal
                 item_background.fg = beautiful.fg_normal
                 local comment_textbox = items_container.children[selected_widget].widget.widget.second.children[2]
-                comment_textbox.markup = '<i><span foreground="'..color.white_alt..'">'..comment_textbox.text..'</span></i>'
+                comment_textbox.markup = '<i><span foreground="'..color.black_alt..'">'..comment_textbox.text..'</span></i>'
             end
     
             -- we mark the new selected_widget as the index
@@ -193,7 +192,7 @@ return function(args)
                 if i == selected_widget then
                     name_comment_textboxes.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
                 else
-                    name_comment_textboxes.children[2].markup = '<i><span foreground="'..color.white_alt..'">'..comment..'</span></i>'
+                    name_comment_textboxes.children[2].markup = '<i><span foreground="'..color.black_alt..'">'..comment..'</span></i>'
                 end
                 item_widget_background.position_index = scrollbar.value + i
             end
@@ -232,7 +231,7 @@ return function(args)
                     if count == selected_widget then
                         item_widget_second.children[2].markup = '<i><span foreground="'..beautiful.bg_normal..'">'..comment..'</span></i>'
                     else
-                        item_widget_second.children[2].markup = '<i><span foreground="'..color.white_alt..'">'..comment..'</span></i>'
+                        item_widget_second.children[2].markup = '<i><span foreground="'..color.black_alt..'">'..comment..'</span></i>'
                     end
                     item_widget_background.position_index = count
                     item_widget_background.item = item
@@ -261,8 +260,8 @@ return function(args)
     
             scrollbar.maximum = math.max((item_count - max_showed_item_count) / scrollbar_velocity, 1)
             scrollbar.handle_width = (max_showed_item_count / item_count) * layout_height
-            scrollbar_container.widget.handle_color = scrollbar.maximum > 1 and color.white or color.black
-            scrollbar_container.widget.bar_color = scrollbar.maximum > 1 and color.black_alt or color.black
+            scrollbar_container.widget.handle_color = scrollbar.maximum > 1 and color.fg or color.bg
+            scrollbar_container.widget.bar_color = scrollbar.maximum > 1 and color.black or color.bg
         end
     
         scrollbar:connect_signal("property::value", scroll_layout_contents)
@@ -275,7 +274,7 @@ return function(args)
                         {
                             {
                                 {
-                                    markup = '<span foreground="'..color.green..'">Lancer: </span>',
+                                    markup = '<span foreground="'..color.green_alt..'">Lancer: </span>',
                                     widget = wibox.widget.textbox
                                 },
                                 prompt_textbox,

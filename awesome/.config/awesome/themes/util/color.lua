@@ -3,6 +3,9 @@ local color = {}
 local xresources = require("beautiful.xresources")
 local xresources_theme = xresources.get_current_theme()
 
+color.bg = xresources_theme["background"]
+color.fg = xresources_theme["foreground"]
+
 color.black = xresources_theme["color0"]
 color.black_alt = xresources_theme["color8"]
 

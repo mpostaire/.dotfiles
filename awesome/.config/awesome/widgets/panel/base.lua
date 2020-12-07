@@ -7,8 +7,6 @@ local dpi = require("beautiful.xresources").apply_dpi
 local helpers = require("util.helpers")
 local autoclose_popup = require("util.autoclose_popup")
 
-local popup_spawn_button = 1
-
 local function make_popup(control_widget)
     return autoclose_popup {
         widget = {
@@ -24,8 +22,7 @@ local function make_popup(control_widget)
             widget = wibox.container.margin
         },
         ontop = true,
-        visible = true,
-        spawn_button = popup_spawn_button
+        visible = true
     }
 end
 
@@ -124,7 +121,7 @@ return function(args)
         -- we hide it this way because we want it to be visible by default to calculate its position
         widget.control_popup.visible = false
         widget:buttons({
-            awful.button({}, popup_spawn_button, toggle_popup)
+            awful.button({}, 1, toggle_popup)
         })
     else
         widget._private.popup_enabled = false

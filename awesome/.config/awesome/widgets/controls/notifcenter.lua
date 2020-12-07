@@ -14,13 +14,13 @@ return function()
     local notifcenter = wibox.widget {
         {
             {
-                markup = '<span foreground="'..color.white_alt..'">'..icon..'</span>',
+                markup = '<span foreground="'..color.black_alt..'">'..icon..'</span>',
                 font = helpers.change_font_size(beautiful.nerd_font, 28),
                 align = "center",
                 widget = wibox.widget.textbox
             },
             {
-                markup = '<span foreground="'..color.white_alt..'">Aucune notification</span>',
+                markup = '<span foreground="'..color.black_alt..'">Aucune notification</span>',
                 align = "center",
                 widget = wibox.widget.textbox
             },

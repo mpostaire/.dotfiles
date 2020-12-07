@@ -25,7 +25,7 @@ return function(show_label)
             archupdates_widget:show(false)
             return ""
         elseif updates == 0 then
-            archupdates_widget:set_icon_color(color.blue)
+            archupdates_widget:set_icon_color(color.blue_alt)
             archupdates_widget:show_icon(true)
             archupdates_widget:show_label(show_label)
             return updates_aur
@@ -35,7 +35,7 @@ return function(show_label)
             archupdates_widget:show_label(show_label)
             return updates
         else
-            archupdates_widget:set_icon_color(color.blue)
+            archupdates_widget:set_icon_color(color.blue_alt)
             archupdates_widget:show_icon(true)
             archupdates_widget:show_label(show_label)
             return updates.."+"..updates_aur

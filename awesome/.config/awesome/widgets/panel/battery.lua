@@ -30,11 +30,11 @@ return function()
         local icon = icons[battery.state][battery.level]
 
         if battery.state == "fully-charged" then
-            widget:set_icon_color(color.green)
+            widget:set_icon_color(color.green_alt)
         elseif battery.state == "charging" then
-            widget:set_icon_color(color.yellow)
+            widget:set_icon_color(color.yellow_alt)
         elseif battery.state == "discharging" and battery.level == "critical" then
-            widget:set_icon_color(color.red)
+            widget:set_icon_color(color.red_alt)
         else
             widget:set_icon_color(beautiful.fg_normal)
         end

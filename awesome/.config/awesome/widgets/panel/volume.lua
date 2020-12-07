@@ -27,7 +27,7 @@ return function(show_label)
 
     local function get_icon()
         if alsa.muted then
-            return '<span foreground="'..color.white_alt..'">'..icons.muted..'</span>'
+            return icons.muted
         else
             if alsa.volume < 33 then
                 return icons.low
@@ -41,8 +41,8 @@ return function(show_label)
 
     local function update_widget()
         if alsa.muted then
-            widget:set_icon_color(color.white_alt)
-            widget:set_label_color(color.white_alt)
+            widget:set_icon_color(color.black_alt)
+            widget:set_label_color(color.black_alt)
         else
             widget:set_icon_color(beautiful.fg_normal)
             widget:set_label_color(beautiful.fg_normal)

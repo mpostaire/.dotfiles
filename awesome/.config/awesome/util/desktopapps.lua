@@ -452,7 +452,8 @@ function desktopapps.search(query)
         -- match when we find query in either one of the entry name, comment, generic name, keywords or categories
         local match = helpers.replace_special_chars(v.Name):lower():find(query) or
                       (v.Comment and helpers.replace_special_chars(v.Comment):lower():find(query)) or
-                      (v.GenericName and helpers.replace_special_chars(v.GenericName):lower():find(query))
+                      (v.GenericName and helpers.replace_special_chars(v.GenericName):lower():find(query)) or
+                      (helpers.replace_special_chars(v.Exec):lower():match("%w+"):find(query))
         if not match and v.Keywords then
             for _,keyword in pairs(v.Keywords) do
                 match = helpers.replace_special_chars(keyword):lower():find(query)

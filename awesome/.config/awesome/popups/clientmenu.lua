@@ -1,6 +1,6 @@
-local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local menu = require("popups.menu")
 
 local target_client
 
@@ -15,18 +15,14 @@ local funcs = {
     toggle_sticky = function() target_client.sticky = not target_client.sticky end
 }
 
-local mainmenu = awful.menu(
-    {
-        items = {
-            { "close", funcs.close },
-            { "maximized", funcs.toggle_maximized },
-            { "minimize", funcs.toggle_minimized },
-            { "floating", funcs.toggle_floating },
-            { "ontop", funcs.toggle_ontop },
-            { "sicky", funcs.toggle_sticky }
-        }
-    }
-)
+local mainmenu = menu {
+    { "close", funcs.close },
+    { "maximized", funcs.toggle_maximized },
+    { "minimize", funcs.toggle_minimized },
+    { "floating", funcs.toggle_floating },
+    { "ontop", funcs.toggle_ontop },
+    { "sicky", funcs.toggle_sticky }
+}
 
 local function update_entries()
     mainmenu:delete(2)

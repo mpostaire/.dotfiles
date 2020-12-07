@@ -2,9 +2,9 @@ local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = require("beautiful.xresources").apply_dpi
-local clientmenu = require("popups.clientmenu") -- TODO remove this ??
 local color = require("themes.util.color")
 local gtable = require("gears.table")
+local menu = require("popups.menu")
 local desktopapps = require("util.desktopapps")
 local dbus = require("dbus_proxy")
 local Gio = require("lgi").Gio
@@ -24,49 +24,6 @@ local bg_hover_normal = color.lighten_by(beautiful.tasklist_bg_normal, 0.05)
 local bg_hover_focus = color.lighten_by(beautiful.tasklist_bg_focus, 0.05)
 local bg_hover_urgent = color.lighten_by(beautiful.tasklist_bg_urgent, 0.05)
 
-local sticky = beautiful.tasklist_sticky or "▪"
-local ontop = beautiful.tasklist_ontop or '⌃'
-local above = beautiful.tasklist_above or '▴'
-local below = beautiful.tasklist_below or '▾'
-local floating = beautiful.tasklist_floating or '✈'
-local maximized = beautiful.tasklbeautiful or '<b>+</b>'
-local maximized_horizontal = beautiful.tasklist_maximized_horizontal or '⬌'
-local maximized_vertical = beautiful.tasklist_maximized_vertical or '⬍'
-
--- _G.client.connect_signal("property::name", update_name)
--- _G.client.connect_signal("property::urgent", update_name)
--- _G.client.connect_signal("property::sticky", update_name)
--- _G.client.connect_signal("property::ontop", update_name)
--- _G.client.connect_signal("property::above", update_name)
--- _G.client.connect_signal("property::below", update_name)
--- _G.client.connect_signal("property::floating", update_name)
--- _G.client.connect_signal("property::maximized_horizontal", update_name)
--- _G.client.connect_signal("property::maximized_vertical", update_name)
--- _G.client.connect_signal("property::maximized", update_name)
--- _G.client.connect_signal("property::minimized", update_name)
-
--- local function get_name(desktopapp, count)
---     -- print(tostring(count))
---     count = count or 1
---     local name = desktopapp.Name .. " ["..tostring(count).."]"
---     -- if not beautiful.tasklist_plain_task_name then
---     --     if c.sticky then name = name .. sticky end
-
---     --     if c.ontop then name = name .. ontop
---     --     elseif c.above then name = name .. above
---     --     elseif c.below then name = name .. below end
-
---     --     if c.maximized then
---     --         name = name .. maximized
---     --     else
---     --         if c.maximized_horizontal then name = name .. maximized_horizontal end
---     --         if c.maximized_vertical then name = name .. maximized_vertical end
---     --         if c.floating then name = name .. floating end
---     --     end
---     -- end
---     return name
--- end
-
 local tooltip
 if beautiful.tasklist_disable_task_name then
     tooltip = awful.tooltip {
@@ -78,20 +35,20 @@ if beautiful.tasklist_disable_task_name then
 end
 
 local function set_task_widget_style(widget)
-    if widget.urgent then
-        if widget.hovered then
-            widget.progressbar_widget.background_color = bg_hover_urgent
-        else
-            widget.progressbar_widget.background_color = beautiful.tasklist_bg_urgent
-        end
-        widget.background_widget.fg = beautiful.tasklist_fg_urgent
-    elseif widget.focused then
+    if widget.focused then
         if widget.hovered then
             widget.progressbar_widget.background_color = bg_hover_focus
         else
             widget.progressbar_widget.background_color = beautiful.tasklist_bg_focus
         end
         widget.background_widget.fg = beautiful.tasklist_fg_focus
+    elseif widget.urgent then
+        if widget.hovered then
+            widget.progressbar_widget.background_color = bg_hover_urgent
+        else
+            widget.progressbar_widget.background_color = beautiful.tasklist_bg_urgent
+        end
+        widget.background_widget.fg = beautiful.tasklist_fg_urgent
     else
         if widget.hovered then
             widget.progressbar_widget.background_color = bg_hover_normal
@@ -139,7 +96,7 @@ local function new_task_widget(c, desktopapp, clients)
 
     local progressbar_widget = wibox.widget {
         background_color = _G.client.focus == c and beautiful.tasklist_bg_focus or beautiful.tasklist_bg_normal,
-        color = beautiful.accent.."55",
+        color = color.green.."77",
         value = 0,
         widget = wibox.widget.progressbar
     }
@@ -172,7 +129,7 @@ local function new_task_widget(c, desktopapp, clients)
                         desktopapp.Icon
                     }
                 end
-                awful.menu(terms):show()
+                menu(terms):show()
             elseif clients[1] == _G.client.focus then
                 clients[1].minimized = true
             else
@@ -181,7 +138,9 @@ local function new_task_widget(c, desktopapp, clients)
             end
         end),
         awful.button({ }, 2, function()
-            awful.spawn.easy_async_with_shell(desktopapp.cmdline, function() end)
+            if desktopapp.cmdline then
+                awful.spawn.easy_async_with_shell(desktopapp.cmdline, function() end)
+            end
         end),
         awful.button({ }, 3, function()
             local items
@@ -199,7 +158,7 @@ local function new_task_widget(c, desktopapp, clients)
                     end
                 end
             }
-            awful.menu(items):show()
+            menu(items):show()
         end),
         -- TODO use faster implementation of a circular list than this
         awful.button({ }, 4, function()
@@ -236,79 +195,12 @@ local function new_task_widget(c, desktopapp, clients)
     return task_widget
 end
 
-local function new_unknown_task_widget(c)
-    local task_widget = wibox.widget {
-        {
-            {
-                {
-                    {
-                        forced_height = dpi(22),
-                        forced_width = dpi(22),
-                        client = c,
-                        visible = not beautiful.tasklist_disable_icon,
-                        widget = awful.widget.clienticon,
-                    },
-                    {
-                        markup = "[U] "..c.name, -- TODO remove this "[U] " prefix (this is to check if a task is unkown)
-                        visible = not beautiful.tasklist_disable_task_name,
-                        widget = wibox.widget.textbox
-                    },
-                    spacing = dpi(6),
-                    layout = wibox.layout.fixed.horizontal
-                },
-                left = dpi(6),
-                right = dpi(6),
-                widget = wibox.container.margin
-            },
-            halign = 'center',
-            widget = wibox.container.place
-        },
-        client = c,
-        bg = _G.client.focus == c and beautiful.tasklist_bg_focus or beautiful.tasklist_bg_normal,
-        fg = _G.client.focus == c and beautiful.tasklist_fg_focus or beautiful.tasklist_fg_normal,
-        widget = wibox.container.background
-    }
-
-    task_widget:buttons {
-        awful.button({ }, 1, function()
-            if c == _G.client.focus then
-                c.minimized = true
-            else
-                c:emit_signal(
-                    "request::activate",
-                    "tasklist",
-                    { raise = true }
-                )
-            end
-        end)
-    }
-
-    if tooltip then
-        tooltip:add_to_object(task_widget)
-    end
-
-    task_widget:connect_signal("mouse::enter", function()
-        if tooltip then
-            tooltip.text = c.name
-        end
-
-        task_widget.hovered = true
-        set_task_widget_style(task_widget, true)
-    end)
-    task_widget:connect_signal("mouse::leave", function()
-        task_widget.hovered = false
-        set_task_widget_style(task_widget, true)
-    end)
-
-    return task_widget
-end
-
 local function new_task(desktopapp, c, tasklist)
     local clients = { c }
     local task = {
         desktopapp = desktopapp,
         widget = new_task_widget(c, desktopapp, clients),
-        count = 1, -- TODO redundant with #task.clients ??
+        count = 1,
         notif_count = 0,
         notif_count_visible = false,
         notif_progress = 0,
@@ -375,31 +267,6 @@ local function new_task(desktopapp, c, tasklist)
     return task
 end
 
--- TODO make unkown task and task one unique task type (so there is no need to do 2 widgets/constructors types)
-local function new_unknown_task(c, tasklist)
-    local task = {
-        widget = new_unknown_task_widget(c),
-        focus = function(self)
-            if not self.widget then return end
-            set_task_widget_style(self.widget, true)
-        end,
-        unfocus = function(self)
-            if not self.widget then return end
-            set_task_widget_style(self.widget, true)
-        end,
-        set_urgent = function(self, value)
-            if not self.widget then return end
-
-            self.widget.urgent = value
-            set_task_widget_style(self.widget, true)
-        end,
-    }
-
-    tasklist:add(task.widget)
-
-    return task
-end
-
 local tasklist_id_counter = 1
 return function(s, filter_func)
     local filter = filter_func or function(c, s) return true end
@@ -417,24 +284,13 @@ return function(s, filter_func)
                 end
             end
         end,
-        remove_unknown_task_widget = function(self, c)
-            for k,v in ipairs(self.children) do
-                if v.client and v.client == c then
-                    if tooltip then
-                        tooltip:remove_from_object(v)
-                    end
-                    return self:remove(k)
-                end
-            end
-        end,
         layout = wibox.layout.flex.horizontal
     }
 
     local managed_by_tasklist_prop = "managed_by_tasklist"..tasklist.uid
     tasklist_id_counter = tasklist_id_counter + 1
     
-    local class_to_task = {}
-    local desktopapp_id_to_task = {}
+    local class_to_task, desktopapp_id_to_task = {}, {}
 
     local function manage_task(c)
         if (c.skip_taskbar or c.hidden or c.type == "splash" or c.type == "dock" or c.type == "desktop")
@@ -449,7 +305,9 @@ return function(s, filter_func)
                 class_to_task[c.class] = new_task(desktopapp, c, tasklist)
                 desktopapp_id_to_task[desktopapp.id] = class_to_task[c.class]
             else
-                c.tasklist_unknown_task = new_unknown_task(c, tasklist)
+                -- client with no found desktop file
+                local id = tostring(c.window)
+                class_to_task[id] = new_task({ Name = c.name, Icon = c.icon, id = id }, c, tasklist)
             end
         else
             task:add_client(c)
@@ -459,14 +317,13 @@ return function(s, filter_func)
     local function unmanage_task(c)
         if not c[managed_by_tasklist_prop] then return end
 
-        if c.tasklist_unknown_task then
-            tasklist:remove_unknown_task_widget(c)
-            c.tasklist_unknown_task = nil
-            return
-        end
-        
         local task = class_to_task[c.class]
-        if not task then return end
+        if not task then
+            local id = tostring(c.window)
+            task = class_to_task[id]
+            if not task then return end
+            class_to_task[id] = nil
+        end
         task:remove_client(c)
     end
 
@@ -502,36 +359,21 @@ return function(s, filter_func)
         _G.client.connect_signal("focus", function(c)
             if not c[managed_by_tasklist_prop] then return end
 
-            if c.tasklist_unknown_task then
-                c.tasklist_unknown_task:focus()
-                return
-            end
-            
-            local task = class_to_task[c.class]
+            local task = class_to_task[c.class] or class_to_task[tostring(c.window)]
             if not task then return end
             task:focus()
         end)
         _G.client.connect_signal("unfocus", function(c)
             if not c[managed_by_tasklist_prop] then return end
-    
-            if c.tasklist_unknown_task then
-                c.tasklist_unknown_task:unfocus()
-                return
-            end
 
-            local task = class_to_task[c.class]
+            local task = class_to_task[c.class] or class_to_task[tostring(c.window)]
             if not task then return end
             task:unfocus()
         end)
         _G.client.connect_signal("property::urgent", function(c)
             if not c[managed_by_tasklist_prop] then return end
-            
-            if c.tasklist_unknown_task then
-                c.tasklist_unknown_task:set_urgent(c.urgent)
-                return
-            end
 
-            local task = class_to_task[c.class]
+            local task = class_to_task[c.class] or class_to_task[tostring(c.window)]
             if not task then return end
             task:set_urgent(c.urgent)
         end)

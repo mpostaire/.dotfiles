@@ -21,7 +21,7 @@ local icons = {
 
 local function get_icon()
     if alsa.muted then
-        return '<span foreground="'..color.white_alt..'">'..icons.muted..'</span>'
+        return '<span foreground="'..color.black_alt..'">'..icons.muted..'</span>'
     else
         if alsa.volume < 33 then
             return icons.low
@@ -42,7 +42,7 @@ return function(width)
         local volume_value = ((alsa.volume - 10) / 90) * 100
 
         private.volume_slider = wibox.widget {
-            bar_active_color = color.white,
+            bar_active_color = beautiful.fg_normal,
             bar_color = beautiful.bg_focus,
             handle_color = beautiful.fg_normal,
             handle_shape = gears.shape.circle,

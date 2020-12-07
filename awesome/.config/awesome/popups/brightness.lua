@@ -42,6 +42,7 @@ local function build_popup()
         border_width = beautiful.border_width,
         ontop = true,
         placement = awful.placement.centered,
+        input_passthrough = true,
         visible = false
     }
 end

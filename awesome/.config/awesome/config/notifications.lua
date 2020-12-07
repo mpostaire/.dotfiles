@@ -20,7 +20,7 @@ ruled.notification.connect_signal('request::rules', function()
     -- Add a red background for urgent notifications.
     ruled.notification.append_rule {
         rule       = { urgency = 'critical' },
-        properties = { bg = color.red_alt, fg = '#FFFFFF', timeout = 0 }
+        properties = { bg = color.red, fg = '#FFFFFF', timeout = 0 }
     }
 end)
 
@@ -28,7 +28,7 @@ naughty.connect_signal("request::display", function(n)
     -- TODO make actions more like buttons visually (figure if it's possible to do mouse hover highlighting)
 
     local actions_separator = wibox.widget {
-        color = color.black_alt,
+        color = color.black,
         span_ratio = 0.9,
         widget = wibox.widget.separator
     }

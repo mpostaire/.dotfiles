@@ -2,7 +2,6 @@ local gears = require("gears")
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local color = require("themes.util.color")
 local brightness = require("util.brightness")
 local helpers = require("util.helpers")
 
@@ -17,7 +16,7 @@ return function(width)
         local brightness_value = ((brightness.brightness - 10) / 90) * 100
     
         private.brightness_slider = wibox.widget {
-            bar_active_color = color.white,
+            bar_active_color = beautiful.fg_normal,
             bar_color = beautiful.bg_focus,
             handle_color = beautiful.fg_normal,
             handle_shape = gears.shape.circle,

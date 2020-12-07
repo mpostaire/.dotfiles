@@ -37,7 +37,7 @@ local icons = {
         ["🌩"] = " ",
         ["✨"] = " "
     },
-    location = '<span foreground="'..color.red_alt..'"> </span>'
+    location = '<span foreground="'..color.red..'"> </span>'
 }
 
 return function()
@@ -102,7 +102,7 @@ return function()
             nil,
             {
                 right_grid_layout,
-                fg = color.white_alt,
+                fg = color.black_alt,
                 widget = wibox.container.background
             },
             layout = wibox.layout.align.horizontal

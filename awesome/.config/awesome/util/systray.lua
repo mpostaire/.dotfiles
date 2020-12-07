@@ -5,6 +5,8 @@ local Gio = lgi.Gio
 local GObject = lgi.GObject
 local GVariant = lgi.GLib.Variant
 
+-- Specification: https://github.com/gnustep/libs-dbuskit/blob/master/Bundles/DBusMenu/com.canonical.dbusmenu.xml
+
 -- MEMLEAK proxies created in add_sni() may not be garbage collected ?
 
 -- TODO optimize this so it should be able to update elements without a complete rebuild
@@ -14,14 +16,19 @@ local function build_menu(layout, proxy)
     local submenu = layout[3]
 
     local root = {
-        "???",
-        function()
+        "???", -- label
+        function() -- cmd
             proxy:Event(id, "clicked", GVariant("i", 0), 0)
-        end
+        end,
+        nil, -- icon
+        false, -- disabled
+        true, -- visible
+        false, -- separator
+        -1, -- toggle-state
     } -- TODO set default properties here to be overwritten in loop below
     for prop, value in pairs(properties) do
         if prop == "type" and value == "separator" then
-            root[1] = "------"
+            root[6] = true
             break
         end
 
@@ -35,6 +42,12 @@ local function build_menu(layout, proxy)
         elseif prop == "icon-name" and value ~= "" then
             -- print(value)
             root[3] = helpers.get_icon(value, _, 32)
+        elseif prop == "enabled" then
+            root[4] = not value
+        elseif prop == "visible" then
+            root[5] = value
+        elseif prop == "toggle-state" then
+            root[7] = value
         end
     end
 
@@ -213,7 +226,8 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
         path = item_proxy.Menu
     }
 
-    local menu_layout = menu_proxy:GetLayout(0, -1, {})
+    -- TODO check TODOs inside the systray.snis[id].activate function
+    -- local menu_layout = menu_proxy:GetLayout(0, -1, {})
 
     -- only prop of this proxy that may be useful (array of paths to use for icon lookup)
     -- local menu_icon_themes = menu_proxy.IconThemePath
@@ -248,11 +262,16 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
             table.insert(on_show_menu_callbacks, func)
         end,
         activate = function(x, y)
+            -- TODO this is not working check doc to better retreive layout updates (subscribe to signal etc.)
+            --      cache layout and change it only after an update
             local need_update = menu_proxy:AboutToShow(0)
-            if need_update then
-                menu_layout = menu_proxy:GetLayout(0, -1, {})
-            end
-            local menu_items = build_menu(menu_layout[2], menu_proxy)
+            -- if need_update then
+            --     menu_layout = menu_proxy:GetLayout(0, -1, {})
+            -- end
+
+            -- TODO check upper TODO (for now we get the entire layout each time: this is very inneficient)
+            -- local menu_items = build_menu(menu_layout[2], menu_proxy)
+            local menu_items = build_menu(menu_proxy:GetLayout(0, -1, {})[2], menu_proxy)
             for _,v in pairs(on_show_menu_callbacks) do v(menu_items, x, y) end
         end
     }
