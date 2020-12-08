@@ -135,7 +135,6 @@ theme.systray_icon_spacing = dpi(12)
 -- theme.menu_submenu_icon = themes_path.."icons/submenu.png"
 -- theme.menu_checked_icon = themes_path.."icons/checked.png"
 -- theme.menu_unchecked_icon = themes_path.."icons/unchecked.png"
-theme.menu_submenu = '⯈'
 theme.menu_checked = ''
 theme.menu_unchecked = ''
 theme.menu_height = dpi(25)
@@ -184,22 +183,23 @@ theme.menu_separator_spacing = dpi(0)
 -- theme.titlebar_maximized_button_focus_active  = themes_path.."icons/titlebar/maximized_focus_active.png"
 
 -- You can use your own layout icons like this:
-theme.layout_fairh = gears.color.recolor_image(themes_path.."icons/layouts/fairh.png", color.fg)
-theme.layout_fairv = gears.color.recolor_image(themes_path.."icons/layouts/fairv.png", color.fg)
-theme.layout_floating  = gears.color.recolor_image(themes_path.."icons/layouts/floating.png", color.fg)
-theme.layout_magnifier = gears.color.recolor_image(themes_path.."icons/layouts/magnifier.png", color.fg)
-theme.layout_max = gears.color.recolor_image(themes_path.."icons/layouts/max.png", color.fg)
-theme.layout_fullscreen = gears.color.recolor_image(themes_path.."icons/layouts/fullscreen.png", color.fg)
-theme.layout_tilebottom = gears.color.recolor_image(themes_path.."icons/layouts/tilebottom.png", color.fg)
-theme.layout_tileleft   = gears.color.recolor_image(themes_path.."icons/layouts/tileleft.png", color.fg)
-theme.layout_tile = gears.color.recolor_image(themes_path.."icons/layouts/tile.png", color.fg)
-theme.layout_tiletop = gears.color.recolor_image(themes_path.."icons/layouts/tiletop.png", color.fg)
-theme.layout_spiral  = gears.color.recolor_image(themes_path.."icons/layouts/spiral.png", color.fg)
-theme.layout_dwindle = gears.color.recolor_image(themes_path.."icons/layouts/dwindle.png", color.fg)
-theme.layout_cornernw = gears.color.recolor_image(themes_path.."icons/layouts/cornernw.png", color.fg)
-theme.layout_cornerne = gears.color.recolor_image(themes_path.."icons/layouts/cornerne.png", color.fg)
-theme.layout_cornersw = gears.color.recolor_image(themes_path.."icons/layouts/cornersw.png", color.fg)
-theme.layout_cornerse = gears.color.recolor_image(themes_path.."icons/layouts/cornerse.png", color.fg)
+local icon_color = theme.fg_normal
+theme.layout_fairh = gears.color.recolor_image(themes_path.."icons/layouts/fairh.png", icon_color)
+theme.layout_fairv = gears.color.recolor_image(themes_path.."icons/layouts/fairv.png", icon_color)
+theme.layout_floating  = gears.color.recolor_image(themes_path.."icons/layouts/floating.png", icon_color)
+theme.layout_magnifier = gears.color.recolor_image(themes_path.."icons/layouts/magnifier.png", icon_color)
+theme.layout_max = gears.color.recolor_image(themes_path.."icons/layouts/max.png", icon_color)
+theme.layout_fullscreen = gears.color.recolor_image(themes_path.."icons/layouts/fullscreen.png", icon_color)
+theme.layout_tilebottom = gears.color.recolor_image(themes_path.."icons/layouts/tilebottom.png", icon_color)
+theme.layout_tileleft   = gears.color.recolor_image(themes_path.."icons/layouts/tileleft.png", icon_color)
+theme.layout_tile = gears.color.recolor_image(themes_path.."icons/layouts/tile.png", icon_color)
+theme.layout_tiletop = gears.color.recolor_image(themes_path.."icons/layouts/tiletop.png", icon_color)
+theme.layout_spiral  = gears.color.recolor_image(themes_path.."icons/layouts/spiral.png", icon_color)
+theme.layout_dwindle = gears.color.recolor_image(themes_path.."icons/layouts/dwindle.png", icon_color)
+theme.layout_cornernw = gears.color.recolor_image(themes_path.."icons/layouts/cornernw.png", icon_color)
+theme.layout_cornerne = gears.color.recolor_image(themes_path.."icons/layouts/cornerne.png", icon_color)
+theme.layout_cornersw = gears.color.recolor_image(themes_path.."icons/layouts/cornersw.png", icon_color)
+theme.layout_cornerse = gears.color.recolor_image(themes_path.."icons/layouts/cornerse.png", icon_color)
 
 -- Generate Awesome icon:
 theme.awesome_icon = theme_assets.awesome_icon(
