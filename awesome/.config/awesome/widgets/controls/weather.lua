@@ -132,7 +132,12 @@ return function()
         else
             day_night_state = "night"
         end
-        if data[1] and icons[day_night_state][data[1]] then return icons[day_night_state][data[1]] end
+        if data[1] then
+            data[1] = helpers.trim(data[1])
+            if icons[day_night_state][data[1]] then
+                return icons[day_night_state][data[1]]
+            end
+        end
         return ""
     end
 
