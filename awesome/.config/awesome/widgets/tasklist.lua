@@ -20,6 +20,8 @@ local Gio = require("lgi").Gio
 -- TODO cache awful.menus
 -- TODO click outside closes awful.menus
 
+-- TODO check if behaviour when filter is for focused tags only
+
 local bg_hover_normal = color.lighten_by(beautiful.tasklist_bg_normal, 0.05)
 local bg_hover_focus = color.lighten_by(beautiful.tasklist_bg_focus, 0.05)
 local bg_hover_urgent = color.lighten_by(beautiful.tasklist_bg_urgent, 0.05)
@@ -118,9 +120,9 @@ local function new_task_widget(c, desktopapp, clients)
             -- TODO do not rebuild this menu each time: cache it and add/remove elements dynamically
             if #clients > 1 then
                 -- TODO better menu
-                terms = {}
+                local temp = {}
                 for i, c in pairs(clients) do
-                    terms[i] = {
+                    temp[i] = {
                         c.name,
                         function()
                             c:raise()
@@ -129,7 +131,7 @@ local function new_task_widget(c, desktopapp, clients)
                         desktopapp.Icon
                     }
                 end
-                menu(terms):show()
+                menu(temp):show()
             elseif clients[1] == _G.client.focus then
                 clients[1].minimized = true
             else

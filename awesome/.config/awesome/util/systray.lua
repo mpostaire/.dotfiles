@@ -16,7 +16,7 @@ local function build_menu(layout, proxy)
     local submenu = layout[3]
 
     local root = {
-        "???", -- label
+        "", -- label
         function() -- cmd
             proxy:Event(id, "clicked", GVariant("i", 0), 0)
         end,
@@ -25,6 +25,7 @@ local function build_menu(layout, proxy)
         false, -- invisible
         false, -- separator
         -1, -- toggle-state
+        theme = {}
     } -- TODO set default properties here to be overwritten in loop below
     for prop, value in pairs(properties) do
         if prop == "type" and value == "separator" then
@@ -51,6 +52,8 @@ local function build_menu(layout, proxy)
             root[5] = not value
         elseif prop == "toggle-state" then
             root[7] = value
+        elseif prop == "toggle-type" and value ~= "" then
+            root.theme.checked = value == "radio" and "●" or nil
         end
     end
 
@@ -63,20 +66,6 @@ end
 local systray = { snis = {} }
 
 local on_sni_added_callbacks, on_sni_removed_callbacks = {}, {}
-
-local menu_default_props = {
-    type = "standard",
-    label = "",
-    enabled = true,
-    visible = true,
-    ["icon-name"] = "",
-    ["icon-data"] = nil,
-    shortcut = nil,
-    ["toggle-type"] = "",
-    ["toggle-state"] = -1,
-    ["children-display"] = "",
-    disposition = "normal"
-}
 
 local function dbus_proxy_get_prop(proxy, interface, property, callback)
     Gio.DBusProxy.call(
