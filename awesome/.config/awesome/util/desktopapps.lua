@@ -341,7 +341,6 @@ local function get_xdg_menu_dirs()
                                 gdebug.print_error("Error while reading '" .. path .. "': " .. program)
                             elseif program then
                                 helpers.table_bininsert(desktopapps.entries, program, sort_func)
-                                table.insert(desktopapps.entries, program)
                                 for _,v in ipairs(on_entries_updated_callbacks) do
                                     v()
                                 end
