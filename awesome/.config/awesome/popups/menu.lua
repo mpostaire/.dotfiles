@@ -139,15 +139,15 @@ local function load_theme(a, b)
     ret.submenu_icon= a.submenu_icon or b.menu_submenu_icon or b.submenu_icon or
                       fallback.menu_submenu_icon or fallback.submenu_icon
     ret.submenu = a.submenu or b.menu_submenu or b.submenu or
-                      fallback.menu_submenu or fallback.submenu or "▶"
+                      fallback.menu_submenu or fallback.submenu or "⯈"
     ret.unchecked_icon = a.unchecked_icon or b.menu_unchecked_icon or b.unchecked_icon or
                       fallback.menu_unchecked_icon or fallback.unchecked_icon
     ret.unchecked = a.unchecked or b.menu_unchecked or b.unchecked or
-                      fallback.menu_unchecked or fallback.unchecked
+                      fallback.menu_unchecked or fallback.unchecked or "☐"
     ret.checked_icon = a.checked_icon or b.menu_checked_icon or b.checked_icon or
                       fallback.menu_checked_icon or fallback.checked_icon
     ret.checked = a.checked or b.menu_checked or b.checked or
-                      fallback.menu_checked or fallback.checked
+                      fallback.menu_checked or fallback.checked or "☑"
     ret.height = a.height or b.menu_height or b.height or
                  fallback.menu_height or dpi(16)
     ret.width = a.width or b.menu_width or b.width or
