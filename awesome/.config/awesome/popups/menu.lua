@@ -465,6 +465,7 @@ function menu:add(args, index)
     args.new = args.new or menu.entry
     local item = protected_call(args.new, self, args)
     if (not item) or (not item.widget) then
+        -- TODO this message will also show up if item is invisible (better implement the invisible state ?)
         print("Error while checking menu entry: no property widget found.")
         return
     end
@@ -553,7 +554,7 @@ end
 --------------------------------------------------------------------------------
 
 --- Default awful.menu.entry constructor.
--- @param parent The parent menu (TODO: This is apparently unused)
+-- @param parent The parent menu
 -- @param args the item params
 -- @return table with 'widget', 'cmd', 'akey' and all the properties the user wants to change
 -- @constructorfct awful.menu.entry
@@ -743,7 +744,8 @@ function menu.new(args, parent)
     end
 
     -- TODO vertical scrollable contents if screen space too short. Maybe take inspiration of my inputlist
-    -- TODO unselect item when mouse leave menu
+    --      arrow widgets on top and bottom of menu. when hover scroll by 1 in corresponding direction and repeat with timer
+    --      as long as mouse is hovering. check firefox menus for example
     _menu.wibox = autoclose_wibox {
         close_callback = function()
             _menu:hide()
@@ -758,6 +760,14 @@ function menu.new(args, parent)
         type = "popup_menu"
     }
     _menu.wibox:set_widget(_menu.layout)
+    
+    -- unselect item when mouse leave menu
+    _menu.wibox:connect_signal("mouse::leave", function()
+        if not _menu.active_child then
+            _menu:item_leave(_menu.sel)
+            _menu.sel = nil
+        end
+    end)
 
     -- Create items
     for _, v in ipairs(args) do  _menu:add(v)  end
