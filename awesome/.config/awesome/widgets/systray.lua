@@ -6,9 +6,6 @@ local dpi = beautiful.xresources.apply_dpi
 local helpers = require("util.helpers")
 local systray = require("util.systray")
 
--- TODO make this and util version of this widget functions inside local variables and then put them in callbacks args
---      so Lua does not need to parse them every time
-
 return function(include_legacy_systray)
     local item_container = wibox.widget {
         layout = wibox.layout.fixed.horizontal

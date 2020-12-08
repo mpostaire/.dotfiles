@@ -40,8 +40,11 @@ local function build_menu(layout, proxy)
                 table.insert(root[2], build_menu(item, proxy))
             end
         elseif prop == "icon-name" and value ~= "" then
-            -- print(value)
             root[3] = helpers.get_icon(value, _, 32)
+        elseif prop == "icon-data" and value and not root[3] then
+            -- TODO for this line to work I have to use value:get_data_as_bytes() (where value must be a variant)
+            --      but it is not possible with dbus_proxy because it automatically strips the variants.
+            -- root[3] = lgi.cairo.ImageSurface.create_for_data(value:get_data_as_bytes(), lgi.cairo.Format.ARGB32, 16, 16, 0)
         elseif prop == "enabled" then
             root[4] = not value
         elseif prop == "visible" then

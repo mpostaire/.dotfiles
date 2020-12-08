@@ -146,7 +146,7 @@ local function new_task_widget(c, desktopapp, clients)
             local items
             if desktopapp.Actions then
                 items = gtable.clone(desktopapp.Actions)
-                items[#items + 1] = { "----------" } -- TODO better separator
+                items[#items + 1] = { separator = true }
             else
                 items = {}
             end
