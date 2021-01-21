@@ -20,8 +20,8 @@ awful.mouse.append_global_mousebindings({
 
 -- {{{ Key bindings
 awful.keyboard.append_global_keybindings({
-    awful.key({ variables.modkey,           }, "s", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end,
-              {description="show help", group="awesome"}),
+    awful.key({ variables.modkey }, "s", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end,
+              {description = "show help", group = "awesome"}),
     awful.key({ variables.modkey,           }, "Escape", awful.tag.history.restore,
               {description = "go back", group = "tag"}),
     awful.key({ variables.modkey, "Control" }, "Left", awful.tag.viewprev,
@@ -77,14 +77,6 @@ awful.keyboard.append_global_keybindings({
               {description = "focus the previous screen", group = "screen"}),
     awful.key({ variables.modkey,           }, "u", awful.client.urgent.jumpto,
               {description = "jump to urgent client", group = "client"}),
-    -- awful.key({ variables.modkey,           }, "Tab",
-    --     function ()
-    --         awful.client.focus.history.previous()
-    --         if client.focus then
-    --             client.focus:raise()
-    --         end
-    --     end,
-    --     {description = "go back", group = "client"}),
 
     -- Standard program
     awful.key({ variables.modkey,           }, "Return", function() spawn.easy_async(variables.terminal, function() end) end,
@@ -121,16 +113,14 @@ awful.keyboard.append_global_keybindings({
               {description = "select previous", group = "layout"}),
 
     awful.key({ variables.modkey, "Control" }, "n",
-              function ()
-                  local c = awful.client.restore()
-                  -- Focus restored client
-                  if c then
-                    c:emit_signal(
-                        "request::activate", "key.unminimize", {raise = true}
-                    )
-                  end
-              end,
-              {description = "restore minimized", group = "client"}),
+        function ()
+            local c = awful.client.restore()
+            -- Focus restored client
+            if c then
+                c:emit_signal("request::activate", "key.unminimize", {raise = true})
+            end
+        end,
+    {description = "restore minimized", group = "client"}),
 
     -- lock screen
     awful.key({ variables.modkey }, "l",
@@ -145,7 +135,7 @@ awful.keyboard.append_global_keybindings({
 
     -- applauncher
     awful.key({ variables.modkey }, "space", applauncher.run,
-    {description = "show the launcher menu", group = "launcher"}),
+    {description = "show the launcher menu", group = "awesome"}),
 
     -- laptop special keys
     awful.key({}, "XF86Calculator",
@@ -233,7 +223,7 @@ awful.keyboard.append_global_keybindings({
 
     -- Tag layout selection
     awful.key {
-        modifiers   = {variables.modkey },
+        modifiers   = { variables.modkey },
         keygroup    = "numpad",
         description = "select layout directly",
         group       = "layout",
@@ -243,73 +233,66 @@ awful.keyboard.append_global_keybindings({
                 t.layout = t.layouts[index] or t.layout
             end
         end,
-    }
+    },
 })
 
--- this is used in rules.lua
 client.connect_signal("request::default_keybindings", function()
     awful.keyboard.append_client_keybindings({
-        -- awful.key({ variables.modkey,           }, "f",
-        --     function (c)
-        --         c.fullscreen = not c.fullscreen
-        --         c:raise()
-        --     end,
-        --     {description = "toggle fullscreen", group = "client"}),
-        awful.key({ variables.modkey, "Control" }, "c", function(c) clientmenu.launch(c, true) end,
-                {description = "open control menu", group = "client"}),
-        awful.key({ variables.modkey }, "q",      function (c) c:kill()                         end,
-                {description = "close", group = "client"}),
-        awful.key({ variables.modkey, "Shift"   }, "q", function(c)
-                        if c.pid then
-                            spawn.easy_async("kill -9 "..c.pid, function() end)
-                        end
-                    end,
-                {description = "kill", group = "client"}),
-        awful.key({ variables.modkey }, "f",  awful.client.floating.toggle                     ,
-                {description = "toggle floating", group = "client"}),
-        awful.key({ variables.modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
-                {description = "move to master", group = "client"}),
-        awful.key({ variables.modkey,           }, "o",      function (c) c:move_to_screen()               end,
-                {description = "move to screen", group = "client"}),
-        awful.key({ variables.modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
-                {description = "toggle keep on top", group = "client"})
-        -- awful.key({ variables.modkey,           }, "n",
-        --     function (c)
-        --         -- The client currently has the input focus, so it cannot be
-        --         -- minimized, since minimized clients can't have the focus.
-        --         c.minimized = true
-        --     end ,
-        --     {description = "minimize", group = "client"}),
-        -- awful.key({ variables.modkey,           }, "m",
-        --     function (c)
-        --         c.maximized = not c.maximized
-        --         c:raise()
-        --     end ,
-        --     {description = "(un)maximize", group = "client"})
-        -- awful.key({ variables.modkey, "Control" }, "m",
-        --     function (c)
-        --         c.maximized_vertical = not c.maximized_vertical
-        --         c:raise()
-        --     end ,
-        --     {description = "(un)maximize vertically", group = "client"}),
-        -- awful.key({ variables.modkey, "Shift"   }, "m",
-        --     function (c)
-        --         c.maximized_horizontal = not c.maximized_horizontal
-        --         c:raise()
-        --     end ,
-        --     {description = "(un)maximize horizontally", group = "client"})
+        awful.key({ variables.modkey, "Control" }, "f",
+        function(c)
+            c.fullscreen = not c.fullscreen
+            c:raise()
+        end,
+        {description = "toggle fullscreen", group = "client"}),
+        awful.key({ variables.modkey, "Control" }, "c",
+        function(c)
+            clientmenu.launch(c, true)
+        end,
+        {description = "open control menu", group = "client"}),
+        awful.key({ variables.modkey }, "q",
+        function(c)
+            c:kill()
+        end,
+        {description = "close", group = "client"}),
+        awful.key({ variables.modkey, "Shift"   }, "q",
+        function(c)
+            if c.pid then
+                spawn.easy_async("kill -9 "..c.pid, function() end)
+            end
+        end,
+        {description = "kill", group = "client"}),
+        awful.key({ variables.modkey }, "f", 
+        function(c)
+            awful.client.floating.toggle(c)
+        end,
+        {description = "toggle floating", group = "client"}),
+        awful.key({ variables.modkey, "Control" }, "Return",
+        function(c)
+            c:swap(awful.client.getmaster())
+        end,
+        {description = "move to master", group = "client"}),
+        awful.key({ variables.modkey }, "o",
+        function(c)
+            c:move_to_screen()
+        end,
+        {description = "move to screen", group = "client"}),
+        awful.key({ variables.modkey }, "t",
+        function(c)
+            c.ontop = not c.ontop
+        end,
+        {description = "toggle keep on top", group = "client"})
     })
 end)
 
 client.connect_signal("request::default_mousebindings", function()
     awful.mouse.append_client_mousebindings({
-        awful.button({ }, 1, function (c)
+        awful.button({ }, 1, function(c)
             c:activate { context = "mouse_click" }
         end),
-        awful.button({ variables.modkey }, 1, function (c)
+        awful.button({ variables.modkey }, 1, function(c)
             c:activate { context = "mouse_click", action = "mouse_move"  }
         end),
-        awful.button({ variables.modkey }, 3, function (c)
+        awful.button({ variables.modkey }, 3, function(c)
             c:activate { context = "mouse_click", action = "mouse_resize"}
         end),
     })
