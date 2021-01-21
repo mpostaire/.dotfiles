@@ -5,8 +5,8 @@ local gtable = require("gears.table")
 local dbus = require("dbus_proxy")
 local lgi = require("lgi")
 local Gio = lgi.Gio
-local success_gtk, Gtk = pcall(lgi.require, "Gtk")
-local success_gdk, Gdk = pcall(lgi.require, "Gdk")
+local success_gtk, Gtk = pcall(lgi.require, "Gtk", "3.0")
+local success_gdk, Gdk = pcall(lgi.require, "Gdk", "3.0")
 
 local helpers = {}
 
@@ -282,6 +282,7 @@ function helpers.dbus_watch_name_or_prefix(name, name_added_callback, name_lost_
     table.insert(dbus_watched_names, data)
 end
 
+-- TODO remove this and replace with interactive_background
 function helpers.change_cursor_on_hover(widget, cursor)
     local old_cursor, old_wibox
     widget:connect_signal("mouse::enter", function()

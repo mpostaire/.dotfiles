@@ -149,6 +149,8 @@ theme.menu_border_color = theme.border_normal
 theme.menu_separator_span_ratio = 1
 theme.menu_separator_thickness = dpi(1)
 theme.menu_separator_spacing = dpi(0)
+theme.menu_submenu_timer = 0.2
+-- theme.menu_disable_icons = true
 
 -- You can add as many variables as
 -- you wish and access them by using
@@ -208,7 +210,7 @@ theme.awesome_icon = theme_assets.awesome_icon(
 
 -- Define the icon theme for application icons. Tries to find the current Gtk icon theme or defaults to Adwaita
 local lgi = require("lgi")
-local success, Gtk = pcall(lgi.require, "Gtk")
+local success, Gtk = pcall(lgi.require, "Gtk", "3.0")
 if success then
     theme.icon_theme = Gtk.Settings.get_default()["gtk-icon-theme-name"] or "Adwaita"
 end
