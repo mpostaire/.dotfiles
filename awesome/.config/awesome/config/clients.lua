@@ -42,7 +42,8 @@ ruled.client.connect_signal("request::rules", function()
                 "Wpa_gui",
                 "veromix",
                 "xtightvncviewer",
-                "Gnome-calculator"
+                "Gnome-calculator",
+                "electrum"
             },
             -- Note that the name property shown in xprop might be set slightly after creation of the client
             -- and the name shown there might not match defined rules here.
@@ -90,7 +91,7 @@ ruled.client.connect_signal("request::rules", function()
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
     ruled.client.append_rule {
-        rule       = { class = "Firefox"     },
+        rule       = { class = "firefox"     },
         properties = { screen = 1, tag = "2" }
     }
 
@@ -102,13 +103,19 @@ end)
 
 -- these need to be separate functions for disconnect_signal()
 local function focus_modal(c)
-    c.modal_client:activate()
+    if c.modal_client then
+        c.modal_client:activate()
+    end
 end
 local function sync_modal_tag(c)
-    c:tags(c.modal_client:tags())
+    if c.modal_client then
+        c:tags(c.modal_client:tags())
+    end
 end
 local function sync_modal_minimized(c)
-    c.modal_client.minimized = c.minimized
+    if c.modal_client then
+        c.modal_client.minimized = c.minimized
+    end
 end
 
 -- Signal function to execute when a new client appears.
