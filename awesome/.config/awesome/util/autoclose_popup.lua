@@ -4,7 +4,9 @@ local awful = require("awful")
 
 return function(args)
     local close_callback = args.close_callback
+    local mouse_free_area = args.mouse_free_area
     args.close_callback = nil
+    args.mouse_free_area = nil
     local popup = awful.popup(args)
 
     popup.root = args.parent and args.parent.root or popup
@@ -40,7 +42,10 @@ return function(args)
     end
 
     local function grabber(mouse)
-        local should_stop = is_mouse_in_popup_or_children(mouse)
+        local should_stop = (mouse_free_area and mouse.x > mouse_free_area.x and
+            mouse.x < mouse_free_area.x + mouse_free_area.width and
+            mouse.y > mouse_free_area.y and
+            mouse.y < mouse_free_area.y + mouse_free_area.height) or is_mouse_in_popup_or_children(mouse)
 
         if not mouse.buttons[1] and not mouse.buttons[2] and not mouse.buttons[3] then
             just_launched = false
@@ -99,6 +104,12 @@ return function(args)
             if close_callback then close_callback() end
         end
     end)
+
+    popup.start_mousegrabber = function()
+        if not _G.mousegrabber.isrunning() and popup.visible then
+            _G.mousegrabber.run(grabber, "left_ptr")
+        end
+    end
 
     return popup
 end
