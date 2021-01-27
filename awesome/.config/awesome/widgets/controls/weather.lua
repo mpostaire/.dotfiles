@@ -159,7 +159,7 @@ return function()
             if not data[6] then return end
             local location_data = gstring.split(data[6], ",")
             local lat, long = tonumber(location_data[1]), tonumber(location_data[2])
-            local location_str = geoclue.coords_to_string(lat, long)
+            local location_str = geoclue.string_location
             icon_widget.text = get_weather_icon(lat, long)
             location_widget.markup = icons.location..location_str
             humidity_widget.text = data[3]
