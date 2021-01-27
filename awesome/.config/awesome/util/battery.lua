@@ -1,6 +1,6 @@
 local lgi = require("lgi")
 
-local success, upower = pcall(lgi.require, 'UPowerGlib')
+local success, upower = pcall(lgi.require, "UPowerGlib", "1.0")
 if not success then return { enabled = false } end
 
 local battery = {}
