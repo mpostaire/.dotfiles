@@ -3,7 +3,7 @@ local color = require("themes.util.color")
 local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
-local alsa = require("util.alsa")
+local pulseaudio = require("util.pulseaudio")
 local helpers = require("util.helpers")
 
 local volume_popup = {}
@@ -16,12 +16,12 @@ local icons = {
 }
 
 local function get_icon()
-    if alsa.muted then
+    if pulseaudio.muted then
         return '<span foreground="'..color.black_alt..'">'..icons.muted..'</span>'
     else
-        if alsa.volume < 33 then
+        if pulseaudio.volume < 33 then
             return icons.low
-        elseif alsa.volume < 66 then
+        elseif pulseaudio.volume < 66 then
             return icons.medium
         else
             return icons.high
@@ -33,7 +33,7 @@ local popup, progressbar, icon_widget
 local function build_popup()
     progressbar = wibox.widget {
         max_value = 100,
-        value = alsa.volume,
+        value = pulseaudio.volume,
         forced_height = 6,
         forced_width = 0,
         color = beautiful.fg_normal,
@@ -84,8 +84,8 @@ function volume_popup.show()
         popup.visible = true
         volume_popup.timer:start()
     end
-    progressbar.value = alsa.volume
-    if alsa.muted then
+    progressbar.value = pulseaudio.volume
+    if pulseaudio.muted then
         progressbar.color = color.white_alt
     else
         progressbar.color = beautiful.fg_normal
@@ -93,14 +93,14 @@ function volume_popup.show()
     icon_widget:set_markup_silently(get_icon())
 end
 
-alsa.on_enabled(function()
+pulseaudio.on_enabled(function()
     if not popup then build_popup() end
-    popup.enabled = alsa.enabled
+    popup.enabled = pulseaudio.enabled
 end)
-alsa.on_disabled(function()
-    popup.enabled = alsa.enabled
+pulseaudio.on_disabled(function()
+    popup.enabled = pulseaudio.enabled
 end)
-alsa.on_properties_changed(function()
+pulseaudio.on_properties_changed(function()
     volume_popup.show()
 end)
 

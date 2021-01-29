@@ -1,6 +1,6 @@
 require("popups.brightness") -- show popup
 local awful = require("awful")
-local brightness = require("util.brightness")
+local backlight = require("util.backlight")
 local base_panel_widget = require("widgets.panel.base")
 local brightness_control_widget = require("widgets.controls.brightness")
 local helpers = require("util.helpers")
@@ -8,8 +8,9 @@ local helpers = require("util.helpers")
 local icon = ""
 
 return function(show_label)
+    if backlight.read_only then return end
+
     local widget = base_panel_widget{icon = icon, control_widget = brightness_control_widget()}
-    widget.visible = false
 
     -- if nothing specified, we show the label
     if show_label == nil then
@@ -19,24 +20,18 @@ return function(show_label)
     end
 
     local function update_widget()
-        widget:update_label(math.floor(brightness.brightness) .. "%")
+        widget:update_label(math.floor(backlight.brightness) .. "%")
     end
+    update_widget()
 
-    brightness.on_enabled(function()
-        update_widget()
-        widget.visible = brightness.enabled
-    end)
-    brightness.on_disabled(function()
-        widget.visible = brightness.enabled
-    end)
-    brightness.on_properties_changed(update_widget)
+    backlight.on_changed(update_widget)
 
     widget:buttons({
         awful.button({}, 4, function()
-            brightness.inc_brightness(5)
+            backlight.increase(5)
         end),
         awful.button({}, 5, function()
-            brightness.dec_brightness(5)
+            backlight.decrease(5)
         end),
         widget:buttons()
     })

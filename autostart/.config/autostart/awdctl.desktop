@@ -1,7 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=awdctl
-Exec=awdctl -d
-Terminal=false
-StartupNotify=false

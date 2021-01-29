@@ -3,14 +3,8 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local color = require("themes.util.color")
 local awful = require("awful")
-local alsa = require("util.alsa")
+local pulseaudio = require("util.pulseaudio")
 local helpers = require("util.helpers")
-
--- FIXME sound mute + no move click on slider = slider graphics updates but not alsa
---          this is caused by the fact that when we mute, alsa_updating_value is set to true
---          but because this change did not come from a slider.value change, it's not set back to false
---          in the property signal handler of the slider value afterwards. (idea : in alsa.on_properties_changed
---          add a table argument of all changed properties to check if a mute change is the origin of the callback)
 
 local icons = {
     low = "",
@@ -20,12 +14,12 @@ local icons = {
 }
 
 local function get_icon()
-    if alsa.muted then
+    if pulseaudio.muted then
         return '<span foreground="'..color.black_alt..'">'..icons.muted..'</span>'
     else
-        if alsa.volume < 33 then
+        if pulseaudio.volume < 33 then
             return icons.low
-        elseif alsa.volume < 66 then
+        elseif pulseaudio.volume < 66 then
             return icons.medium
         else
             return icons.high
@@ -38,8 +32,6 @@ return function(width)
     
     local function build_widget()
         local slider_width = width or 150
-        -- we convert volume value from [10,100] to [0,100] interval
-        local volume_value = ((alsa.volume - 10) / 90) * 100
 
         private.volume_slider = wibox.widget {
             bar_active_color = beautiful.fg_normal,
@@ -72,54 +64,60 @@ return function(width)
             layout = wibox.layout.align.horizontal
         }
 
-        private.alsa_updating_value = false
+        private.pulse_updating_value = false
         private.mouse_updating_value = false
         private.volume_slider:connect_signal("property::value", function()
-            -- if we are updating volume_slider.value because alsa changed we do not want to change it again to prevent loops
-            if private.alsa_updating_value then
-                private.alsa_updating_value = false
+            -- if we are updating volume_slider.value because pulse changed, we do not want to change it again to prevent loops
+            if private.pulse_updating_value then
+                private.pulse_updating_value = false
                 return
             else
                 private.mouse_updating_value = true
-                -- volume_slider.value is changed to fit in the [10,100] interval
-                alsa.set_volume(((private.volume_slider.value / 100) * 90) + 10)
+                pulseaudio.set_volume(private.volume_slider.value)
             end
         end)
 
         private.icon_widget:buttons({
             awful.button({}, 1, function()
-                alsa.toggle_volume()
+                pulseaudio.toggle_volume()
             end)
         })
     
         private.volume_slider:buttons({
             awful.button({}, 4, function()
-                alsa.inc_volume(5)
+                pulseaudio.inc_volume(5)
             end),
             awful.button({}, 5, function()
-                alsa.dec_volume(5)
+                pulseaudio.dec_volume(5)
             end)
         })
 
         private.widget.type = "control_widget"
     end
     
-    alsa.on_enabled(function()
+    pulseaudio.on_enabled(function()
         if not private.widget then build_widget() end
-        private.widget.visible = alsa.enabled
+        if private.mouse_updating_value then
+            private.mouse_updating_value = false
+            return
+        end
+        private.pulse_updating_value = true
+        private.volume_slider.value = pulseaudio.volume
+
+        private.widget.visible = pulseaudio.enabled
     end)
-    alsa.on_disabled(function()
-        private.widget.visible = alsa.enabled
+    pulseaudio.on_disabled(function()
+        private.widget.visible = pulseaudio.enabled
     end)
-    alsa.on_properties_changed(function()
+    pulseaudio.on_properties_changed(function()
         private.icon_widget.markup = get_icon()
         
         if private.mouse_updating_value then
             private.mouse_updating_value = false
             return
         end
-        private.alsa_updating_value = true
-        private.volume_slider.value = ((alsa.volume - 10) / 90) * 100
+        private.pulse_updating_value = true
+        private.volume_slider.value = pulseaudio.volume
     end)
     
     return private.widget

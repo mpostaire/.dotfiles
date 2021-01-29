@@ -14,7 +14,6 @@ polybar/.config/polybar/modules/datepid
 fonts/.local/share/fonts/.uuid
 gtk/.config/gtk-3.0/bookmarks
 autostart/.config/autostart/*.desktop
-!autostart/.config/autostart/awdctl.desktop
 !autostart/.config/autostart/picom.desktop
 !autostart/.config/autostart/clipit.desktop
 
