@@ -16,8 +16,8 @@ export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
 
 # set PATH so it includes user's private bin if it exists
-[ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
-[ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
+[ -d "$HOME/bin" ] && PATH="$PATH:$HOME/bin"
+[ -d "$HOME/.local/bin" ] && PATH="$PATH:$HOME/.local/bin"
 
 # enable gtk appmenu
 if [ -n "$GTK_MODULES" ]; then
