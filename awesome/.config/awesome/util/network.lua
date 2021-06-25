@@ -3,8 +3,6 @@ local dbus = require("dbus_proxy")
 -- TODO: strength of current connection, list of all visible connections + their strength
 --       functions to rescan, disable/enable networking, disable/enable wifi, connect to another connection
 
--- TODO rewrite this with lgi.NM ? (check libnm lua documentation)
-
 local network = {}
 
 local on_properties_changed_callbacks = {}

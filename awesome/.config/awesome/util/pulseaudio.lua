@@ -13,7 +13,7 @@ pulseaudio.enabled = false -- assume false at startup
 
 local on_properties_changed_callbacks, on_alsa_enabled_callbacks, on_alsa_disabled_callbacks = {}, {}, {}
 
-local proxy
+local proxy, connection
 
 function pulseaudio.set_volume(value)
     if not proxy then return end
@@ -29,8 +29,7 @@ function pulseaudio.set_volume(value)
     end
 
     pulseaudio.volume = value
-    local true_volume = math.ceil((value / 100) * proxy.BaseVolume)
-    proxy:Set("org.PulseAudio.Core1.Device", "Volume", GVariant("au", { true_volume, true_volume })) -- TODO this is temp and wrong way of doing it i should add support to all channels
+    proxy:Set("org.PulseAudio.Core1.Device", "Volume", GVariant("au", { math.ceil((value / 100) * proxy.BaseVolume) }))
 end
 
 function pulseaudio.inc_volume(value)
@@ -88,12 +87,25 @@ local function get_proxy()
         bus = connection,
         name = nil,
         interface = "org.PulseAudio.Core1.Device",
-        path = core_proxy.Sinks[1]
-    }
+        path = core_proxy.Sinks[1] -- TODO how do i know the first one is the one in use ??
+    }, connection
 end
 
 local function on_name_added(name)
-    proxy = get_proxy()
+    proxy, connection = get_proxy()
+
+    local active_port_proxy = dbus.Proxy:new {
+        bus = connection,
+        name = nil,
+        interface = "org.PulseAudio.Core1.DevicePort",
+        path = proxy.ActivePort -- TODO how do i know the first one is the one in use ??
+    }
+
+    if active_port_proxy.Name:match("headphones") then
+        print("ok")
+    end
+
+    -- print(require("gears.debug").dump(proxy.Ports))
 
     proxy:connect_signal(function(p, muted)
         assert(p == proxy)

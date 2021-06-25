@@ -13,6 +13,7 @@ local autoclose_wibox = require("util.autoclose_wibox")
 local button = require("awful.button")
 local gstring = require("gears.string")
 local gtable = require("gears.table")
+local timer = require("gears.timer")
 local spawn = require("awful.spawn")
 local tags = require("awful.tag")
 local keygrabber = require("awful.keygrabber")
@@ -163,6 +164,10 @@ local function load_theme(a, b)
                             fallback.menu_separator_spacing or dpi(0)
     ret.separator_thickness = a.separator_thickness or b.menu_separator_thickness or
                             fallback.menu_separator_thickness or dpi(1)
+    ret.submenu_timer = a.submenu_timer or b.menu_submenu_timer or
+                                fallback.menu_submenu_timer or 0.2
+    ret.disable_icons = a.disable_icons or b.menu_disable_icons or
+                                fallback.menu_disable_icons or false
     for _, prop in ipairs({"width", "height", "menu_width", "max_width"}) do
         if type(ret[prop]) ~= "number" then ret[prop] = tonumber(ret[prop]) end
     end
@@ -300,6 +305,15 @@ function menu:exec(num, opts)
     if not item or item.disabled then return end
     local cmd = item.cmd
     if type(cmd) == "table" then
+        if cmd.generator then
+            -- we put the generated submenu inside item.cmd to cache it for next time
+            -- TODO make it generate after timer and not before ???? or not ?? check kde implem
+            item.cmd = cmd.generator()
+            cmd = item.cmd
+        end
+        if cmd.hide_callback then
+            self.hide_callback = cmd.hide_callback
+        end
         local action = cmd.cmd
         if #cmd == 0 then
             if opts.exec and action and type(action) == "function" then
@@ -321,7 +335,7 @@ function menu:exec(num, opts)
                 menu.get_root(self):hide()
                 return
             else
-                self.child[num]:update()
+                self.child[num]:update() -- TODO what does it do ???
             end
         end
         if self.active_child and self.active_child ~= self.child[num] then
@@ -329,7 +343,18 @@ function menu:exec(num, opts)
         end
         self.active_child = self.child[num]
         if not self.active_child.wibox.visible then
-            self.active_child:show()
+            if opts.mouse then
+                -- TODO make timer object at menu creation and reuse it when needed
+                
+                if self._timer then
+                    self._timer:again()
+                else
+                    self.active_child:show()
+                end
+                
+            else
+                self.active_child:show({sel = 1})
+            end
         end
     elseif type(cmd) == "string" then
         menu.get_root(self):hide()
@@ -382,6 +407,7 @@ end
 
 function menu:item_leave(num)
     --print("leave", num)
+    if self._timer and self._timer.started then self._timer:stop() end
     local item = self.items[num]
     if item and not item.disabled then
         item._background:set_fg(item.theme.fg_normal)
@@ -403,6 +429,7 @@ function menu:show(args)
     set_coords(self, s, coords)
 
     keygrabber.run(self._keygrabber)
+    self:item_enter(args.sel or 0)
     self.wibox.visible = true
 end
 
@@ -421,6 +448,8 @@ function menu:hide()
 
     keygrabber.stop(self._keygrabber)
     self.wibox.visible = false
+
+    if self.hide_callback then self.hide_callback() end
 end
 
 --- Toggle menu visibility.
@@ -464,8 +493,9 @@ function menu:add(args, index)
     args.theme = theme
     args.new = args.new or menu.entry
     local item = protected_call(args.new, self, args)
+    -- TODO this case is when an item is invisible (better implement the invisible state ?)
+    if item == 1 then return end
     if (not item) or (not item.widget) then
-        -- TODO this message will also show up if item is invisible (better implement the invisible state ?)
         print("Error while checking menu entry: no property widget found.")
         return
     end
@@ -561,7 +591,7 @@ end
 function menu.entry(parent, args) -- luacheck: no unused args
     args = args or {}
     args.invisible = args[5] or args.invisible
-    if args.invisible then return end
+    if args.invisible then return 1 end
     args.text = args[1] or args.text or ""
     args.cmd = args[2] or args.cmd
     args.icon = args[3] or args.icon
@@ -602,7 +632,7 @@ function menu.entry(parent, args) -- luacheck: no unused args
         }
     else
         iconbox = wibox.widget {
-            image = args.icon,
+            image = not args.theme.disable_icons and args.icon or nil,
             forced_width = args.theme.height or dpi(25),
             widget = wibox.widget.imagebox
         }
@@ -748,8 +778,12 @@ function menu.new(args, parent)
     --      as long as mouse is hovering. check firefox menus for example
     _menu.wibox = autoclose_wibox {
         close_callback = function()
+            if _menu == _menu:get_root() and type(args.close_callback) == "function" then
+                args.close_callback()
+            end
             _menu:hide()
         end,
+        mouse_free_area = args.mouse_free_area,
         ontop = true,
         fg = _menu.theme.fg_normal,
         bg = _menu.theme.bg_normal,
@@ -763,11 +797,23 @@ function menu.new(args, parent)
     
     -- unselect item when mouse leave menu
     _menu.wibox:connect_signal("mouse::leave", function()
-        if not _menu.active_child then
+        if not _menu.active_child or not _menu.active_child.wibox.visible then
             _menu:item_leave(_menu.sel)
             _menu.sel = nil
         end
     end)
+
+    if _menu.theme.submenu_timer > 0 then
+        _menu._timer = timer {
+            timeout = _menu.theme.submenu_timer,
+            autostart = false,
+            call_now = false,
+            callback = function()
+                _menu.active_child:show()
+            end,
+            single_shot = true
+        }
+    end
 
     -- Create items
     for _, v in ipairs(args) do  _menu:add(v)  end

@@ -4,6 +4,8 @@ local helpers = require("util.helpers")
 local Gio = lgi.Gio
 local GObject = lgi.GObject
 local GVariant = lgi.GLib.Variant
+-- TODO pcall line below
+local dbusmenu = lgi.require("Dbusmenu", "0.4")
 
 -- Specification: https://github.com/gnustep/libs-dbuskit/blob/master/Bundles/DBusMenu/com.canonical.dbusmenu.xml
 
@@ -217,6 +219,16 @@ local function add_sni(id, sni_bus_name, sni_obj_path, service, connection)
         interface = "com.canonical.dbusmenu",
         path = item_proxy.Menu
     }
+
+    -- -- TODO handle case where there is no menu
+    -- local menu = dbusmenu.Client.new(sni_bus_name, item_proxy.Menu)
+    -- function menu:on_root_changed(new_root)
+    --     print("root changed")
+    --     self:get_root()
+    -- end
+    -- function menu:on_layout_updated()
+    --     print("layout updated")
+    -- end
 
     -- TODO check TODOs inside the systray.snis[id].activate function
     -- local menu_layout = menu_proxy:GetLayout(0, -1, {})

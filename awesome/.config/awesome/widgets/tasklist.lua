@@ -4,6 +4,7 @@ local beautiful = require("beautiful")
 local dpi = require("beautiful.xresources").apply_dpi
 local color = require("themes.util.color")
 local gtable = require("gears.table")
+local gstring = require("gears.string")
 local menu = require("popups.menu")
 local desktopapps = require("util.desktopapps")
 local dbus = require("dbus_proxy")
@@ -115,6 +116,9 @@ local function new_task_widget(c, desktopapp, clients)
         layout = wibox.layout.stack
     }
 
+    -- TODO on mouse click check if there is a mouse enter in another item. if yes, swap them. it is a form of drag to rearrange.
+    --      maybe make my own layout to be able to to this drag visually (the item follows the mouse).
+    -- make a system to be able to pin items even if they are closed ?
     task_widget:buttons {
         awful.button({ }, 1, function()
             -- TODO do not rebuild this menu each time: cache it and add/remove elements dynamically
@@ -309,7 +313,7 @@ return function(s, filter_func)
             else
                 -- client with no found desktop file
                 local id = tostring(c.window)
-                class_to_task[id] = new_task({ Name = c.name, Icon = c.icon, id = id }, c, tasklist)
+                class_to_task[id] = new_task({ Name = c.name or gstring.xml_escape("<unkown>"), Icon = c.icon, id = id }, c, tasklist)
             end
         else
             task:add_client(c)

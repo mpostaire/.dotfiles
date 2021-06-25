@@ -474,6 +474,7 @@ function desktopapps.search(query)
 end
 
 -- TODO other cases (this works in most cases already)...
+--      use Bamf ?
 function desktopapps.get_desktopapp_from_client(c)
     if not c.class then return end
     

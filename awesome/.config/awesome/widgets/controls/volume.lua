@@ -28,62 +28,55 @@ local function get_icon()
 end
 
 return function(width)
-    local private = {}
-    
-    local function build_widget()
-        local slider_width = width or 150
+    local widget = wibox.layout.align.horizontal()
 
-        private.volume_slider = wibox.widget {
+    local pulse_updating_value = false
+    local mouse_updating_value = false
+    local function build_widget()
+        widget.volume_slider = wibox.widget {
             bar_active_color = beautiful.fg_normal,
             bar_color = beautiful.bg_focus,
             handle_color = beautiful.fg_normal,
             handle_shape = gears.shape.circle,
             handle_border_color = beautiful.fg_normal,
             handle_width = 14,
-            value = volume_value,
             maximum = 100,
-            forced_width = slider_width,
+            forced_width = width or 150,
             forced_height = 4,
             bar_height = 4,
             widget = wibox.widget.slider
         }
 
-        private.icon_widget = wibox.widget {
+        widget.icon_widget = wibox.widget {
             markup = get_icon(),
             font = helpers.change_font_size(beautiful.icon_font, 16),
             widget = wibox.widget.textbox
         }
-        private.widget = wibox.widget {
-            {
-                private.icon_widget,
-                right = 8,
-                widget = wibox.container.margin
-            },
-            private.volume_slider,
-            nil,
-            layout = wibox.layout.align.horizontal
+        widget.first = wibox.widget {
+            widget.icon_widget,
+            right = 8,
+            widget = wibox.container.margin
         }
+        widget.second = widget.volume_slider
 
-        private.pulse_updating_value = false
-        private.mouse_updating_value = false
-        private.volume_slider:connect_signal("property::value", function()
+        widget.volume_slider:connect_signal("property::value", function()
             -- if we are updating volume_slider.value because pulse changed, we do not want to change it again to prevent loops
-            if private.pulse_updating_value then
-                private.pulse_updating_value = false
+            if pulse_updating_value then
+                pulse_updating_value = false
                 return
             else
-                private.mouse_updating_value = true
-                pulseaudio.set_volume(private.volume_slider.value)
+                mouse_updating_value = true
+                pulseaudio.set_volume(widget.volume_slider.value)
             end
         end)
 
-        private.icon_widget:buttons({
+        widget.icon_widget:buttons({
             awful.button({}, 1, function()
                 pulseaudio.toggle_volume()
             end)
         })
-    
-        private.volume_slider:buttons({
+
+        widget.volume_slider:buttons({
             awful.button({}, 4, function()
                 pulseaudio.inc_volume(5)
             end),
@@ -92,33 +85,34 @@ return function(width)
             end)
         })
 
-        private.widget.type = "control_widget"
     end
+
+    widget.type = "control_widget"
     
     pulseaudio.on_enabled(function()
-        if not private.widget then build_widget() end
-        if private.mouse_updating_value then
-            private.mouse_updating_value = false
+        if not widget.volume_slider then build_widget() end
+        if mouse_updating_value then
+            mouse_updating_value = false
             return
         end
-        private.pulse_updating_value = true
-        private.volume_slider.value = pulseaudio.volume
+        pulse_updating_value = true
+        widget.volume_slider.value = pulseaudio.volume
 
-        private.widget.visible = pulseaudio.enabled
+        widget.visible = pulseaudio.enabled
     end)
     pulseaudio.on_disabled(function()
-        private.widget.visible = pulseaudio.enabled
+        widget.visible = pulseaudio.enabled
     end)
     pulseaudio.on_properties_changed(function()
-        private.icon_widget.markup = get_icon()
+        widget.icon_widget.markup = get_icon()
         
-        if private.mouse_updating_value then
-            private.mouse_updating_value = false
+        if mouse_updating_value then
+            mouse_updating_value = false
             return
         end
-        private.pulse_updating_value = true
-        private.volume_slider.value = pulseaudio.volume
+        pulse_updating_value = true
+        widget.volume_slider.value = pulseaudio.volume
     end)
     
-    return private.widget
+    return widget
 end

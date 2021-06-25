@@ -43,7 +43,8 @@ ruled.client.connect_signal("request::rules", function()
                 "veromix",
                 "xtightvncviewer",
                 "Gnome-calculator",
-                "electrum"
+                "electrum",
+                "Pavucontrol"
             },
             -- Note that the name property shown in xprop might be set slightly after creation of the client
             -- and the name shown there might not match defined rules here.
@@ -79,6 +80,16 @@ ruled.client.connect_signal("request::rules", function()
         properties = {
             show_titlebars = true,
         }
+    }
+
+    -- TODO test this with firefox extension install popup
+    ruled.client.append_rule {
+        rule = {role = "Popup"},
+        properties = {
+            show_titlebars = false,
+            titlebars_enabled = false,
+            callback = function(c) print(c.role) end
+        },
     }
 
     -- URxvt size fix
