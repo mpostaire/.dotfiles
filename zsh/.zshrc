@@ -41,6 +41,11 @@ if command -v fzf > /dev/null; then
         source /usr/share/fzf/completion.zsh
     fi
 
+    # set list-colors to enable filename colorizing
+    zstyle -e ':completion:*' list-colors 'reply=(${(s[:])LS_COLORS})'
+    # preview directory's content when completing cd
+    zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
+    
     # Replace zsh's default completion selection menu with fzf!
     ztupide load --async Aloxaf/fzf-tab
 else
