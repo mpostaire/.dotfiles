@@ -41,8 +41,6 @@ if command -v fzf > /dev/null; then
         source /usr/share/fzf/completion.zsh
     fi
 
-    # set list-colors to enable filename colorizing
-    zstyle -e ':completion:*' list-colors 'reply=(${(s[:])LS_COLORS})'
     # preview directory's content when completing cd
     zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
     
@@ -67,8 +65,9 @@ zmodload -i zsh/terminfo
 
 # Enable tab completion menu-based
 zstyle ':completion:*' menu select
-# Default colors for listings.
-zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
+# Colors for ls completion.
+zstyle -e ':completion:*' list-colors 'reply=(${(s[:])LS_COLORS})'
+
 # Speed up completions
 zstyle ':completion:*' accept-exact '*(N)'
 zstyle ':completion:*' use-cache on
