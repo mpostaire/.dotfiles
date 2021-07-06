@@ -36,7 +36,7 @@ function highlight_command() {
     # echo $reply # debug
     print -r $ret
 }
-function higlight_command_from_history() {
+function highlight_command_from_history() {
     hist_results=("${(@f)$(fc -rl 1)}")
     
     for ((i = 1; i <= ${#hist_results}; i++)); do
