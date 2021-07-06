@@ -4,7 +4,7 @@ autoload -U compinit && compinit
 ## PLUGINS
 
 [ -f ~/.zsh/ztupide/ztupide.zsh ] || git -C ~/.zsh clone https://github.com/mpostaire/ztupide
-ZTUPIDE_AUTOUPDATE=604800 # 7 days
+# ZTUPIDE_AUTOUPDATE=604800 # 7 days (disabled because annoying - maybe add background update?)
 source ~/.zsh/ztupide/ztupide.zsh
 
 # Colored man pages (needs colors and format tweaking)
@@ -29,6 +29,8 @@ ztupide load --async zsh-users/zsh-autosuggestions _zsh_autosuggest_start
 
 # fzf integration
 if command -v fzf > /dev/null; then
+    # TODO: color fzf alt+r (syntax higlighting) and alt+c output -> ~/.zsh/wip_stuff.zsh contains wip implementations
+    export FZF_DEFAULT_OPTS="--info=inline --bind=ctrl-d:abort,ctrl-H:backward-kill-word"
     export FZF_CTRL_R_OPTS='--reverse' # put history search prompt on top
 
     if [[ -a /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
