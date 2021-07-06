@@ -47,6 +47,9 @@ if command -v fzf > /dev/null; then
     zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
     
     # Replace zsh's default completion selection menu with fzf!
+    # overwrite -ftb-colorize function from fzf-tab to fix symlinks targets not properly colored
+    # TODO: open PR to merge the fix instead of overwriting this
+    fpath+=(~/.zsh/functions)
     ztupide load --async Aloxaf/fzf-tab
 else
     bindkey "^R" history-incremental-pattern-search-backward
