@@ -1,4 +1,3 @@
-
 ## PROMPT
 
 autoload -U colors && colors # Enable colors in prompt
@@ -64,40 +63,50 @@ _prompt_git_info() {
 }
 
 # Correct the prompt when PWD is big
-_prompt_format_lines() {
-    local newline=$'%(?:%F{green}:%F{red})\n│%F{blue} '
+_prompt_format_path() {
+    # $1 is the color, following arg(s) are the path
+    local newline="%(?:%F{green}:%F{red})\n│${1} "
     (( width = ${COLUMNS} - 3 )) # -3 parce que le append de la barre + l'espace + margin
-    (( width_rem = ${width} + 1 ))
     local login_hostname=$(print -P "  %n@%m:  ")
     (( width1st = ${COLUMNS} - ${#login_hostname} ))
-    (( width1st_rem = ${width1st} + 1 ))
-    local rest=${@} # le reste a traiter
-    
+    local rest=${@[@]:2} # le reste a traiter
+
     if [[ ${#rest} -le ${width1st} ]]; then
-        echo ${rest}
+        result=${1}${rest}
     else
         if [[ ${width1st} -le 0 ]]; then # when terminal too small don't show PWD
             return 0
         fi
         # Premiere ligne est speciale
-        local temp=$(echo ${rest} | cut -c1-${width1st}) # get the beginning of the line
-        rest=$(echo ${rest} | cut -c${width1st_rem}-) # get the remaining
-        local result=${temp}
+        local temp=${rest:0:${width1st}} # get the beginning of the line
+        rest=${rest:${width1st}} # get the remaining
+
+        local result=${1}${temp}
         while [[ ${#rest} -gt ${width} ]]; do
-            temp=$(echo ${rest} | cut -c1-${width})
-            rest=$(echo ${rest} | cut -c${width_rem}-)
-            result=${result}${newline}${temp}
+            temp=${rest:0:${width}}
+            rest=${rest:${width}}
+            result=${result}${newline}${1}${temp}
         done
-        echo ${result}${newline}${rest}
+        result=${result}${newline}${1}${rest}
     fi
+
+    print ${result}
 }
 
 _prompt_retcode_rprompt='%(?:: %F{yellow}[%?])'
 _rprompt_async_proc=0
 # the precmd function is executed before displaying each prompt
 precmd() {
-    local current_path=$(_prompt_format_lines $(print -P %~))
-    PROMPT="%B%(?:%F{green}:%F{red})┌ %F{green}%n@%m: %F{blue}${current_path}
+    # TODO parse LS_COLORS to get colors automatically
+    local path_color="%F{blue}"
+    local link_target=$(readlink -f ${PWD})
+    if [[ ${link_target} != ${PWD} ]]; then
+        link_target="${rsv/$HOME/~}"
+        path_color="%F{cyan}"
+    fi
+
+    local current_path=$(_prompt_format_path ${path_color} $(print -P %~))
+    PROMPT="%B%(?:%F{green}:%F{red})┌ %F{green}%n@%m: ${current_path}
 %(?:%F{green}:%F{red})└ %(?:%F{green}%(#:#:$):%F{red}%(#:#:$))%f%b "
 
     async() {
