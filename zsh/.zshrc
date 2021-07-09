@@ -32,6 +32,9 @@ if command -v fzf > /dev/null; then
     # TODO: color fzf alt+r (syntax higlighting) and alt+c output -> ~/.zsh/wip_stuff.zsh contains wip implementations
     export FZF_DEFAULT_OPTS="--info=inline --bind=ctrl-d:abort,ctrl-H:backward-kill-word"
     export FZF_CTRL_R_OPTS='--reverse' # put history search prompt on top
+    export FZF_ALT_C_OPTS='--preview "ls -1 --color=always {}"'
+    # TODO fix this:
+    # export FZF_CTRL_T_OPTS='--preview "[ -d {} ] && ls -1 --color=always {} || viu {} 2> /dev/null || if [[ $(file -bi \{\}) =~ binary$ ]]; then echo Binary file.; else cat {}; fi\"'
 
     if [[ -a /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
         # Debian installation
@@ -43,15 +46,71 @@ if command -v fzf > /dev/null; then
         source /usr/share/fzf/completion.zsh
     fi
 
-    # preview directory's content when completing cd
-    zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 --color=always $realpath'
-    
-    # Replace zsh's default completion selection menu with fzf!
+# TODO unify this style for all menus including alt+c ctrl+t
+    local _fzf_preview_files='
+# if realpath empty or doesnt exit, it likely is an argument so print it and return
+if [[ -z $realpath || ! -e $realpath ]]; then
+    print $desc
+    return
+fi
+
+local type="$(file -biL $realpath)"
+local file="$(ls -d1 --color=always $realpath)"
+local title separator
+if [ -d $realpath ]; then
+    title="Directory: $file"
+else
+    title="File: $file"
+fi
+# get target if this is a link and append it to title after coloring it using ls
+if [ -L $realpath ]; then
+    local rsv=$(readlink -f $realpath)
+    rsv=$(ls -d1 --color=always "$rsv")
+    local rsv_str="${rsv/$HOME/~}"
+    title="$title -> $rsv_str"
+fi
+printf -v separator "%.0s─" {1..$FZF_PREVIEW_COLUMNS}
+print "${title}\n\033[1;30m${separator}\033[0m"
+
+# try previewing directory content
+if [[ -d $realpath ]]; then
+    ls -1 --color=always $realpath
+    return
+# try previewing image
+elif [[ "${type/\/*/}" = "image" ]]; then
+    # resize height if window height <= width, width if the opposite
+    if [ $FZF_PREVIEW_LINES -le $FZF_PREVIEW_COLUMNS ]; then
+        viu -h $(($FZF_PREVIEW_LINES-2)) $realpath 2> /dev/null
+    else
+        viu -w $FZF_PREVIEW_COLUMNS $realpath 2> /dev/null
+    fi
+    return
+# try previewing binary file content
+elif [[ "${type/*charset=/}" = "binary" ]]; then
+    hexdump -C -n 500 $realpath
+    return
+# try previewing ascii file content
+else
+    if command -v bat > /dev/null; then
+        bat --theme=TwoDark --color=always --style=numbers,changes --line-range=:500 $realpath
+    else
+        head --lines=500 $realpath
+    fi
+fi'
+
+    # show file/directory preview during completion
+    # TODO: do same thing to ctrl+t menu
+    zstyle ':fzf-tab:complete:*:*:files' fzf-preview ${_fzf_preview_files}
+    zstyle ':fzf-tab:complete:*:*:files' fzf-flags '--preview-window=~2'
+
     # overwrite -ftb-colorize function from fzf-tab to fix symlinks targets not properly colored
+    # also overwrites -ftb-fzf function from fzf-tab to allow curtom preview window when the completion list are files/directories
     # TODO: open PR to merge the fix instead of overwriting this
-    fpath+=(~/.zsh/functions)
+    fpath+=(${ZDOTDIR:-$HOME/.zsh}/functions)
+    # Replace zsh's default completion selection menu with fzf!
     ztupide load --async Aloxaf/fzf-tab
 else
+    echo 'Install the fzf package to enable fzf integration.'
     bindkey "^R" history-incremental-pattern-search-backward
 fi
 
