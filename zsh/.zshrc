@@ -30,7 +30,10 @@ ztupide load --async zsh-users/zsh-autosuggestions _zsh_autosuggest_start
 # fzf integration
 if command -v fzf > /dev/null; then
     # TODO: color fzf alt+r (syntax higlighting) and alt+c output -> ~/.zsh/wip_stuff.zsh contains wip implementations
-    export FZF_DEFAULT_OPTS="--info=inline --bind=ctrl-d:abort,ctrl-H:backward-kill-word"
+    # TODO better color (dimmer) for gutter and bg+
+    # ctrl-r bind is double toggle-preview to reload preview window contents (not using the reload() action that reevaluate the fzf command)
+    export FZF_DEFAULT_OPTS="--info=inline --bind=ctrl-d:abort,ctrl-H:backward-kill-word,ctrl-p:toggle-preview,ctrl-r:toggle-preview+toggle-preview
+    --color=hl:2,bg+:8,gutter:8,hl+:2,info:8,border:8,prompt:12,pointer:9,marker:11,spinner:2,header:3"
     export FZF_CTRL_R_OPTS='--reverse' # put history search prompt on top
     export FZF_ALT_C_OPTS='--preview "ls -1 --color=always {}"'
     # TODO fix this:
@@ -47,6 +50,7 @@ if command -v fzf > /dev/null; then
     fi
 
 # TODO unify this style for all menus including alt+c ctrl+t
+# TODO (maybe impossible?): add keybind to toggle show/hide hidden files in directory preview
     local _fzf_preview_files='
 # if realpath empty or doesnt exit, it likely is an argument so print it and return
 if [[ -z $realpath || ! -e $realpath ]]; then
@@ -64,7 +68,10 @@ else
 fi
 # get target if this is a link and append it to title after coloring it using ls
 if [ -L $realpath ]; then
-    local rsv=$(readlink -f $realpath)
+    local rsv=$(readlink $realpath)
+    local rsv=${realpath:h}/${rsv#$HOME}
+    rsv=${rsv:a}
+    local rsv_str="${rsv/$HOME/~}"
     rsv=$(ls -d1 --color=always "$rsv")
     local rsv_str="${rsv/$HOME/~}"
     title="$title -> $rsv_str"
@@ -74,7 +81,20 @@ print "${title}\n\033[1;30m${separator}\033[0m"
 
 # try previewing directory content
 if [[ -d $realpath ]]; then
-    ls -1 --color=always $realpath
+    local out
+    # add hidden files to preview if we are browsing dotfiles
+    if [[ "${buffer[-1]}" = "." ]]; then
+        out=$(ls -A1 --color=always $realpath)
+    else
+        out=$(ls -1 --color=always $realpath)
+    fi
+    # if no output, show message for empty directory
+    if [ -z "$out" ]; then
+        out="Empty directory"
+        printf -v out "\033[37m%*s\033[0m" $(((${#out}+$FZF_PREVIEW_COLUMNS)/2)) "$out"
+        printf "%.0s\n" {1..$((($FZF_PREVIEW_LINES/2)-2))}
+    fi
+    print $out
     return
 # try previewing image
 elif [[ "${type/\/*/}" = "image" ]]; then
@@ -102,9 +122,12 @@ fi'
     # TODO: do same thing to ctrl+t menu
     zstyle ':fzf-tab:complete:*:*:files' fzf-preview ${_fzf_preview_files}
     zstyle ':fzf-tab:complete:*:*:files' fzf-flags '--preview-window=~2'
+    # zstyle ':fzf-tab:complete:*:*:files' fzf-bindings 'ctrl-h:reload(echo ok)'
+    zstyle ':fzf-tab:complete:*:*:files' fzf-bindings 'ctrl-h:reload()'
 
     # overwrite -ftb-colorize function from fzf-tab to fix symlinks targets not properly colored
-    # also overwrites -ftb-fzf function from fzf-tab to allow curtom preview window when the completion list are files/directories
+    # also overwrites -ftb-fzf function from fzf-tab to allow custom preview window when the completion
+    # list are files/directories as well as new variable buffer to get the user input in the zsh (not fzf) prompt
     # TODO: open PR to merge the fix instead of overwriting this
     fpath+=(${ZDOTDIR:-$HOME/.zsh}/functions)
     # Replace zsh's default completion selection menu with fzf!

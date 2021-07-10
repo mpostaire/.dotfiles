@@ -22,6 +22,7 @@ if (( \$+ctxt[realdir] )); then
 fi
 # get original word
 export word=\$ctxt[word]
+export buffer=\"$BUFFER\"
 "
 local binds=tab:down,btab:up,change:top,ctrl-space:toggle
 local fzf_command fzf_flags fzf_preview debug_command tmp switch_group fzf_pad
@@ -50,6 +51,7 @@ local tags="${_lastcomp[tags]}"
 if [[ -z "${fzf_preview}" && ! ${tags} =~ 'options' && ${tags} =~ 'directories|files' ]]; then
   zstyle -s ":fzf-tab:${_ftb_curcontext}:files" fzf-preview fzf_preview
   zstyle -s ":fzf-tab:${_ftb_curcontext}:files" fzf-flags fzf_flags
+  zstyle -s ":fzf-tab:${_ftb_curcontext}:files" fzf-bindings tmp && binds+=,${(j:,:)tmp}
 fi
 #
 
