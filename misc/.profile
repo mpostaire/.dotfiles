@@ -18,6 +18,7 @@ export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
 # set PATH so it includes user's private bin if it exists
 [ -d "$HOME/bin" ] && PATH="$PATH:$HOME/bin"
 [ -d "$HOME/.local/bin" ] && PATH="$PATH:$HOME/.local/bin"
+[ -d "$HOME/.cargo/bin" ] && PATH="$PATH:$HOME/.cargo/bin"
 
 # enable gtk appmenu
 if [ -n "$GTK_MODULES" ]; then
