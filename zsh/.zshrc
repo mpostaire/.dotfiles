@@ -29,28 +29,6 @@ ztupide load --async zsh-users/zsh-autosuggestions _zsh_autosuggest_start
 
 # fzf integration
 if command -v fzf > /dev/null; then
-    # TODO: color fzf alt+r (syntax higlighting) and alt+c output -> ~/.zsh/wip_stuff.zsh contains wip implementations
-    # TODO better color (dimmer) for gutter and bg+
-    # ctrl-r bind is double toggle-preview to reload preview window contents (not using the reload() action that reevaluate the fzf command)
-    export FZF_DEFAULT_OPTS="--info=inline --bind=ctrl-d:abort,ctrl-H:backward-kill-word,ctrl-p:toggle-preview,ctrl-r:toggle-preview+toggle-preview
-    --color=hl:2,bg+:8,gutter:8,hl+:2,info:8,border:8,prompt:12,pointer:9,marker:11,spinner:2,header:3"
-    export FZF_CTRL_R_OPTS='--reverse' # put history search prompt on top
-    export FZF_ALT_C_OPTS='--preview "ls -1 --color=always {}"'
-    # TODO fix this:
-    # export FZF_CTRL_T_OPTS='--preview "[ -d {} ] && ls -1 --color=always {} || viu {} 2> /dev/null || if [[ $(file -bi \{\}) =~ binary$ ]]; then echo Binary file.; else cat {}; fi\"'
-
-    if [[ -a /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
-        # Debian installation
-        source /usr/share/doc/fzf/examples/key-bindings.zsh
-        source /usr/share/doc/fzf/examples/completion.zsh
-    else
-        # Arch Installation
-        source /usr/share/fzf/key-bindings.zsh
-        source /usr/share/fzf/completion.zsh
-    fi
-
-# TODO unify this style for all menus including alt+c ctrl+t
-# TODO (maybe impossible?): add keybind to toggle show/hide hidden files in directory preview
     local _fzf_preview_files='
 # if realpath empty or doesnt exit, it likely is an argument so print it and return
 if [[ -z $realpath || ! -e $realpath ]]; then
@@ -118,12 +96,32 @@ else
     fi
 fi'
 
+    # TODO better color (dimmer) for gutter and bg+
+    # ctrl-r keybinding is double toggle-preview to reload preview window contents (not using the reload() action that reevaluate the fzf command)
+    export FZF_DEFAULT_OPTS="--info=inline --bind=ctrl-d:abort,ctrl-H:backward-kill-word,ctrl-p:toggle-preview,ctrl-r:toggle-preview+toggle-preview
+    --color=hl:2,bg+:8,gutter:8,hl+:2,info:8,border:8,prompt:12,pointer:9,marker:11,spinner:2,header:3"
+    # TODO: color fzf ctrl+t, ctrl+r (syntax higlighting), alt+c -> ~/.zsh/wip_stuff.zsh contains wip implementations (but very slow)
+    export FZF_CTRL_R_OPTS='--cycle --reverse' # put history search prompt on top
+    export FZF_ALT_C_OPTS="--cycle --ansi --preview 'export realpath={}; ${_fzf_preview_files}' --preview-window=~2"
+    export FZF_CTRL_T_OPTS="--cycle --preview 'export realpath={}; ${_fzf_preview_files}' --preview-window=~2"
+
+    if [[ -a /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
+        # Debian installation
+        source /usr/share/doc/fzf/examples/key-bindings.zsh
+        source /usr/share/doc/fzf/examples/completion.zsh
+    else
+        # Arch Installation
+        source /usr/share/fzf/key-bindings.zsh
+        source /usr/share/fzf/completion.zsh
+    fi
+
     # show file/directory preview during completion
-    # TODO: do same thing to ctrl+t menu
+    # TODO (maybe impossible?): add keybind to toggle show/hide hidden files in directory preview
     zstyle ':fzf-tab:complete:*:*:files' fzf-preview ${_fzf_preview_files}
     zstyle ':fzf-tab:complete:*:*:files' fzf-flags '--preview-window=~2'
     # zstyle ':fzf-tab:complete:*:*:files' fzf-bindings 'ctrl-h:reload(echo ok)'
-    zstyle ':fzf-tab:complete:*:*:files' fzf-bindings 'ctrl-h:reload()'
+    # despite its name, this sets the height of fzf-tab menu even without using tmux
+    FZF_TMUX_HEIGHT=40%
 
     # overwrite -ftb-colorize function from fzf-tab to fix symlinks targets not properly colored
     # also overwrites -ftb-fzf function from fzf-tab to allow custom preview window when the completion

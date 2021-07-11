@@ -47,11 +47,9 @@ function highlight_command_from_history() {
 
 # # Color fzf alt+c output (faster than alternative below but links everything is colored like a directory wich they technically are)
 # export FZF_ALT_C_OPTS="--ansi"
-# function find_dirs() {
-#     command find -L . -mindepth 1 \( -path '*/\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \) \
-#     -prune -o -type d -printf "\033[${${(s[:])LS_COLORS}[2]:3}m%P\033[0m\n" 2> /dev/null
-# }
-# export FZF_ALT_C_COMMAND="find_dirs"
+# export FZF_ALT_C_COMMAND='command find -L . -mindepth 1 \( -path "*/\.*" -o -fstype "sysfs" -o -fstype "devfs" -o -fstype "devtmpfs" -o -fstype "proc" \) \
+# -prune -o -type d -printf "\033[${${(s[:])LS_COLORS}[2]:3}m%P\033[0m\n" 2> /dev/null'
+
 # # # Color fzf alt+c output (a bit slow but symlinks are accurately colored)
 # # export FZF_ALT_C_COMMAND="command find -L . -mindepth 1 \\( -path '*/\\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune \
 # # -o -type d -exec ls --color=always -d {} \; 2> /dev/null"
