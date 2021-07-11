@@ -121,7 +121,7 @@ fi'
     zstyle ':fzf-tab:complete:*:*:files' fzf-flags '--preview-window=~2'
     # zstyle ':fzf-tab:complete:*:*:files' fzf-bindings 'ctrl-h:reload(echo ok)'
     # despite its name, this sets the height of fzf-tab menu even without using tmux
-    FZF_TMUX_HEIGHT=40%
+    FZF_TMUX_HEIGHT=70%
 
     # overwrite -ftb-colorize function from fzf-tab to fix symlinks targets not properly colored
     # also overwrites -ftb-fzf function from fzf-tab to allow custom preview window when the completion
