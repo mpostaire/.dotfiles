@@ -76,11 +76,10 @@ if [[ -d $realpath ]]; then
     return
 # try previewing image
 elif [[ "${type/\/*/}" = "image" ]]; then
-    # resize height if window height <= width, width if the opposite
-    if [ $FZF_PREVIEW_LINES -le $FZF_PREVIEW_COLUMNS ]; then
-        viu -h $(($FZF_PREVIEW_LINES-2)) $realpath 2> /dev/null
+    if command -v chafa > /dev/null; then
+        chafa -s ${FZF_PREVIEW_COLUMNS}x$(($FZF_PREVIEW_LINES-2)) $realpath 2> /dev/null
     else
-        viu -w $FZF_PREVIEW_COLUMNS $realpath 2> /dev/null
+        print "Install the \"chafa\" package to enable image preview."
     fi
     return
 # try previewing binary file content
@@ -89,7 +88,7 @@ elif [[ "${type/*charset=/}" = "binary" ]]; then
     return
 # try previewing ascii file content
 else
-    if command -v bat > /dev/null; then
+    if ! command -v bat > /dev/null; then
         bat --theme=TwoDark --color=always --style=numbers,changes --line-range=:500 $realpath
     else
         head --lines=500 $realpath
@@ -131,7 +130,7 @@ fi'
     # Replace zsh's default completion selection menu with fzf!
     ztupide load --async Aloxaf/fzf-tab
 else
-    echo 'Install the fzf package to enable fzf integration.'
+    echo 'Install the "fzf" package to enable fzf integration.'
     bindkey "^R" history-incremental-pattern-search-backward
 fi
 
