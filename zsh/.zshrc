@@ -88,7 +88,7 @@ elif [[ "${type/*charset=/}" = "binary" ]]; then
     return
 # try previewing ascii file content
 else
-    if ! command -v bat > /dev/null; then
+    if command -v bat > /dev/null; then
         bat --theme=TwoDark --color=always --style=numbers,changes --line-range=:500 $realpath
     else
         head --lines=500 $realpath
