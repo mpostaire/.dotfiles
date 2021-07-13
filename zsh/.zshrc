@@ -55,7 +55,7 @@ if [ -L $realpath ]; then
     title="$title -> $rsv_str"
 fi
 printf -v separator "%.0s─" {1..$FZF_PREVIEW_COLUMNS}
-print "${title}\n\033[1;30m${separator}\033[0m"
+print "${title}\n\033[1;90m${separator}\033[0m"
 
 # try previewing directory content
 if [[ -d $realpath ]]; then
