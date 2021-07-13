@@ -105,8 +105,11 @@ precmd() {
         path_color="%F{cyan}"
     fi
 
+    local ssh_status
+    [[ -n ${SSH_CONNECTION} ]] && ssh_status=' %F{yellow}(ssh)%F{green}'
+
     local current_path=$(_prompt_format_path ${path_color} $(print -P %~))
-    PROMPT="%B%(?:%F{green}:%F{red})┌ %F{green}%n@%m: ${current_path}
+    PROMPT="%B%(?:%F{green}:%F{red})┌ %F{green}%n@%m${ssh_status}: ${current_path}
 %(?:%F{green}:%F{red})└ %(?:%F{green}%(#:#:$):%F{red}%(#:#:$))%f%b "
 
     async() {
