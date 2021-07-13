@@ -95,10 +95,9 @@ else
     fi
 fi'
 
-    # TODO better color (dimmer) for gutter and bg+
     # ctrl-r keybinding is double toggle-preview to reload preview window contents (not using the reload() action that reevaluate the fzf command)
     export FZF_DEFAULT_OPTS="--info=inline --bind=ctrl-d:abort,ctrl-H:backward-kill-word,ctrl-p:toggle-preview,ctrl-r:toggle-preview+toggle-preview
-    --color=hl:2,bg+:8,gutter:8,hl+:2,info:8,border:8,prompt:12,pointer:9,marker:11,spinner:2,header:3"
+    --color=hl:underline:italic:green,bg+:bright-black,gutter:black,hl+:underline:italic:green,info:italic:bright-black,border:bright-black,prompt:bright-blue,pointer:red,marker:bright-yellow,spinner:green,header:yellow"
     # TODO: color fzf ctrl+t, ctrl+r (syntax higlighting), alt+c -> ~/.zsh/wip_stuff.zsh contains wip implementations (but very slow)
     export FZF_CTRL_R_OPTS='--cycle --reverse' # put history search prompt on top
     export FZF_ALT_C_OPTS="--cycle --ansi --preview 'export realpath={}; ${_fzf_preview_files}' --preview-window=~2"
