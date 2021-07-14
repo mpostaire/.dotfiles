@@ -144,6 +144,9 @@ zmodload zsh/complist
 # Allows the use of terminfo array for keybindings
 zmodload -i zsh/terminfo
 
+# Load the zsh/nearcolor module in terminals that do not support 24bit colors
+[[ "$COLORTERM" = (24bit|truecolor) || "${terminfo[colors]}" -eq '16777216' ]] || zmodload zsh/nearcolor
+
 ## COMPLETION
 
 # Enable tab completion menu-based
@@ -209,7 +212,14 @@ HISTSIZE=1000
     || return 1
 }
 
-# resets terminal if a command messes it up
+# automatically resets terminal for each new prompt in case a command messes it up
+autoload -Uz add-zsh-hook
+reset_broken_terminal () {
+	printf '%b' '\e[0m\e(B\e)0\017\e[?5l\e7\e[0;0r\e8'
+}
+add-zsh-hook -Uz precmd reset_broken_terminal
+
+# manually resets terminal if a command really messes it up and the precmd hook wasn't enough
 fix() {
     reset;
     stty sane;

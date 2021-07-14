@@ -95,8 +95,7 @@ _prompt_format_path() {
 
 _prompt_retcode_rprompt='%(?:: %F{yellow}[%?])'
 _rprompt_async_proc=0
-# the precmd function is executed before displaying each prompt
-precmd() {
+_make_prompt() {
     # TODO parse LS_COLORS to get colors automatically
     local path_color="%F{blue}"
     local link_target=$(readlink -f ${PWD})
@@ -147,3 +146,7 @@ TRAPUSR1() {
 PROMPT="%B%F{green}>%f%b "
 RPROMPT="${_prompt_retcode_rptompt}"
 SPROMPT="Correct %F{red}'%R'%f to %F{green}'%r'%f [Yes, No, Abort, Edit]? "
+
+autoload -Uz add-zsh-hook
+# the precmd hook is executed before displaying each prompt
+add-zsh-hook -Uz precmd _make_prompt
