@@ -51,5 +51,7 @@ command -v numlockx > /dev/null && numlockx
 authentication_agent=/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 command -v $authentication_agent > /dev/null && $authentication_agent &
 
+# fix android studio starting with blank screen
+export _JAVA_AWT_WM_NONREPARENTING=1
 exec awesome > ~/.cache/awesome/stdout 2> ~/.cache/awesome/stderr
 # exec awesome
