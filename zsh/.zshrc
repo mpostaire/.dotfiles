@@ -23,7 +23,9 @@ ztupide load --async mpostaire/zsh-autopair
 ztupide load --async zdharma/fast-syntax-highlighting
 
 # fish-like autosuggestions
-ZSH_AUTOSUGGEST_USE_ASYNC=1
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+# this adds a huge prompt display speedup but may cause problems (see plugin's readme)
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 # we call _zsh_autosuggest_start function after the plugin is loaded (it's needed if loading in async mode and if using ZSH_AUTOSUGGEST_USE_ASYNC=1).
 ztupide load --async zsh-users/zsh-autosuggestions _zsh_autosuggest_start
 
