@@ -214,12 +214,13 @@ HISTSIZE=1000
     || return 1
 }
 
+# This causes problems with intellij integrated terminal (and maybe the cause of delayed exit on some cases?)
 # automatically resets terminal for each new prompt in case a command messes it up
-autoload -Uz add-zsh-hook
-reset_broken_terminal () {
-	printf '%b' '\e[0m\e(B\e)0\017\e[?5l\e7\e[0;0r\e8'
-}
-add-zsh-hook -Uz precmd reset_broken_terminal
+# autoload -Uz add-zsh-hook
+# reset_broken_terminal () {
+# 	printf '%b' '\e[0m\e(B\e)0\017\e[?5l\e7\e[0;0r\e8'
+# }
+# add-zsh-hook -Uz precmd reset_broken_terminal
 
 # manually resets terminal if a command really messes it up and the precmd hook wasn't enough
 fix() {
