@@ -30,6 +30,7 @@ ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 ztupide load --async zsh-users/zsh-autosuggestions _zsh_autosuggest_start
 
 # fzf integration
+[[ -a ~/.fzf.zsh ]] && source ~/.fzf.zsh
 if command -v fzf > /dev/null; then
     local _fzf_preview_files='
 # if realpath empty or doesnt exit, it likely is an argument so print it and return
@@ -109,8 +110,8 @@ fi'
         # Debian installation
         source /usr/share/doc/fzf/examples/key-bindings.zsh
         source /usr/share/doc/fzf/examples/completion.zsh
-    else
-        # Arch Installation
+    elif [[ -a /usr/share/fzf/key-bindings.zsh ]]; then
+        # Arch installation
         source /usr/share/fzf/key-bindings.zsh
         source /usr/share/fzf/completion.zsh
     fi
