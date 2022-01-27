@@ -20,7 +20,7 @@ ztupide load --async mpostaire/zsh-autopair
 # ztupide load --async marlonrichert/zsh-autocomplete
 
 # Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
-ztupide load --async zdharma/fast-syntax-highlighting
+ztupide load --async zdharma-continuum/fast-syntax-highlighting
 
 # fish-like autosuggestions
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
