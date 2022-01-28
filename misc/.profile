@@ -31,5 +31,5 @@ fi
 export GTK_MODULES
 export UBUNTU_MENUPROXY
 
-# auto startx if connected in tty1 (useful if not using a login manager)
+# auto startx if connected in tty1 and X is not running (useful if not using a login manager)
 [[ -z $DISPLAY && $(tty) = "/dev/tty1" ]] && exec startx

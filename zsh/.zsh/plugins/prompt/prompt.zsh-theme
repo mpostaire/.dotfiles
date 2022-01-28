@@ -108,7 +108,7 @@ _make_prompt() {
     [[ -n ${SSH_CONNECTION} ]] && ssh_status=' %F{yellow}(ssh)%F{green}'
 
     local current_path=$(_prompt_format_path ${path_color} $(print -P %~))
-    PROMPT="%B%(?:%F{green}:%F{red})┌ %F{green}%n@%m${ssh_status}: ${current_path}
+    PROMPT="%B%(?:%F{green}:%F{red})┌ %F{green}%n@%M${ssh_status}: ${current_path}
 %(?:%F{green}:%F{red})└ %(?:%F{green}%(#:#:$):%F{red}%(#:#:$))%f%b "
 
     async() {
@@ -150,3 +150,85 @@ SPROMPT="Correct %F{red}'%R'%f to %F{green}'%r'%f [Yes, No, Abort, Edit]? "
 autoload -Uz add-zsh-hook
 # the precmd hook is executed before displaying each prompt
 add-zsh-hook -Uz precmd _make_prompt
+
+
+
+
+
+
+
+
+
+
+
+
+# # Reduce prompt latency by fetching git status asynchronously.
+# add-zsh-hook precmd .prompt.git-status.async
+# .prompt.git-status.async() {
+#   local fd
+#   exec {fd}< <( .prompt.git-status.parse )
+#   zle -Fw "$fd" .prompt.git-status.callback
+# }
+# zle -N .prompt.git-status.callback
+# .prompt.git-status.callback() {
+#   local fd=$1 REPLY
+#   {
+#     zle -F "$fd"  # Unhook this callback.
+
+#     [[ $2 == (|hup) ]] ||
+#         return  # Error occured.
+
+#     read -ru $fd
+#     .prompt.git-status.repaint "$REPLY"
+#   } always {
+#     exec {fd}<&-  # Close file descriptor.
+#   }
+# }
+
+# # Periodically sync git status in prompt.
+# TMOUT=2  # Update interval in seconds
+# trap .prompt.git-status.sync ALRM
+# .prompt.git-status.sync() {
+#   [[ $CONTEXT == start ]] ||
+#       return  # Update only on primary prompt.
+
+#   (
+#     # Fetch only if no fetch has occured within the last 2 minutes.
+#     local gitdir=$( git rev-parse --git-dir 2> /dev/null )
+#     [[ -n $gitdir && -z $gitdir/FETCH_HEAD(Nmm-2) ]] &&
+#         git fetch -q &> /dev/null
+#   ) &|
+#   .prompt.git-status.repaint "$( .prompt.git-status.parse )"
+# }
+
+# .prompt.git-status.repaint() {
+#   [[ $1 == $RPS1 ]] &&
+#       return  # Don't repaint when there's no change.
+
+#   RPS1=$1
+#   zle .reset-prompt
+# }
+
+# .prompt.git-status.parse() {
+#   local MATCH MBEGIN MEND
+#   local -a lines
+
+#   lines=( ${(f)"$( git status -sbu 2> /dev/null )"} ) ||
+#       { print; return } # Not a git repo
+
+#   local -aU symbols=( ${(@MSu)lines[2,-1]##[^[:blank:]]##} )
+#   print -r -- "${${lines[1]/'##'/$symbols}//(#m)$'\C-[['[;[:digit:]]#m/%{${MATCH}%\}}"
+# }
+
+# # Continuation prompt
+# () {
+#   local -a indent=( '%('{1..36}'_,  ,)' )
+#   PS2="${(j::)indent}" RPS2='%F{11}%^'
+# }
+
+# # Debugging prompt
+# () {
+#   local -a indent=( '%('{1..36}"e,$( echoti cuf 2 ),)" )
+#   local i=$'\t'${(j::)indent}
+#   PS4=$'\r%(?,,'$i$'  -> %F{9}%?%f\n)%{\e[2m%}%F{10}%1N%f\r'$i$'%I%b %(1_,%F{11}%_%f ,)'
+# }
