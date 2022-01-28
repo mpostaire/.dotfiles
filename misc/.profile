@@ -1,8 +1,7 @@
 # qt native gtk integration
-export QT_QPA_PLATFORMTHEME=gtk2
+export QT_QPA_PLATFORMTHEME=qt5ct
 export EDITOR=/usr/bin/vim
 export TERMINAL=/usr/bin/urxvt
-export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 # fix "xdg-open fork-bomb" export your preferred browser from here
 export BROWSER=/usr/bin/firefox
 
