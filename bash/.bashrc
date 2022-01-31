@@ -38,7 +38,7 @@ fi
 alias "df=df -h"
 alias "cp=cp -i"
 
-PS1="\e[1;32m\u@\H: \e[1;34m\w\e[1;32m \$(if [ \$? -ne 0 ]; then printf '\e[1;31m\$'; else printf '\$'; fi)\e[0m "
+PS1="\e[1;32m\u@\H: \e[1;34m\w\e[1;32m \$(if [ \$? -ne 0 ]; then printf '\e[1;31m'; fi)\\$\e[0m "
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
