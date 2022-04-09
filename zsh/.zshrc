@@ -156,6 +156,8 @@ zmodload -i zsh/terminfo
 zstyle ':completion:*' menu select
 # Colors for ls completion.
 zstyle -e ':completion:*' list-colors 'reply=(${(s[:])LS_COLORS})'
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
 
 # Speed up completions
 zstyle ':completion:*' accept-exact '*(N)'
