@@ -33,9 +33,13 @@ text/csv=org.gnome.gedit.desktop
 text/x-makefile=org.gnome.gedit.desktop
 text/x-pascal=org.gnome.gedit.desktop
 text/markdown=org.gnome.gedit.desktop
+text/x-tex=org.gnome.gedit.desktop
+text/x-java=org.gnome.gedit.desktop
 x-scheme-handler/magnet=transmission-gtk.desktop
+application/x-bittorrent=transmission-gtk.desktop
 inode/directory=org.gnome.Nautilus.desktop
+application/json=org.gnome.gedit.desktop
 
 [Added Associations]
-inode/directory=visual-studio-code.desktop;org.gnome.Nautilus.desktop;
+inode/directory=org.gnome.Nautilus.desktop;visual-studio-code.desktop;
 text/html=org.gnome.gedit.desktop;firefox.desktop;
