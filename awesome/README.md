@@ -4,7 +4,7 @@ NOTE: I'm not using awesome anymore so this config will not be updated until I d
 
 ## Installation
 
-Use GNU stow to install this as explained [here](../../../README.md).
+Use GNU stow to install this as explained [here](../README.md).
 
 | Dependency | Usage |
 | - | - |
