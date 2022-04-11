@@ -11,7 +11,9 @@ source ~/.zsh/ztupide/ztupide.zsh
 ztupide load --async zsh-colored-man-pages
 
 # Colored ls (and set auto ls when cd with chpwd in callback to ensure the auto ls is also colored)
-ztupide load --async zsh-colored-ls 'chpwd() { ls }'
+ztupide load --async zsh-colored-ls 'list() { ls }'
+# add colored ls to chpwd (executed after each change directory)
+chpwd_functions+=("list")
 
 # Auto-close and delete matching delimiters in zsh (fork of hlissner/zsh-autopair that handles backward-kill-word)
 ztupide load --async mpostaire/zsh-autopair
@@ -123,13 +125,6 @@ HISTFILE=~/.zhistory
 SAVEHIST=1000
 HISTSIZE=1000
 
-# .. # -> go # directories up
-..() {
-  [[ ${1:-1} =~ '^[0-9]+$' ]] \
-    && cd $( printf '../'%.0s {1..${1:-1}} ) \
-    || return 1
-}
-
 # This causes problems with intellij integrated terminal (and maybe the cause of delayed exit on some cases?)
 # automatically resets terminal for each new prompt in case a command messes it up
 # autoload -Uz add-zsh-hook
@@ -140,18 +135,18 @@ HISTSIZE=1000
 
 # manually resets terminal if a command really messes it up and the precmd hook wasn't enough
 fix() {
-    reset;
-    stty sane;
-    tput rs1;
-    clear;
-    echo -e "\e[0m";
+    reset
+    stty sane
+    tput rs1
+    clear
+    echo -e "\e[0m"
 }
 
 # download audio from youtube
-audio-dl() { youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s' $@ }
-
+alias "audio-dl=youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s'"
 alias "df=df -h"
 alias "cp=cp -i"
+alias "bat=bat --theme=TwoDark"
 
 # Cycle through history based on characters already typed on the line
 autoload -U up-line-or-beginning-search

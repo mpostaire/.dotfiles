@@ -18,17 +18,14 @@ export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
 
 # enable gtk appmenu
 if [ -n "$GTK_MODULES" ]; then
-    GTK_MODULES="${GTK_MODULES}:appmenu-gtk-module"
+    export GTK_MODULES="${GTK_MODULES}:appmenu-gtk-module"
 else
-    GTK_MODULES="appmenu-gtk-module"
+    export GTK_MODULES="appmenu-gtk-module"
 fi
 
 if [ -z "$UBUNTU_MENUPROXY" ]; then
-    UBUNTU_MENUPROXY=1
+    export UBUNTU_MENUPROXY=1
 fi
-
-export GTK_MODULES
-export UBUNTU_MENUPROXY
 
 # auto startx if connected in tty1 and X is not running (useful if not using a login manager)
 [[ -z $DISPLAY && $(tty) = "/dev/tty1" ]] && exec startx

@@ -16,7 +16,7 @@ cd dotfiles
 # Examples:
 # Install all the dotfiles (the '*/' matches any directory)
 stow */
-# Install only shell, defaultapps and gtk-bookmarks dotfiles
-stow shell defaultapps gtk-bookmarks
+# Install only shell and defaultapps dotfiles
+stow shell defaultapps
 # Read the stow manpage for more info
 ```
