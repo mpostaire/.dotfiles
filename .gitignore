@@ -7,6 +7,7 @@ zsh/.zsh/plugins/*
 !zsh/.zsh/plugins/zsh-colored-man-pages
 !zsh/.zsh/plugins/zsh-colored-ls
 !zsh/.zsh/plugins/prompt
+!zsh/.zsh/plugins/fzf-tab-config
 zsh/.zsh/cache
 *zwc
 zsh/.zsh/ztupide
