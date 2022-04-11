@@ -13,6 +13,7 @@ Use GNU stow to install this as explained [here](../../../README.md).
 | picom | optional: compositor used for window shadows/fading. |
 | zsh | optional: shell. |
 | redshift | optional: reduces eye strain. |
+| clipit | optional: clipboard manager. |
 
 ## Screenshots
 
