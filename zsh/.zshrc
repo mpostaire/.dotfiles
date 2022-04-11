@@ -20,7 +20,7 @@ ztupide load --async mpostaire/zsh-autopair
 # ztupide load --async marlonrichert/zsh-autocomplete
 
 # Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
-ztupide load --async zdharma-continuum/fast-syntax-highlighting
+ztupide load --async z-shell/F-Sy-H
 
 # fish-like autosuggestions
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
@@ -35,6 +35,13 @@ if command -v fzf > /dev/null; then
     ztupide load --async fzf-tab-config
     # Replace zsh's default completion selection menu with fzf!
     ztupide load --async Aloxaf/fzf-tab
+
+    # kill fzf children of this zsh process on exit (fix bug of accumulatiing fzf processes
+    # not closed properly after tab completion and fix bug of slow zsh exit)
+    # TODO make this better by fixing the bug at the source in fzf-tab plugin if possible
+    #   idea: at the end of 'fzf-tab-complete', just before the return, put 'pkill -P $$' and remove trap below
+    #   but that would break after each update
+    trap "pkill -P $$" EXIT
 else
     echo 'Install the "fzf" package to enable fzf integration.'
     bindkey "^R" history-incremental-pattern-search-backward
