@@ -36,11 +36,12 @@ if command -v fzf > /dev/null; then
     # Replace zsh's default completion selection menu with fzf!
     ztupide load --async Aloxaf/fzf-tab
 
-    # kill fzf children of this zsh process on exit (fix bug of accumulatiing fzf processes
-    # not closed properly after tab completion and fix bug of slow zsh exit)
-    # TODO make this better by fixing the bug at the source in fzf-tab plugin if possible
-    #   idea: at the end of 'fzf-tab-complete', just before the return, put 'pkill -P $$' and remove trap below
-    #   but that would break after each update
+    # Kill all children processes of this zsh process on exit (fix bug of accumulating fzf processes
+    # not closed properly after tab completion and fix bug of slow zsh exit).
+    # TODO make this better by fixing the bug at the source in fzf-tab plugin if possible.
+    # This may cause some scripts to fail when launched from an interactive shell but it's acceptable as
+    # I generally don't want children processes surviving after a terminal is closed except for daemons but
+    # they won't be affected.
     trap "pkill -P $$" EXIT
 else
     echo 'Install the "fzf" package to enable fzf integration.'
