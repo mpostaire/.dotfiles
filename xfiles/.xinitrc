@@ -31,12 +31,12 @@ fi
 xsetroot -cursor_name left_ptr
 
 # set the lockscreen
-xss-lock -- $HOME/.scripts/lock.sh &
+xss-lock -- "$HOME"/.config/awesome/lock.sh &
 
 # dim the screen after 10 minutes of inactivity, lock 10 seconds later
 #xset s 600 10
 #xset s 20 10
-#xss-lock -n /usr/share/doc/xss-lock/dim-screen.sh -- ~/.scripts/lock.sh
+#xss-lock -n /usr/share/doc/xss-lock/dim-screen.sh -- "$HOME"/.config/awesome/lock.sh
 
 # start some nice programs
 
