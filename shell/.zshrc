@@ -1,6 +1,3 @@
-# init completion (must be before ztupide is sourced to enable its completions)
-autoload -U compinit && compinit
-
 ## PLUGINS
 
 [ -f ~/.zsh/ztupide/ztupide.zsh ] || git -C ~/.zsh clone https://github.com/mpostaire/ztupide
@@ -50,8 +47,14 @@ else
     bindkey "^R" history-incremental-pattern-search-backward
 fi
 
+# adding completion functions to fpath doesn't work in --async mode
+ztupide load zsh-users/zsh-completions
+
 # Prompt (can be async only if it support it or else first prompt may not correctly show up)
 ztupide load prompt
+
+# init completion (must be after all the completion functions have been added to fpath)
+autoload -U compinit && compinit
 
 ## MODULES
 
