@@ -21,17 +21,10 @@ ztupide load --async mpostaire/zsh-autopair
 # Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
 ztupide load --async z-shell/F-Sy-H
 
-# fish-like autosuggestions
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-# this adds a huge prompt display speedup but may cause problems (see plugin's readme)
-ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-# we call _zsh_autosuggest_start function after the plugin is loaded (it's needed if loading in async mode and if using ZSH_AUTOSUGGEST_USE_ASYNC=1).
-ztupide load --async zsh-users/zsh-autosuggestions _zsh_autosuggest_start
-
 # fzf integration
 if command -v fzf > /dev/null; then
     # fzf-tab personal config and fixes (has to be loaded before fzf-tab)
-    ztupide load --async fzf-tab-config
+    ztupide load --async zsh-fzf-config
     # Replace zsh's default completion selection menu with fzf!
     ztupide load --async Aloxaf/fzf-tab
 
@@ -47,14 +40,23 @@ else
     bindkey "^R" history-incremental-pattern-search-backward
 fi
 
-# adding completion functions to fpath doesn't work in --async mode
-ztupide load zsh-users/zsh-completions
+# more completion functions
+ztupide load --async zsh-users/zsh-completions
+
+# even more completion functions, then init completion system (must be after all
+# the completion functions have been added to fpath)
+ztupide load --async zsh-more-completions 'autoload -U compinit && compinit'
+
+# fish-like autosuggestions (it's better to place it after compinit)
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+# this adds a huge prompt display speedup but may cause problems (see plugin's readme)
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+# we call _zsh_autosuggest_start function after the plugin is loaded (it's needed if
+# loading in async mode and if using ZSH_AUTOSUGGEST_USE_ASYNC=1).
+ztupide load --async zsh-users/zsh-autosuggestions '_zsh_autosuggest_start'
 
 # Prompt (can be async only if it support it or else first prompt may not correctly show up)
-ztupide load prompt
-
-# init completion (must be after all the completion functions have been added to fpath)
-autoload -U compinit && compinit
+ztupide load zsh-prompt
 
 ## MODULES
 
@@ -121,6 +123,7 @@ bindkey "${terminfo[kcbt]}" none
 
 # Shell history
 setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_SPACE
 setopt SHARE_HISTORY
