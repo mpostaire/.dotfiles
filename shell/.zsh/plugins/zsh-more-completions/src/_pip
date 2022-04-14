@@ -1,0 +1,341 @@
+#compdef -P pip[0-9.]#
+
+# This line below will do completions using pip's builtin completer but it's slow and not that good
+# compadd $(COMP_WORDS="${words}" COMP_CWORD="$#" PIP_AUTO_COMPLETE=1 pip 2>/dev/null)
+
+# Based on https://gist.github.com/blueyed/54a257c411310a28805a
+
+local pip="${words[1]}"
+
+local subcmds=(
+    "install\:\"Install packages.\""
+    "download\:\"Download packages.\""
+    "uninstall\:\"Uninstall packages.\""
+    "freeze\:\"Output installed packages in requirements format.\""
+    "list\:\"List installed packages.\""
+    "show\:\"Show information about installed packages.\""
+    "check\:\"Verify installed packages have compatible dependencies.\""
+    "config\:\"Manage local and global configuration.\""
+    "search\:\"Search PyPI for packages.\""
+    "cache\:\"Inspect and manage pip's wheel cache.\""
+    "wheel\:\"Build wheels from your requirements.\""
+    "hash\:\"Compute hashes of package archives.\""
+    "completion\:\"A helper command used for command completion.\""
+    "debug\:\"Show information useful for debugging.\""
+    "help\:\"Show help for commands.\""
+)
+
+local general_options=(
+    '(-h --help)'{-h,--help}'[Show help.]'
+    '--isolated[Run pip in an isolated mode, ignoring environment variables and user configuration.]'
+    {\*-v,\*--verbose}'[Give more output. Option is additive, and can be used up to 3 times.]'
+    '(-V --version)'{-V,--version}'[Show version and exit.]'
+    {\*-q,\*--quiet}'[Give less output. Option is additive, and can be used up to 3 times (corresponding to WARNING, ERROR, and CRITICAL logging levels).]'
+    '--log[Path to a verbose appending log.]:file:_files'
+    '--no-input[Disable prompting for input.]'
+    "--proxy[Specify a proxy in the form \[user:passwd@\]proxy.server:port.]:proxy:"
+    '--retries[Maximum number of retries each connection should attempt (default 5 times).]:retries:'
+    '--timeout[Set the socket timeout (default 15 seconds).]:sec:'
+    '--exists-action[Default action when a path already exists.]:action:((s\:"switch" i\:"ignore" w\:"wipe" b\:"backup" a\:"abort"))'
+    '--trusted-host[Mark this host or host:port pair as trusted, even though it does not have valid or any HTTPS.]:hostname:'
+    '--cert[Path to alternate CA bundle.]:path:_files'
+    '--client-cert[Path to SSL client certificate, a single file containing the private key and the certificate in PEM format.]:path:_files'
+    '--cache-dir[Store the cache data in <dir>.]:dir:_directories'
+    '--no-cache-dir[Disable the cache.]'
+    "--disable-pip-version-check[Don't periodically check PyPI to determine whether a new version of pip is available for download. Implied with --no-index.]"
+    '--no-color[Suppress colored output.]'
+    '--no-python-version-[Silence deprecation warnings for upcoming unsupported Pythons.]'
+    '--use-feature[Enable new functionality, that may be backward incompatible.]:feature:(2020-resolver fast-deps)'
+    '--use-deprecated[Enable deprecated functionality, that will be removed in the future.]:feature:(legacy-resolver)'
+)
+
+local debug_options=(
+    '*--platform[Only use wheels compatible with <platform>.]:platform:(win32 linux_i386 linux_x86_64)'
+    "*--abi[Only use wheels compatible with Python abi <abi>, e.g. 'pypy_41'.]:abi:"
+    '--python-version[The Python interpreter version to use for wheel and "Requires-Python" compatibility checks.]:python_version:'
+    "--implementation[Only use wheels compatible with Python implementation <implementation>.]:implementation:(pp jy cp ip py)"
+)
+
+local package_index_options=(
+    '(-i --index-url)'{-i,--index-url}'[Base URL of the Python Package Index.]:url:'
+    '--extra-index-url[Extra URLs of package indexes to use in addition to --index-url.]:url:'
+    '--no-index[Ignore package index (only looking at --find-links URLs instead).]'
+    '(-f --find-links)'{-f,--find-links}'[URL to look for packages at.]:url:'
+)
+
+_installed_packages() {
+    local installed_pkgs=($(_call_program fetch-installed \
+                            "env COMP_WORDS='pip show' COMP_CWORD=2 PIP_AUTO_COMPLETE=1 ${pip}"))
+    _wanted installed-package expl 'installed packages' compadd -a installed_pkgs
+}
+
+_pip_install() {
+    local upgrade_strategies=(
+        'eager\:"dependencies are upgraded regardless of whether the currently installed version satisfies the requirements of the upgraded package(s)."'
+        'only-if-needed\:"dependencies are upgraded only when they do not satisfy the requirements of the upgraded package(s)."'
+    )
+    local download_options=(
+        {\*-r,\*--requirement}"[Install from the given requirements file. This option can be used multiple times.]:file:_files"
+        {\*-c,\*--constraint}"[Constrain versions using the given constraints file. This option can be used multiple times.]:file:_files"
+        "--no-deps[Don't install package dependencies.]"
+        "--pre[Include pre-release and development versions. By default, pip only finds stable versions.]"
+        '(-e --editable)'{-e,--editable}"[Install a project in editable mode (i.e. setuptools \"develop mode\") from a local project path or a VCS url.]:path/url:_files"
+        '(-t --target)'{-t,--target}"[Install packages into <dir>.]:dir:_directories"
+        "--user[Install to the Python user install directory for your platform.]"
+        "--root[Install everything relative to this alternate root directory.]:dir:_directories"
+        "--prefix[Installation prefix where lib, bin and other top-level folders are placed.]:dir:_directories"
+        "--src[Directory to check out editable projects into.]:dir:_directories"
+        '(-U --upgrade)'{-U,--upgrade}"[Upgrade all specified packages to the newest available version.]"
+        "--upgrade-strategy[Determines how dependency upgrading should be handled.]:upgrade_strategy:((${upgrade_strategies[*]}))"
+        "--force-reinstall[Reinstall all packages even if they are already up-to-date.]"
+        '(-I --ignore-installed)'{-I,--ignore-installed}"[Ignore the installed packages, overwriting them.]"
+        "--ignore-requires-python[Ignore the Requires-Python information.]"
+        "--no-build-isolation[Disable isolation when building a modern source distribution. Build dependencies specified by PEP 518 must be already installed if this option is used.]"
+        "--use-pep517[Use PEP 517 for building source distributions.]"
+        "--no-use-pep517[Force legacy behaviour for building source distributions.]"
+        "--install-option[Extra arguments to be supplied to the setup.py install command.]:options:"
+        "--global-option[Extra global options to be supplied to the setup.py call before the 'bdist_wheel' command.]:options:"
+        "--compile[Compile Python source files to bytecode.]"
+        "--no-compile[Do not compile Python source files to bytecode.]"
+        "--no-warn-script-location[Do not warn when installing scripts outside PATH.]"
+        "--no-warn-conflicts[Do not warn about broken dependencies.]"
+        "*--no-binary[Do not use binary packages. Can be supplied multiple times, and each time adds to the existing value.]:format_control:"
+        "*--only-binary[Do not use source packages. Can be supplied multiple times, and each time adds to the existing value.]:format_control:"
+        "--prefer-binary[Prefer older binary packages over newer source packages.]"
+        "--require-hashes[Require a hash to check each requirement against, for repeatable installs.]"
+        "--progress-bar[Specify type of progress to be displayed.]:progress_bar:(off on ascii pretty emoji)"
+        "--no-clean[Don't clean up build directories.]"
+    )
+    _arguments -s \
+        ${download_options} \
+        ${debug_options} \
+        ${package_index_options} \
+        ${general_options} \
+        ': :'
+}
+
+_pip_download() {
+    local download_options=(
+        {\*-c,\*--constraint}"[Constrain versions using the given constraints file. This option can be used multiple times.]:file:_files"
+        {\*-r,\*--requirement}"[Install from the given requirements file. This option can be used multiple times.]:file:_files"
+        "--no-deps[Don't install package dependencies.]"
+        "--global-option[Extra global options to be supplied to the setup.py call before the 'bdist_wheel' command.]:options:"
+        "*--no-binary[Do not use binary packages. Can be supplied multiple times, and each time adds to the existing value.]:format_control:"
+        "*--only-binary[Do not use source packages. Can be supplied multiple times, and each time adds to the existing value.]:format_control:"
+        "--prefer-binary[Prefer older binary packages over newer source packages.]"
+        "--src[Directory to check out editable projects into.]:dir:_directories"
+        "--pre[Include pre-release and development versions. By default, pip only finds stable versions.]"
+        "--require-hashes[Require a hash to check each requirement against, for repeatable installs.]"
+        "--progress-bar[Specify type of progress to be displayed.]:progress_bar:(off on ascii pretty emoji)"
+        "--no-build-isolation[Disable isolation when building a modern source distribution. Build dependencies specified by PEP 518 must be already installed if this option is used.]"
+        "--use-pep517[Use PEP 517 for building source distributions.]"
+        "--no-use-pep517[Force legacy behaviour for building source distributions.]"
+        "--ignore-requires-python[Ignore the Requires-Python information.]"
+        '(-d --dest)'{-d,--dest}"[Download packages into <dir>.]:dir:_directories"
+        "--no-clean[Don't clean up build directories.]"
+    )
+    _arguments -s \
+        ${download_options} \
+        ${debug_options} \
+        ${package_index_options} \
+        ${general_options} \
+        ': :'
+}
+
+_pip_uninstall() {
+    local uninstall_options=(
+        {\*-r,\*--requirement}'[Uninstall all the packages listed in the given requirements file.]:file:_files'
+        '(-y --yes)'{-y,--yes}"[Don't ask for confirmation of uninstall deletions.]"
+    )
+    _arguments -C -s \
+        ': :_installed_packages' \
+        ${uninstall_options} \
+        ${general_options}
+}
+
+_pip_freeze() {
+    local freeze_options=(
+        {\*-r,\*--requirement}'[Use the order in the given requirements file and its comments when generating output.]:file:_files'
+        '(-f --find-links)'{-f,--find-links}'[URL for finding packages, which will be added to the output.]:url:'
+        '(-l --local)'{-l,--local}'[If in a virtualenv that has global access, do not output globally-installed packages.]'
+        '--user[Only output packages installed in user-site.]'
+        '*--path[Restrict to the specified installation path for listing packages.]:path:_directories'
+        '--all[Do not skip these packages in the output: pip, setuptools, wheel, distribute.]'
+        '--exclude-editable[Exclude editable package from output.]'
+        '--exclude[Exclude specified package from the output.]:package:_installed_packages'
+    )
+    _arguments -C -s \
+        ${freeze_options} \
+        ${general_options}
+}
+
+_pip_list() {
+    local list_options=(
+        '(-o --outdated)'{-o,--outdated}'[List outdated packages.]'
+        '(-u --update)'{-u,--uptodate}'[List uptodate packages.]'
+        '(-e --editable)'{-e,--editable}'[List editable projects.]'
+        '(-l --local)'{-l,--local}'[If in a virtualenv that has global access, do not list globally-installed packages.]'
+        '--user[Only output packages installed in user-site.]'
+        '*--path[Restrict to the specified installation path for listing packages.]:path:_files'
+        '--pre[Include pre-release and development versions. By default, pip only finds stable versions.]'
+        '--format[Select the output format among.]:list_format:(columns freeze json)'
+        '--not-required[List packages that are not dependencies of installed packages.]'
+        '--exclude-editable[Exclude editable package from output.]'
+        '--include-editable[Include editable package from output.]'
+        '--exclude[Exclude specified package from the output.]:package:_installed_packages'
+    )
+    _arguments -C -s \
+        ${list_options} \
+        ${package_index_options} \
+        ${general_options}
+}
+
+_pip_show() {
+    local show_options=(
+        '(-f --files)'{-f,--files}'[Show the full list of installed files for each package.]'
+        ':installed_package:_installed_packages'
+    )
+    _arguments -C -s \
+        ${show_options} \
+        ${general_options}
+}
+
+_pip_check() {
+    _arguments -C -s ${general_options}
+}
+
+_pip_config() {
+    local config_options=(
+        '--editor[Editor to use to edit the file. Uses VISUAL or EDITOR environment variables if not provided.]:editor-path:_files'
+        '--global[Use the system-wide configuration file only.]'
+        '--user[Use the user configuration file only.]'
+        '--site[Use the current environment configuration file only.]'
+    )
+    _arguments -C -s \
+        ': :->subcmd' \
+        ${config_options} \
+        ${general_options}
+
+    case $state in
+        subcmd)
+            local config_subcmds=(
+                'list:"List the active configuration (or from the file specified)."'
+                'edit:"Edit the configuration file in an editor."'
+                'get:"Get the value associated with name."'
+                'set:"Set the name=value."'
+                'unset:"Unset the value associated with name."'
+                'debug:"List the configuration files and values defined under them."'
+            )
+            _arguments "*: :((${config_subcmds[*]}))"
+            ;;
+    esac
+}
+
+_pip_search() {
+    local search_options=(
+        '(-i --index)'{-i,--index}'[Base URL of Python Package Index.]:url:'
+    )
+    _arguments ${search_options}
+}
+
+_pip_cache() {
+    _arguments -C -s \
+        ': :->subcmd' \
+        ${general_options[*]} \
+        '*::options:->options'
+
+    case $state in
+        subcmd)
+            local cache_subcmds=(
+                'dir:"Show the cache directory."'
+                'info:"Show information about the cache."'
+                'list:"List filenames of packages stored in the cache."'
+                'remove:"Remove one or more package from the cache."'
+                'purge:"Remove all items from the cache."'
+            )
+            _arguments "*: :((${cache_subcmds[*]}))"
+            ;;
+        options)
+            case ${words[1]} in
+                list)
+                    _arguments "--format[Select the output format.]: :(human abspath)"
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+_pip_wheel() {
+    local wheel_options=(
+        '(-w --wheel-dir)'{-w,--wheel-dir}"[Build wheels into <dir>.]:dir:_directories"
+        "*--no-binary[Do not use binary packages. Can be supplied multiple times, and each time adds to the existing value.]:format_control:"
+        "*--only-binary[Do not use source packages. Can be supplied multiple times, and each time adds to the existing value.]:format_control:"
+        "--prefer-binary[Prefer older binary packages over newer source packages.]"
+        "--build-option[Extra arguments to be supplied to 'setup.py bdist_wheel'.]:options:"
+        "--no-build-isolation[Disable isolation when building a modern source distribution. Build dependencies specified by PEP 518 must be already installed if this option is used.]"
+        "--use-pep517[Use PEP 517 for building source distributions.]"
+        "--no-use-pep517[Force legacy behaviour for building source distributions.]"
+        {\*-c,\*--constraint}"[Constrain versions using the given constraints file. This option can be used multiple times.]:file:_files"
+        '(-e --editable)'{-e,--editable}"[Install a project in editable mode (i.e. setuptools \"develop mode\") from a local project path or a VCS url.]:path/url:_files"
+        {\*-r,\*--requirement}"[Install from the given requirements file. This option can be used multiple times.]:file:_files"
+        "--src[Directory to check out editable projects into.]:dir:_directories"
+        "--ignore-requires-python[Ignore the Requires-Python information.]"
+        "--no-deps[Don't install package dependencies.]"
+        "--progress-bar[Specify type of progress to be displayed.]:progress_bar:(off on ascii pretty emoji)"
+        "--no-verify[Don't verify if built wheel is valid.]"
+        "--global-option[Extra global options to be supplied to the setup.py call before the 'bdist_wheel' command.]:options:"
+        "--pre[Include pre-release and development versions. By default, pip only finds stable versions.]"
+        "--require-hashes[Require a hash to check each requirement against, for repeatable installs.]"
+        "--no-clean[Don't clean up build directories.]"
+    )
+    _arguments -s \
+        ${wheel_options} \
+        ${package_index_options} \
+        ${general_options} \
+        ${debug_options} \
+        ': :_files'
+}
+
+_pip_hash() {
+    _arguments \
+        '(-a --algorithm)'{-a,--algorithm}"[The hash algorithm to use]:algorithm:(sha256 sha384 sha512)" \
+        '1:: :_files'
+}
+
+_pip_completion() {
+    local completion_options=(
+        '(-b --bash)'{-b,--bash}':"Emit completion code for bash"'
+        '(-z --zsh)'{-z,--zsh}':"Emit completion code for zsh"'
+        '(-f --fish)'{-f,--fish}':"Emit completion code for fish"'
+    )
+    _arguments "1: :((${completion_options[*]}))"
+}
+
+_pip_debug() {
+    _arguments -C -s \
+        ${general_options} \
+        ${debug_options}
+}
+
+_pip_help() {
+    _arguments "1: :((${subcmds[*]}))"
+}
+
+_arguments -C -s \
+    ': :->subcmd' \
+    ${general_options} \
+    ${debug_options} \
+    '*::options:->options'
+
+case $state in
+    subcmd)
+        _arguments "*: :((${subcmds[*]}))"
+        ;;
+    options)
+        case ${words[1]} in
+            install|download|uninstall|freeze|list|show|check|config|search|cache|wheel|hash|completion|debug|help)
+                _pip_"${words[1]}"
+                ;;
+        esac
+        ;;
+esac

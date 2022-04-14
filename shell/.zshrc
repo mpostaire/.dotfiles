@@ -89,8 +89,9 @@ zstyle ":completion:*:commands" rehash true
 
 ## BINDINGS
 
-# backward-kill-word stops at slashes
+# backward-kill-word stops at slashes and equals
 WORDCHARS=${WORDCHARS/\/}
+WORDCHARS=${WORDCHARS/=}
 # Set Ctrl+Backspace to delete previous word
 bindkey '^H' backward-kill-word
 # Set Ctrl+Delete to delete the next word

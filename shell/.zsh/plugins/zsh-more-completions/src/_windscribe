@@ -1,157 +1,162 @@
 #compdef windscribe
 
-# shellcheck disable=SC2168
-
-local options=(
-    '--help\:"Show help message and exit"'
-    'status\:"Check status of Windscribe and connection"'
-    'account\:"Output current account details"'
-    'connect\:"Connect to Windscribe"'
-    'disconnect\:"Disconnect from VPN"'
-    'examples\:"Show usage examples"'
-    'firewall\:"View/Modify Firewall mode"'
-    'lanbypass\:"View/Modify Firewall LAN bypass"'
-    'locations\:"Output list of all available server locations"'
-    'login\:"Login to Windscribe account"'
-    'logout\:"Logout and disconnect"'
-    'port\:"View/Modify default Port"'
-    'protocol\:"View/Modify default Protocol"'
-    'proxy\:"View/Modify Proxy Settings"'
-    'sendlog\:"Send the debug log to Support"'
-    'speedtest\:"Test the connection speed"'
-    'viewlog\:"View the debug log"'
+local subcmds=(
+    'status:"Check status of Windscribe and connection"'
+    'account:"Output current account details"'
+    'connect:"Connect to Windscribe"'
+    'disconnect:"Disconnect from VPN"'
+    'examples:"Show usage examples"'
+    'firewall:"View/Modify Firewall mode"'
+    'lanbypass:"View/Modify Firewall LAN bypass"'
+    'locations:"Output list of all available server locations"'
+    'login:"Login to Windscribe account"'
+    'logout:"Logout and disconnect"'
+    'port:"View/Modify default Port"'
+    'protocol:"View/Modify default Protocol"'
+    'proxy:"View/Modify Proxy Settings"'
+    'sendlog:"Send the debug log to Support"'
+    'speedtest:"Test the connection speed"'
+    'viewlog:"View the debug log"'
 )
 
 local connect_options=(
-    '--config\:"Connect to a custom openvpn config"'
-    'best\:"Choose best location"'
-    'US\:"Free"'
-    'US-C\:"Free"'
-    'US-W\:"Free"'
-    'CA\:"Free"'
-    'CA-W\:"Free"'
-    'FR\:"Free"'
-    'DE\:"Free"'
-    'NL\:"Free"'
-    'NO\:"Free"'
-    'RO\:"Free"'
-    'CH\:"Free"'
-    'GB\:"Free"'
-    'TR\:"Free"'
-    'HK\:"Free"'
-    'US-N\:"Pro"'
-    'CA-N\:"Pro"'
-    'AT\:"Pro"'
-    'BE\:"Pro"'
-    'BG\:"Pro"'
-    'HR\:"Pro"'
-    'CY\:"Pro"'
-    'CZ\:"Pro"'
-    'DK\:"Pro"'
-    'EE\:"Pro"'
-    'FI\:"Pro"'
-    'GR\:"Pro"'
-    'HU\:"Pro"'
-    'IS\:"Pro"'
-    'IE\:"Pro"'
-    'IL\:"Pro"'
-    'IT\:"Pro"'
-    'LV\:"Pro"'
-    'LT\:"Pro"'
-    'LU\:"Pro"'
-    'MD\:"Pro"'
-    'MK\:"Pro"'
-    'PL\:"Pro"'
-    'PT\:"Pro"'
-    'SK\:"Pro"'
-    'ES\:"Pro"'
-    'SE\:"Pro"'
-    'GB-N\:"Pro"'
-    'AL\:"Pro"'
-    'AZ\:"Pro"'
-    'BA\:"Pro"'
-    'GE\:"Pro"'
-    'IN\:"Pro"'
-    'KE\:"Pro"'
-    'RU\:"Pro"'
-    'RS\:"Pro"'
-    'ZA\:"Pro"'
-    'UA\:"Pro"'
-    'AU\:"Pro"'
-    'NZ\:"Pro"'
-    'KH\:"Pro"'
-    'ID\:"Pro"'
-    'JP\:"Pro"'
-    'MY\:"Pro"'
-    'PH\:"Pro"'
-    'SG\:"Pro"'
-    'KR\:"Pro"'
-    'TW\:"Pro"'
-    'TH\:"Pro"'
-    'AE\:"Pro"'
-    'VN\:"Pro"'
-    'JP-N\:"Pro"'
-    'AR\:"Pro"'
-    'BR\:"Pro"'
-    'CL\:"Pro"'
-    'CO\:"Pro"'
-    'EC\:"Pro"'
-    'MX\:"Pro"'
-    'PA\:"Pro"'
-    'PE\:"Pro"'
-    'AQ\:"Pro"'
+    'best:"Choose best location"'
+    '--config:"Connect to a custom openvpn config"'
+    'US:"Free"'
+    'US-C:"Free"'
+    'US-W:"Free"'
+    'CA:"Free"'
+    'CA-W:"Free"'
+    'FR:"Free"'
+    'DE:"Free"'
+    'NL:"Free"'
+    'NO:"Free"'
+    'RO:"Free"'
+    'CH:"Free"'
+    'GB:"Free"'
+    'TR:"Free"'
+    'HK:"Free"'
+    'US-N:"Pro"'
+    'CA-N:"Pro"'
+    'AT:"Pro"'
+    'BE:"Pro"'
+    'BG:"Pro"'
+    'HR:"Pro"'
+    'CY:"Pro"'
+    'CZ:"Pro"'
+    'DK:"Pro"'
+    'EE:"Pro"'
+    'FI:"Pro"'
+    'GR:"Pro"'
+    'HU:"Pro"'
+    'IS:"Pro"'
+    'IE:"Pro"'
+    'IL:"Pro"'
+    'IT:"Pro"'
+    'LV:"Pro"'
+    'LT:"Pro"'
+    'LU:"Pro"'
+    'MD:"Pro"'
+    'MK:"Pro"'
+    'PL:"Pro"'
+    'PT:"Pro"'
+    'SK:"Pro"'
+    'ES:"Pro"'
+    'SE:"Pro"'
+    'GB-N:"Pro"'
+    'AL:"Pro"'
+    'AZ:"Pro"'
+    'BA:"Pro"'
+    'GE:"Pro"'
+    'IN:"Pro"'
+    'KE:"Pro"'
+    'RU:"Pro"'
+    'RS:"Pro"'
+    'ZA:"Pro"'
+    'UA:"Pro"'
+    'AU:"Pro"'
+    'NZ:"Pro"'
+    'KH:"Pro"'
+    'ID:"Pro"'
+    'JP:"Pro"'
+    'MY:"Pro"'
+    'PH:"Pro"'
+    'SG:"Pro"'
+    'KR:"Pro"'
+    'TW:"Pro"'
+    'TH:"Pro"'
+    'AE:"Pro"'
+    'VN:"Pro"'
+    'JP-N:"Pro"'
+    'AR:"Pro"'
+    'BR:"Pro"'
+    'CL:"Pro"'
+    'CO:"Pro"'
+    'EC:"Pro"'
+    'MX:"Pro"'
+    'PA:"Pro"'
+    'PE:"Pro"'
+    'AQ:"Pro"'
 )
 
-local line
-_arguments "1: :((${options[*]}))" \
-              '*::arg:->args'
+_arguments -C \
+    ': :->subcmd' \
+    '--help[Show help message and exit]: :' \
+    '*:: :->options'
 
-case ${line[1]} in
-    connect)
-        _arguments -C "1: :((${connect_options[*]}))" \
-                      '*::arg:->args'
-        case ${line[1]} in
-            --config)
-                _arguments '1:filename:_files' 
+case $state in
+    subcmd)
+        _arguments "1: :((${subcmds[*]}))"
+        ;;
+    options)
+        case ${words[1]} in
+            connect)
+                _arguments -C \
+                    "1: :((${connect_options[*]}))" \
+                    '*::arg:->args'
+                case ${words[1]} in
+                    --config)
+                        _arguments '1:filename:_files' 
+                        ;;
+                esac
                 ;;
-        esac
-        ;;
-    lanbypass)
-        _arguments "1: :(on off)"
-        ;;
-    firewall)
-        _arguments "1: :(auto on off)"
-        ;;
-    port)
-        _arguments "1: :(443 80 53 123 1194 54783)"
-        ;;
-    protocol)
-        _arguments "1: :(UDP STEALTH TCP)"
-        ;;
-    proxy)
-        local proxy_modes=(on off)
-        local proxy_options=(--host --port --user --type --clear)
+            lanbypass)
+                _arguments "1: :(on off)"
+                ;;
+            firewall)
+                _arguments "1: :(auto on off)"
+                ;;
+            port)
+                _arguments "1: :(443 80 53 123 1194 54783)"
+                ;;
+            protocol)
+                _arguments "1: :(UDP STEALTH TCP)"
+                ;;
+            proxy)
+                local proxy_options=(
+                    on
+                    off
+                    '--host:"required - the ip address of the proxy gateway"'
+                    '--port:"required - the proxy port number"'
+                    '--user:"optional - the username for proxy authentication"'
+                    '--password:"optional - the password for proxy authentication"'
+                    '--type:"optional - type of proxy HTTP or SOCKS5; default: HTTP"'
+                    '--clear:"remove all proxy settings"'
+                )
 
-        _arguments "1: :(${proxy_modes[*]} ${proxy_options[*]})"
+                _arguments "1: :((${proxy_options[*]}))"
 
-        # shellcheck disable=SC2206
-        case ${line[2]} in
-            --*)
-                local excl=(${line[2]})
-                proxy_options=(${proxy_options:|excl})
-                _arguments "3: :(${proxy_options[*]})"
-
-                excl+=(${line[4]})
-                proxy_options=(${proxy_options:|excl})
-                _arguments "5: :(${proxy_options[*]})"
-
-                excl+=(${line[6]})
-                proxy_options=(${proxy_options:|excl})
-                _arguments "7: :(${proxy_options[*]})"
-
-                excl+=(${line[8]})
-                proxy_options=(${proxy_options:|excl})
-                _arguments "9: :(${proxy_options[*]})"
+                case ${words[2]} in
+                    --*)
+                        _arguments \
+                            '--host[required - the ip address of the proxy gateway]:host:->host' \
+                            '--port[required - the proxy port number]:port:->port' \
+                            '--user[optional - the username for proxy authentication]:user:->user' \
+                            '--password[optional - the password for proxy authentication]:password:->password' \
+                            '--type[optional - type of proxy HTTP or SOCKS5; default: HTTP]:type:(HTTP SOCKS5)' \
+                            '--clear[remove all proxy settings]'
+                        ;;
+                esac
                 ;;
         esac
         ;;

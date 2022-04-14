@@ -65,7 +65,8 @@ else
 fi'
 
 # ctrl-r keybinding is double toggle-preview to reload preview window contents (not using the reload() action that reevaluate the fzf command)
-export FZF_DEFAULT_OPTS="--info=inline --cycle --bind=ctrl-d:abort,ctrl-H:backward-kill-word,ctrl-p:toggle-preview,ctrl-r:toggle-preview+toggle-preview,ctrl-space:select,tab:down,shift-tab:up
+export FZF_DEFAULT_OPTS="--info=inline --cycle --tabstop=4
+--bind=ctrl-d:abort,ctrl-H:backward-kill-word,ctrl-p:toggle-preview,ctrl-r:toggle-preview+toggle-preview,ctrl-space:select,tab:down,shift-tab:up
 --color=hl:underline:italic:green,bg+:bright-black,gutter:black,hl+:underline:italic:green,info:italic:bright-black,border:bright-black,prompt:bright-blue,pointer:red,marker:bright-yellow,spinner:green,header:yellow"
 # TODO: color fzf ctrl+t, ctrl+r (syntax higlighting), alt+c -> ~/.zsh/wip_stuff.zsh contains wip implementations (but very slow)
 export FZF_CTRL_R_OPTS="--cycle --reverse --preview 'print {2..}' --preview-window=hidden,wrap"

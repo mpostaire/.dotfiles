@@ -1,0 +1,80 @@
+#compdef fzf
+
+_arguments \
+    '(-h --help)'{-h,--help}'[Display help]' \
+    '(-x --extended +x --no-extended)'{-x,--extended}'[Extended-search mode]' \
+    '(-x --extended +x --no-extended)'{+x,--no-extended}'[Disable extended-search mode]' \
+    '(-e --exact)'{-e,--exact}'[Enable Exact-match]' \
+    '--algo=[Fuzzy matching algorithm]:TYPE:(v1 v2)' \
+    '(+i)-i[Case-insensitive match]' \
+    '(-i)+i[Case-sensitive match]' \
+    '--literal[Do not normalize latin script letters before matching]' \
+    '(-n --nth)'{-n,--nth=}'[Enable Exact-match]: :' \
+    '(-e --exact)'{-e,--exact}'[Enable Exact-match]: :' \
+    '--with-nth[Transform the presentation of each line using field index expressions]: :' \
+    '(-d --delimiter)'{-d,--delimiter=}'[Enable Exact-match]:STR:' \
+    '(+s --no-sort)'{+s,--no-sort}'[Do not sort the result]' \
+    '--tac[Reverse the order of the input]' \
+    '--disabled[Do not perform search]' \
+    '--tiebreak=[Comma-separated list of sort criteria to apply when the scores are tied]:CRI:->sort_criteria' \
+    '(-m --multi)'{-m,--multi=}'[Enable multi-select with tab/shift-tab]:MAX:' \
+    '--no-mouse[Disable mouse]' \
+    '--bind=[Custom key bindings]:KEYBINDS:->keybinds' \
+    '--cycle[Enable cyclic scroll]' \
+    '--keep-right[Keep the right end of the line visible on overflow]' \
+    '--scroll-off=[Number of screen lines to keep above or below when scrolling to the top or to the bottom]:LINES:' \
+    '--no-hscroll[Disable horizontal scroll]' \
+    '--hscroll-off=[Number of screen columns to keep to the right of the highlighted substring]:COLS:' \
+    '--filepath-word[Make word-wise movements respect path separators]' \
+    '--jump-labels=[Label characters for jump and jump-accept]:CHARS:' \
+    '--height=[Display fzf window below the cursor with the given height instead of using fullscreen]:HEIGHT:' \
+    '--min-height=[Minimum height when --height is given in percent]:HEIGHT:' \
+    '--layout=[Minimum height when --height is given in percent]:LAYOUT:(default reverse reverse-list)' \
+    '--border=[Draw border around the finder]:STYLE:(rounded sharp horizontal vertical top bottom left right none)' \
+    '--margin=[Screen margin (TRBL | TB,RL | T,RL,B | T,R,B,L)]:MARGIN:' \
+    '--padding=[Padding inside border (TRBL | TB,RL | T,RL,B | T,R,B,L)]:PADDING:' \
+    '--info=[Finder info style]:STYLE:(default inline hidden)' \
+    '--prompt=[Input prompt]:STR:' \
+    '--pointer=[Pointer to the current line]:STR:' \
+    '--marker=[Multi-select marker]:STR:' \
+    '--header=[String to print as header]:STR:' \
+    '--header-lines=[The first N lines of the input are treated as header]:N:' \
+    '--header-first[Print header before the prompt line]' \
+    '--ellipsis=[Ellipsis to show when line is truncated]:STR:' \
+    '--ansi[Enable processing of ANSI color codes]' \
+    '--tabstop=[Number of spaces for a tab character]:SPACES:' \
+    '--color=[Number of spaces for a tab character]:COLSPEC:->color' \
+    '--no-bold[Do not use bold text]' \
+    '--history=[History file]:FILE:_files' \
+    '--history-size=[Maximum number of history entries]:N:' \
+    '--preview=[Command to preview highlighted line]:COMMAND:' \
+    '--preview-window=[Preview window layout]:OPT:->preview-window' \
+    '(-q --query)'{-q,--query=}'[Start the finder with the given query]:STR:' \
+    '(-1 --select-1)'{-1,--select-1}'[Automatically select the only match]' \
+    "(-0 --exit-0)"{-0,--exit-0}"[Exit immediately when there's no match]" \
+    "(-f --filter)"{-f,--filter=}"[Filter mode. Do not start interactive finder.]:STR:" \
+    '--print-query[Print query as the first line]' \
+    '*--expect=[Comma-separated list of keys to complete fzf]:KEYS:->expect' \
+    '--read0[Read input delimited by ASCII NUL characters]' \
+    '--print0[Print output delimited by ASCII NUL characters]' \
+    '--sync[Synchronous search for multi-staged filtering]' \
+    '--version[Display version information and exit]'
+
+
+case $state in
+    sort_criteria)
+        _values -s , 'sort_criteria' length begin end index
+        ;;
+    keybinds)
+        # TODO Refer to man fzf
+        ;;
+    color)
+        # TODO Refer to man fzf
+        ;;
+    preview-window)
+        # TODO Refer to man fzf
+        ;;
+    expect)
+        # TODO Refer to man fzf
+        ;;
+esac

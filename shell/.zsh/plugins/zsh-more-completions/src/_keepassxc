@@ -1,0 +1,13 @@
+#compdef keepassxc
+
+_arguments \
+    '*: :_files' \
+    '(-h --help)'{-h,--help}'[Displays help on commandline options.]' \
+    '--help-all[Displays help including Qt specific options.]' \
+    '(-v --version)'{-v,--version}'[Displays version information.]' \
+    '--config[path to a custom config file]:config:_files' \
+    '--localconfig[path to a custom local config file]:localconfig:_files' \
+    '--lock[lock all open databases]' \
+    '--keyfile[key file of the database]:keyfile:_files' \
+    '--pw-stdin[read password of the database from stdin]' \
+    '--debug-info[Displays debugging information.]'
