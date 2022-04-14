@@ -100,4 +100,4 @@ FZF_TMUX_HEIGHT=70%
 # also overwrites -ftb-fzf function from fzf-tab to allow custom preview window when the completion
 # list are files/directories as well as new variable buffer to get the user input in the zsh (not fzf) prompt
 # TODO: open PR to merge the fix instead of overwriting this
-fpath+=(${ZTUPIDE_PLUGIN_PATH}/fzf-tab-config/functions)
+fpath+=(${0:A:h}/functions)
