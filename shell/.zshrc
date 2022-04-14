@@ -44,8 +44,9 @@ fi
 ztupide load --async zsh-users/zsh-completions
 
 # even more completion functions, then init completion system (must be after all
-# the completion functions have been added to fpath)
-ztupide load --async zsh-more-completions 'autoload -U compinit && compinit'
+# the completion functions have been added to fpath) and auto-generate completions
+# for commands without them
+ztupide load --async zsh-more-completions 'autoload -U compinit && compinit && compdef _gnu_generic -default- -P "*"'
 
 # fish-like autosuggestions (it's better to place it after compinit)
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
