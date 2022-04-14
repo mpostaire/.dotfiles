@@ -106,7 +106,7 @@ _pip_install() {
         "--progress-bar[Specify type of progress to be displayed.]:progress_bar:(off on ascii pretty emoji)"
         "--no-clean[Don't clean up build directories.]"
     )
-    _arguments -s \
+    _arguments -C -s \
         ${download_options} \
         ${debug_options} \
         ${package_index_options} \
@@ -134,7 +134,7 @@ _pip_download() {
         '(-d --dest)'{-d,--dest}"[Download packages into <dir>.]:dir:_directories"
         "--no-clean[Don't clean up build directories.]"
     )
-    _arguments -s \
+    _arguments -C -s \
         ${download_options} \
         ${debug_options} \
         ${package_index_options} \
@@ -288,7 +288,7 @@ _pip_wheel() {
         "--require-hashes[Require a hash to check each requirement against, for repeatable installs.]"
         "--no-clean[Don't clean up build directories.]"
     )
-    _arguments -s \
+    _arguments -C -s \
         ${wheel_options} \
         ${package_index_options} \
         ${general_options} \

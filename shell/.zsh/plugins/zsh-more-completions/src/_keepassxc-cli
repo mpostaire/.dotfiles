@@ -1,0 +1,287 @@
+#compdef keepassxc-cli
+
+# TODO use LC_ALL=C keepassxc-cli --help
+
+local subcmds=(
+    "add:\"Add a new entry to a database.\""
+    "analyze:\"Analyze passwords for weaknesses and problems.\""
+    "attachment-export:\"Export an attachment of an entry.\""
+    "attachment-import:\"Imports an attachment to an entry.\""
+    "attachment-rm:\"Remove an attachment of an entry.\""
+    "clip:\"Copy an entry's attribute to the clipboard.\""
+    "close:\"Close the currently opened database.\""
+    "db-create:\"Create a new database.\""
+    "db-info:\"Show a database's information.\""
+    "diceware:\"Generate a new random diceware passphrase.\""
+    "edit:\"Edit an entry.\""
+    "estimate:\"Estimate the entropy of a password.\""
+    "export:\"Exports the content of a database to standard output in the specified format.\""
+    "generate:\"Generate a new random password.\""
+    "help:\"Display command help.\""
+    "import:\"Import the contents of an XML database.\""
+    "ls:\"List database entries.\""
+    "merge:\"Merge two databases.\""
+    "mkdir:\"Adds a new group to a database.\""
+    "mv:\"Moves an entry to a new group.\""
+    "open:\"Open a database.\""
+    "rm:\"Remove an entry from the database.\""
+    "rmdir:\"Removes a group from a database.\""
+    "search:\"Find entries quickly.\""
+    "show:\"Show an entry's information.\""
+)
+
+local general_options=(
+    '(-q --quiet)'{-q,--quiet}'[Silence password prompt and other secondary outputs.]'
+    '(-h --help)'{-h,--help}'[Displays help on commandline options.]'
+)
+
+local common_options=(
+    '(-k --key-file)'{-k,--key-file}'[Key file of the database.]:path:_files'
+    '--no-password[Deactivate password key for the database.]'
+    '(-y --yubikey)'{-y,--yubikey}'[Yubikey slot and optional serial used to access the database (e.g., 1:7370001).]:slot:'
+)
+
+_keepassxc-cli_add() {
+    local add_options=(
+        '(-u --username)'{-u,--username}'[Username for the entry.]:username:'
+        '--url[URL for the entry.]:URL:'
+        '--notes[Notes for the entry.]:Notes:'
+        '(-p --password-prompt)'{-p,--password-prompt}"[Prompt for the entry's password.]"
+        '(-g --generate)'{-g,--generate}'[Generate a password for the entry.]'
+        '(-L --length)'{-L,--length}'[Length of the generated password.]:length:'
+        '(-l --lower)'{-l,--lower}'[Use lowercase characters.]'
+        '(-U --upper)'{-U,--upper}'[Use uppercase characters.]'
+        '(-n --numeric)'{-n,--numeric}'[Use numbers.]'
+        '(-s --special)'{-s,--special}'[Use special characters.]'
+        '(-e --extended)'{-e,--extended}'[Use extended ASCII.]'
+        '(-x --exclude)'{-x,--exclude}'[Exclude character set.]:chars:'
+        '--exclude-similar[Exclude similar looking characters.]'
+        '--every-group[Include characters from every selected group.]'
+        '(-c --custom)'{-c,--custom}'[Use custom character set.]:chars:'
+    )
+    _arguments -C -s \
+        ${add_options} \
+        ${common_options} \
+        ${general_options} \
+        ': :_files'
+}
+
+_keepassxc-cli_analyze() {
+    local analyze_options=(
+        '(-H --hibp)'{-H,--hibp}'[Check if any passwords have been publicly leaked.]:FILENAME:_files'
+        '--okon[Path to okon-cli to search a formatted HIBP file.]:okon-cli:_files'
+    )
+    _arguments -C -s \
+        ${analyze_options} \
+        ${common_options} \
+        ${general_options} \
+        ': :_files'
+}
+
+_keepassxc-cli_attachment-export() {
+    local attachment_export_options=(
+        --stdout
+    )
+    _arguments -C -s \
+        ${attachment_export_options} \
+        ${common_options} \
+        ${general_options} \
+        '*:: :_files'
+}
+
+_keepassxc-cli_attachment-import() {
+    local attachment_import_options=(
+        '(-f --force)'{-f,--force}'[Overwrite existing attachments.]'
+    )
+    _arguments -C -s \
+        ${attachment_import_options} \
+        ${common_options} \
+        ${general_options} \
+        '*:: :_files'
+}
+
+_keepassxc-cli_clip() {
+    local db_create_options=(
+        '(-a --attribute)'{-a,--attribute}'[Copy the given attribute to the clipboard. Defaults to "password" if not specified.]:attrs:'
+        '(-t --totp)'{-t,--totp}'[Copy the current TOTP to the clipboard (equivalent to "-a totp").]'
+        '(-b --best-match)'{-b,--best-match}'[Must match only one entry, otherwise a list of possible matches is shown.]'
+    )
+    _arguments -C -s \
+        ${db_create_options} \
+        ${common_options} \
+        ${general_options} \
+        ': :_files'
+}
+
+_keepassxc-cli_db-create() {
+    local db_create_options=(
+        '(-k --set-key-file)'{-k,--set-key-file}'[Set the key file for the database.]:path:_files'
+        '(-p --set-password)'{-p,--set-password}'[Set a password for the database.]'
+        '(-t --decryption-time)'{-t,--decryption-time}'[Target decryption time in MS for the database.]:time:'
+    )
+    _arguments -C -s \
+        ${db_create_options} \
+        ${general_options} \
+        ': :_files'
+}
+
+_keepassxc-cli_diceware() {
+    local diceware_options=(
+        '(-W --words)'{-W,--words}'[Word count for the diceware passphrase.]:count:'
+        '(-w --word-list)'{-w,--word-list}"[Wordlist for the diceware generator. \[Default: EFF English\]]:path:_files"
+    )
+    _arguments -C -s \
+        ${diceware_options} \
+        ${general_options}
+}
+
+_keepassxc-cli_edit() {
+    local edit_options=(
+        '(-u --username)'{-u,--username}'[Username for the entry.]:username:'
+        '--url[URL for the entry.]:URL:'
+        '--notes[Notes for the entry.]:Notes:'
+        '(-p --password-prompt)'{-p,--password-prompt}"[Prompt for the entry's password.]"
+        '(-t --title)'{-t,--title}'[Title for the entry.]:title:'
+        '(-g --generate)'{-g,--generate}'[Generate a password for the entry.]'
+        '(-L --length)'{-L,--length}'[Length of the generated password.]:length:'
+        '(-l --lower)'{-l,--lower}'[Use lowercase characters.]'
+        '(-U --upper)'{-U,--upper}'[Use uppercase characters.]'
+        '(-n --numeric)'{-n,--numeric}'[Use numbers.]'
+        '(-s --special)'{-s,--special}'[Use special characters.]'
+        '(-e --extended)'{-e,--extended}'[Use extended ASCII.]'
+        '(-x --exclude)'{-x,--exclude}'[Exclude character set.]:chars:'
+        '--exclude-similar[Exclude similar looking characters.]'
+        '--every-group[Include characters from every selected group.]'
+        '(-c --custom)'{-c,--custom}'[Use custom character set.]:chars:'
+    )
+    _arguments -C -s \
+        ${edit_options} \
+        ${common_options} \
+        ${general_options} \
+        ': :_files'
+}
+
+_keepassxc-cli_estimate() {
+    local estimate_options=(
+        '(-a --advanced)'{-a,--advanced}'[Perform advanced analysis on the password.]'
+    )
+    _arguments -C -s \
+        ${estimate_options} \
+        ${common_options} \
+        ${general_options} \
+        ': :'
+}
+
+_keepassxc-cli_export() {
+    local export_options=(
+        '(-f --format)'{-f,--format}'[Format to use when exporting.]:format:(xml csv)'
+    )
+    _arguments -C -s \
+        ${export_options} \
+        ${common_options} \
+        ${general_options} \
+        ': :_files'
+}
+
+_keepassxc-cli_generate() {
+    local generate_options=(
+        '(-L --length)'{-L,--length}'[Length of the generated password]:length:'
+        '(-l --lower)'{-l,--lower}'[Use lowercase characters]'
+        '(-U --upper)'{-U,--upper}'[Use uppercase characters]'
+        '(-n --numeric)'{-n,--numeric}'[Use numbers]'
+        '(-s --special)'{-s,--special}'[Use special characters]'
+        '(-e --extended)'{-e,--extended}'[Use extended ASCII]'
+        '(-x --exclude)'{-x,--exclude}'[Exclude character set]:chars:'
+        '--exclude-similar[Exclude similar looking characters]'
+        '--every-group[Include characters from every selected group]'
+        '(-c --custom)'{-c,--custom}'[Use custom character set]:chars:'
+    )
+    _arguments -C -s \
+        ${generate_options} \
+        ${general_options}
+}
+
+_keepassxc-cli_help() {
+    _arguments "1: :((${subcmds[*]}))"
+}
+
+_keepassxc-cli_import() {
+    local import_options=(
+        '(-k --set-key-file)'{-k,--set-key-file}'[Set the key file for the database.]:path:_files'
+        '(-p --set-password)'{-p,--set-password}'[Set a password for the database.]'
+        '(-t --decryption-time)'{-t,--decryption-time}'[Target decryption time in MS for the database.]:time:'
+    )
+    _arguments -C -s \
+        ${import_options} \
+        ${general_options} \
+        '*:: :_files'
+}
+
+_keepassxc-cli_ls() {
+    local ls_options=(
+        '(-R --recursive)'{-R,--recursive}'[Recursively list the elements of the group.]'
+        '(-f --flatten)'{-f,--flatten}'[Flattens the output to single lines.]'
+    )
+    _arguments -C -s \
+        ${ls_options} \
+        ${common_options} \
+        ${general_options} \
+        ': :_files'
+}
+
+_keepassxc-cli_merge() {
+    local merge_options=(
+        '(-s --same-credentials)'{-s,--same-credentials}'[Use the same credentials for both database files.]'
+        '--key-file-from[Key file of the database to merge from.]:path:_files'
+        '--no-password-from[Deactivate password key for the database to merge from.]'
+        '--dry-run[Only print the changes detected by the merge operation.]'
+        '--yubikey-from[Yubikey slot for the second database.]:slot:'
+    )
+
+    _arguments -C -s \
+        ${merge_options} \
+        ${common_options} \
+        ${general_options} \
+        '*:: :_files'
+}
+
+_keepassxc-cli_show() {
+    local show_options=(
+        '(-t --totp)'{-t,--totp}"[Show the entry's current TOTP.]"
+        {\*-a,\*--attributes}'[Names of the attributes to show.]:attribute:'
+        '(-s --show-protected)'{-s,--show-protected}'[Show the protected attributes in clear text.]'
+        '--show-attachments[Show the attachments of the entry.]'
+    )
+    _arguments -C -s \
+        ${show_options} \
+        ${common_options} \
+        ${general_options} \
+        ': :_files'
+}
+
+_arguments -C -s \
+    ': :->subcmd' \
+    '--debug-info[Displays debugging information.]' \
+    '--help-all[Displays help including Qt specific options.]' \
+    '(-v --version)'{-v,--version}'[Displays version information.]' \
+    '*::options:->options'
+
+case $state in
+    subcmd)
+        _arguments "*: :((${subcmds[*]}))"
+        ;;
+    options)
+        case ${words[1]} in
+            attachment-rm|close|db-info|mkdir|mv|open|rm|rmdir|search)
+                    _arguments -C -s \
+                        ${common_options} \
+                        ${general_options} \
+                        ': :_files'
+                ;;
+            add|analyze|attachment-export|attachment-import|clip|db-create|diceware| \
+            edit|estimate|export|generate|help|import|ls|merge|show)
+                _keepassxc-cli_"${words[1]}"
+                ;;
+        esac
+        ;;
+esac

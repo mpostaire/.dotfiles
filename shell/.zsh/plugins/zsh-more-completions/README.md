@@ -6,9 +6,3 @@ Some zsh completions function I made. They are not perfect in some areas but it 
 
 Source `zsh-more-completions.plugin` in your .zshrc or use your favorite plugin manager.
 This must be sourced before compinit.
-
-<!-- TODO
-youtube-dl
-keepassxc-cli -- for this use _wanted like in _installed_packages in _pip to filter out
-                things like attachment-export, etc from '-'<tab> completion when completing flags on long options 
- -->
