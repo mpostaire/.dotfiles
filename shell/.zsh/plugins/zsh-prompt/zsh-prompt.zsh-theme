@@ -2,26 +2,24 @@
 
 autoload -U colors && colors # Enable colors in prompt
 
-# _prompt_git_info taken and modified from https://joshdick.net/2017/06/08/my_git_prompt_for_zsh_revisited.html
+# TODO async RPROMPT that updates itself regularly (every second?)
 
+# _prompt_git_info taken and modified from https://joshdick.net/2017/06/08/my_git_prompt_for_zsh_revisited.html
 # Echoes information about Git repository status when inside a Git repository
-# partially tested
-# TODO: edit to my preferences
 _prompt_git_info() {
     # Exit if not inside a Git repository
     ! git rev-parse --is-inside-work-tree > /dev/null 2>&1 && return
 
     # Git branch/tag, or name-rev if on detached head
     local GIT_LOCATION=${$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD)#(refs/heads/|tags/)}
-    local GIT_ICON="±"
-    local MAIN_COLOR="15"
 
     local AHEAD="%F{red}⇡NUM%f"
     local BEHIND="%F{cyan}⇣NUM%f"
-    local MERGING="%F{magenta}⚡︎%f"
-    local UNTRACKED="%F{red}●%f"
-    local MODIFIED="%F{yellow}●%f"
-    local STAGED="%F{green}●%f"
+    local MERGING="%F{magenta}✖%f"
+    local STAGED="%F{green}⦁%f"
+    local UNTRACKED="%F{red}?%f"
+    local MODIFIED="%F{yellow}!%f"
+    local STASHED="%F{gray}*%f"
 
     local -a DIVERGENCES
     local -a FLAGS
@@ -41,25 +39,28 @@ _prompt_git_info() {
         FLAGS+=( "${MERGING}" )
     fi
 
-    if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-        FLAGS+=( "${UNTRACKED}" )
+    if ! git diff --cached --quiet 2> /dev/null; then
+        FLAGS+=( "${STAGED}" )
     fi
 
     if ! git diff --quiet 2> /dev/null; then
         FLAGS+=( "${MODIFIED}" )
     fi
+    
+    if [[ -n $(git ls-files --others --exclude-standard 2> /dev/null) ]]; then
+        FLAGS+=( "${UNTRACKED}" )
+    fi
 
-    if ! git diff --cached --quiet 2> /dev/null; then
-        FLAGS+=( "${STAGED}" )
+    if [[ -n $(git stash list 2> /dev/null) ]]; then
+        FLAGS+=( "${STASHED}" )
     fi
 
     local -a GIT_INFO
-    GIT_INFO+=( "%F{${MAIN_COLOR}}[${GIT_LOCATION}" )
+    GIT_INFO+=( "%F{15}(${GIT_LOCATION}" )
     [ -n "${GIT_STATUS}" ] && GIT_INFO+=( "${GIT_STATUS}" )
     [[ ${#DIVERGENCES[@]} -ne 0 ]] && GIT_INFO+=( "${(j::)DIVERGENCES}" )
     [[ ${#FLAGS[@]} -ne 0 ]] && GIT_INFO+=( "${(j::)FLAGS}" )
-    GIT_INFO+=( "%F{${MAIN_COLOR}}${GIT_ICON}]%f" )
-    echo "${(j: :)GIT_INFO}"
+    print "${(j: :)GIT_INFO}%F{15})%f"
 }
 
 # Correct the prompt when PWD is big
@@ -67,7 +68,7 @@ _prompt_format_path() {
     # $1 is the color, following arg(s) are the path
     local newline="%(?:%F{green}:%F{red})\n│${1} "
     (( width = ${COLUMNS} - 3 )) # -3 parce que le append de la barre + l'espace + margin
-    local login_hostname=$(print -P "  %n@%m:  ")
+    local login_hostname=$(print -P "  %n@%M:  ")
     (( width1st = ${COLUMNS} - ${#login_hostname} ))
     local rest=${@[@]:2} # le reste a traiter
 
@@ -93,10 +94,15 @@ _prompt_format_path() {
     print ${result}
 }
 
-_prompt_retcode_rprompt='%(?:: %F{yellow}[%?])'
+# put the return value in rprompt if it is > 0
+_prompt_rprompt='%(?:: %F{red}[%?]%f)'
+# put a ssh notification in rprompt if we are in a ssh session
+[[ -n ${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-} ]] && _prompt_rprompt=' %F{magenta}(ssh)%f'${_prompt_rprompt}
+# put the number of running background jobs in rprompt if there are any
+_prompt_rprompt='%(1j: %F{yellow}%jj%f:)'${_prompt_rprompt}
+
 _rprompt_async_proc=0
 _make_prompt() {
-    # TODO parse LS_COLORS to get colors automatically
     local path_color="%F{blue}"
     local link_target=$(readlink -f ${PWD})
     if [[ ${link_target} != ${PWD} ]]; then
@@ -104,10 +110,8 @@ _make_prompt() {
         path_color="%F{cyan}"
     fi
 
-    local ssh_status
-    [[ -n ${SSH_CONNECTION} ]] && ssh_status=' %F{yellow}(ssh)%F{green}'
-
     local current_path=$(_prompt_format_path ${path_color} $(print -P %~))
+    
     PROMPT="%B%(?:%F{green}:%F{red})┌ %F{green}%n@%M${ssh_status}: ${current_path}
 %(?:%F{green}:%F{red})└ %(?:%F{green}%(#:#:$):%F{red}%(#:#:$))%f%b "
 
@@ -133,7 +137,7 @@ _make_prompt() {
 
 TRAPUSR1() {
     # read from temp file
-    RPROMPT="$(cat /tmp/zsh_prompt_$$)${_prompt_retcode_rprompt}"
+    RPROMPT="$(</tmp/zsh_prompt_$$)${_prompt_rprompt}"
 
     # reset proc number
     rm /tmp/zsh_prompt_$$
@@ -144,7 +148,7 @@ TRAPUSR1() {
 }
 
 PROMPT="%B%F{green}>%f%b "
-RPROMPT="${_prompt_retcode_rptompt}"
+RPROMPT="${_prompt_rprompt}"
 SPROMPT="Correct %F{red}'%R'%f to %F{green}'%r'%f [Yes, No, Abort, Edit]? "
 
 autoload -Uz add-zsh-hook
