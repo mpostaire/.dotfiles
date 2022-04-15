@@ -63,7 +63,11 @@ _arguments \
 
 case $state in
     sort_criteria)
-        _values -s , 'sort_criteria' length begin end index
+        _values -s , 'sort_criteria' \
+            'length[Prefers line with shorter length]' \
+            'begin[Prefers line with matched substring closer to the beginning]' \
+            'end[Prefers line with matched substring closer to the end]' \
+            'index[Prefers line that appeared earlier in the input stream]'
         ;;
     keybinds)
         # TODO Refer to man fzf

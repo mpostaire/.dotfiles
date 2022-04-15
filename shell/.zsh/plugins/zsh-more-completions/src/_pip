@@ -1,4 +1,4 @@
-#compdef -P pip[0-9.]#
+#compdef pip pip2 pip-2.7 pip3 pip-3.2 pip-3.3 pip-3.4 pip3.10
 
 # This line below will do completions using pip's builtin completer but it's slow and not that good
 # compadd $(COMP_WORDS="${words}" COMP_CWORD="$#" PIP_AUTO_COMPLETE=1 pip 2>/dev/null)
