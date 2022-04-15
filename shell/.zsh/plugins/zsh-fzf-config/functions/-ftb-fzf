@@ -19,6 +19,7 @@ fi
 # get real path if it is file
 if (( \$+ctxt[realdir] )); then
   export realpath=\${ctxt[realdir]}\${(Q)desc}
+  export realpath=\${realpath#\${ctxt[IPREFIX]}}
 fi
 # get original word
 export word=\$ctxt[word]
@@ -35,18 +36,11 @@ local ret=0
 -ftb-zstyle -a switch-group switch_group || switch_group=(F1 F2)
 -ftb-zstyle -s fzf-pad fzf_pad || fzf_pad=2
 
-# 
-# to add other tags if necessary, press 'ctrl+x' followed by 'h' to check context and tags of current line
-# zstyle -s ":fzf-tab:${_ftb_curcontext}:directories" fzf-preview fzf_preview
-# zstyle -s ":fzf-tab:${_ftb_curcontext}:local-directories" fzf-preview fzf_preview
-# zstyle -s ":fzf-tab:${_ftb_curcontext}:path-directories" fzf-preview fzf_preview
-# zstyle -s ":fzf-tab:${_ftb_curcontext}:named-directories" fzf-preview fzf_preview
-# zstyle -s ":fzf-tab:${_ftb_curcontext}:files" fzf-preview fzf_preview
-# zstyle -s ":fzf-tab:${_ftb_curcontext}:globbed-files" fzf-preview fzf_preview
-# zstyle -s ":fzf-tab:${_ftb_curcontext}:all-files" fzf-preview fzf_preview
-# zstyle -s ":fzf-tab:${_ftb_curcontext}:other-files" fzf-preview fzf_preview
-
-# ugly implementation
+# this will apply 'fzf-preview', 'fzf-flags' and 'fzf-bindings' styles for 'files' context to any context
+# where there is a file/dir to autocomplete (it makes it not needed to do it for every one of them
+# because there are many: files, globbed-files, all-files, other-files, directories, local-directories
+# path-directories, named-directories and maybe more)
+# press 'ctrl+x' followed by 'h' to check context and tags of current line
 local tags="${_lastcomp[tags]}"
 if [[ -z "${fzf_preview}" && ! ${tags} =~ 'options' && ${tags} =~ 'directories|files' ]]; then
   zstyle -s ":fzf-tab:${_ftb_curcontext}:files" fzf-preview fzf_preview
