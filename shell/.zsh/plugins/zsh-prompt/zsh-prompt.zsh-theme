@@ -2,8 +2,6 @@
 
 autoload -U colors && colors # Enable colors in prompt
 
-# TODO async RPROMPT that updates itself regularly (every second?)
-
 # _prompt_git_info taken and modified from https://joshdick.net/2017/06/08/my_git_prompt_for_zsh_revisited.html
 # Echoes information about Git repository status when inside a Git repository
 _prompt_git_info() {
@@ -13,6 +11,7 @@ _prompt_git_info() {
     # Git branch/tag, or name-rev if on detached head
     local GIT_LOCATION=${$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD)#(refs/heads/|tags/)}
 
+    # TODO I'm not sure about the colors of the icons below...
     local AHEAD="%F{red}⇡NUM%f"
     local BEHIND="%F{cyan}⇣NUM%f"
     local MERGING="%F{magenta}✖%f"
