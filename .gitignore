@@ -2,7 +2,6 @@
 shell/.zsh/plugins/*
 !shell/.zsh/plugins/zsh-colored-man-pages
 !shell/.zsh/plugins/zsh-colored-ls
-!shell/.zsh/plugins/zsh-prompt
 !shell/.zsh/plugins/zsh-fzf-config
 !shell/.zsh/plugins/zsh-more-completions
 shell/.zsh/cache

@@ -44,20 +44,33 @@ fi
 ztupide load --async zsh-users/zsh-completions
 
 # even more completion functions, then init completion system (must be after all
-# the completion functions have been added to fpath) and auto-generate completions
-# for commands without them
-ztupide load --async zsh-more-completions 'autoload -U compinit && compinit && compdef _gnu_generic -default- -P "*"'
+# the completion functions have been added to fpath)
+autoload -U compinit
+ztupide load --async zsh-more-completions 'compinit'
+
+# TODO for auto-generated completions of commands without them, add the following line
+# after compinit (not used because it can cause bad behavior: type 'skinning -' and it will spawn
+# the program window each time a new char is added as it calls its --help each time but skinning
+# don't have a --help and just spawn its window instead)
+# compdef _gnu_generic -default- -P "*"
 
 # fish-like autosuggestions (it's better to place it after compinit)
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # this adds a huge prompt display speedup but may cause problems (see plugin's readme)
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+# in virtual console, use bold to change fg color to a distinct typing fg color (but still white)
+# we do this because vconsole can only use 16 colors using bold on top of the 8 normal colors
+# (vconsole don't have a bold font so the only difference will be the color)
+if [ $TERM = "linux" ]; then
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8,bold"
+fi
+
 # we call _zsh_autosuggest_start function after the plugin is loaded (it's needed if
 # loading in async mode and if using ZSH_AUTOSUGGEST_USE_ASYNC=1).
 ztupide load --async zsh-users/zsh-autosuggestions '_zsh_autosuggest_start'
 
 # Prompt (can be async only if it support it or else first prompt may not correctly show up)
-ztupide load zsh-prompt
+ztupide load mpostaire/bref-zsh-prompt
 
 ## MODULES
 

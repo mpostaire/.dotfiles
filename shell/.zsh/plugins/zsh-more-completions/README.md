@@ -4,5 +4,5 @@ Some zsh completions function I made. They are not perfect in some areas but it 
 
 ## Installation
 
-Source `zsh-more-completions.plugin` in your .zshrc or use your favorite plugin manager.
+Source `zsh-more-completions.plugin.zsh` in your .zshrc or use your favorite plugin manager.
 This must be sourced before compinit.
