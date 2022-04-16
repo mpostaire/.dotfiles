@@ -1,6 +1,4 @@
-# TODO handle case can't ls for colors cause permissions or dont exist (in case of links dest)
-#       ex: try completing '/sys/class/power_supply/BAT0/<tab>' and hover 'device'
-# TODO use ctrl+h binding to toggle show/hide hidden files in preview (save in file this status for presistency?)
+# TODO use binding (can't be ctrl+h) to toggle show/hide hidden files in preview (save in file this status for presistency?)
 
 local _fzf_preview_files='# if realpath empty or doesnt exit, it likely is an argument so print it and return
 if [[ -z $realpath || ! -e $realpath ]]; then
@@ -20,10 +18,12 @@ fi
 # get target if this is a link and append it to title after coloring it using ls
 if [ -L $realpath ]; then
     local rsv=$(readlink $realpath)
-    local rsv=${realpath:h}/${rsv#$HOME}
+    rsv=${realpath:h}/${rsv#$HOME}
     rsv=${rsv:a}
-    local rsv_str="${rsv/$HOME/~}"
-    rsv=$(ls -d1 --color=always "$rsv")
+    local out=$(ls -d1 --color=always "$rsv" 2> /dev/null)
+    # if out is empty, it means ls encountered an error (it may be a link destination file that in sysfs)
+    # and we cannot do anything about it so we print it without colors.
+    rsv=${out:-$rsv}
     local rsv_str="${rsv/$HOME/~}"
     title="$title -> $rsv_str"
 fi
