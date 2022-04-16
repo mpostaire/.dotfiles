@@ -97,6 +97,6 @@ FZF_TMUX_HEIGHT=70%
 
 # overwrite -ftb-colorize function from fzf-tab to fix symlinks targets not properly colored
 # also overwrites -ftb-fzf function from fzf-tab to allow custom preview window when the completion
-# list are files/directories as well as new variable buffer to get the user input in the zsh (not fzf) prompt
+# list contains files and/or directories.
 # TODO: open PR to merge the fix instead of overwriting this
 fpath+=(${0:A:h}/functions)
