@@ -62,9 +62,10 @@ ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 # we do this because vconsole can only use 16 colors using bold on top of the 8 normal colors
 # (vconsole don't have a bold font so the only difference will be the color)
 if [ $TERM = "linux" ]; then
-    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8,bold"
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=0,bold"
+    BREF_GIT_COLOR="%B%F{white}"
+    BREF_BATTERY_COLOR="%B%F{yellow}"
 fi
-
 # we call _zsh_autosuggest_start function after the plugin is loaded (it's needed if
 # loading in async mode and if using ZSH_AUTOSUGGEST_USE_ASYNC=1).
 ztupide load --async zsh-users/zsh-autosuggestions '_zsh_autosuggest_start'
