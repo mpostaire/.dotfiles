@@ -18,8 +18,19 @@ ztupide load --async mpostaire/zsh-autopair
 # Try this plugin when it is less buggy (may be incompatible with fzf-tab plugin)
 # ztupide load --async marlonrichert/zsh-autocomplete
 
-# Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
-ztupide load --async z-shell/F-Sy-H
+# more completion functions
+ztupide load --async zsh-users/zsh-completions
+
+# even more completion functions, then init completion system (must be after all
+# the completion functions have been added to fpath)
+autoload -U compinit
+ztupide load --async zsh-more-completions 'compinit'
+
+# TODO for auto-generated completions of commands without them, add the following line
+# after compinit (not used because it can cause bad behavior: type 'skinning -' and it will spawn
+# the program window each time a new char is added as it calls its --help each time but skinning
+# don't have a --help and just spawn its window instead)
+# compdef _gnu_generic -default- -P "*"
 
 # fzf integration
 if command -v fzf > /dev/null; then
@@ -40,19 +51,8 @@ else
     bindkey "^R" history-incremental-pattern-search-backward
 fi
 
-# more completion functions
-ztupide load --async zsh-users/zsh-completions
-
-# even more completion functions, then init completion system (must be after all
-# the completion functions have been added to fpath)
-autoload -U compinit
-ztupide load --async zsh-more-completions 'compinit'
-
-# TODO for auto-generated completions of commands without them, add the following line
-# after compinit (not used because it can cause bad behavior: type 'skinning -' and it will spawn
-# the program window each time a new char is added as it calls its --help each time but skinning
-# don't have a --help and just spawn its window instead)
-# compdef _gnu_generic -default- -P "*"
+# Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
+ztupide load --async z-shell/F-Sy-H
 
 # fish-like autosuggestions (it's better to place it after compinit)
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
