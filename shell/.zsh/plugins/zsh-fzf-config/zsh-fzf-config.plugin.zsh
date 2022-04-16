@@ -1,5 +1,3 @@
-# TODO use binding (can't be ctrl+h) to toggle show/hide hidden files in preview (save in file this status for presistency?)
-
 local _fzf_preview_files='# if realpath empty or doesnt exit, it likely is an argument so print it and return
 if [[ -z $realpath || ! -e $realpath ]]; then
     print $desc
