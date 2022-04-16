@@ -1,15 +1,11 @@
 ## PLUGINS
 
-[ -f ~/.zsh/ztupide/ztupide.zsh ] || git -C ~/.zsh clone https://github.com/mpostaire/ztupide
+[ -f ~/.zsh/ztupide/ztupide.zsh ] || git -C ~/.zsh clone https://github.com/mpostaire/ztupide.git
 # ZTUPIDE_AUTOUPDATE=604800 # 7 days (disabled because annoying - maybe add background update?)
 source ~/.zsh/ztupide/ztupide.zsh
 
-# Colored man pages (needs colors and format tweaking)
-ztupide load --async zsh-colored-man-pages
-
-# Colored ls (and set auto ls when cd with chpwd in callback to ensure the auto ls is also colored)
-ztupide load --async zsh-colored-ls 'list() { ls }'
-# add colored ls to chpwd (executed after each change directory)
+# Colored ls and manpages (and set auto ls when cd with chpwd in callback to ensure the auto ls is also colored)
+ztupide load --async zsh-colored-ls-manpages 'list() { ls }'
 chpwd_functions+=("list")
 
 # Auto-close and delete matching delimiters in zsh (fork of hlissner/zsh-autopair that handles backward-kill-word)
