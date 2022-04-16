@@ -1,3 +1,7 @@
+# TODO handle case can't ls for colors cause permissions or dont exist (in case of links dest)
+#       ex: try completing '/sys/class/power_supply/BAT0/<tab>' and hover 'device'
+# TODO use ctrl+h binding to toggle show/hide hidden files in preview (save in file this status for presistency?)
+
 local _fzf_preview_files='# if realpath empty or doesnt exit, it likely is an argument so print it and return
 if [[ -z $realpath || ! -e $realpath ]]; then
     print $desc
@@ -28,13 +32,8 @@ print "${title}\n\033[1;90m${separator}\033[0m"
 
 # try previewing directory content
 if [[ -d $realpath ]]; then
-    local out
-    # add hidden files to preview if we are browsing dotfiles
-    if [[ "${buffer[-1]}" = "." ]]; then
-        out=$(ls -A1 --color=always $realpath)
-    else
-        out=$(ls -1 --color=always $realpath)
-    fi
+    # show files (including hidden files) in preview
+    local out=$(ls -A1 --color=always $realpath)
     # if no output, show message for empty directory
     if [ -z "$out" ]; then
         out="Empty directory"
