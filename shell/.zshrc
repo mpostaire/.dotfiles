@@ -143,7 +143,7 @@ HISTFILE=~/.zhistory
 SAVEHIST=1000
 HISTSIZE=1000
 
-# This causes problems with intellij integrated terminal (and maybe the cause of delayed exit on some cases?)
+# This causes problems with intellij integrated terminal
 # automatically resets terminal for each new prompt in case a command messes it up
 # autoload -Uz add-zsh-hook
 # reset_broken_terminal () {
