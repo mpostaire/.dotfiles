@@ -19,7 +19,6 @@ if [[ -n $lstat[14] ]]; then
   local rsv_color=$REPLY
   local realpath=${1:h}/${lstat[14]#$HOME}
   local rsv=${realpath:a}
-  local rsv_str="${rsv/$HOME/~}"
   # If this is not a broken symlink
   if [[ -e $rsv ]]; then
     # fzf-tab-lscolors::match-by $rsv stat
@@ -30,7 +29,7 @@ if [[ -n $lstat[14] ]]; then
     rsv_color=$REPLY
   fi
   dpre=$'\033[0m\033['$sym_color'm'
-  dsuf+=$'\033[0m -> \033['$rsv_color'm'$rsv_str
+  dsuf+=$'\033[0m -> \033['$rsv_color'm'${rsv/$HOME/~}
 else
   dpre=$'\033[0m\033['$REPLY'm'
 fi
