@@ -48,7 +48,7 @@ else
 fi
 
 # Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
-ztupide load --async z-shell/F-Sy-H
+ztupide load --async zdharma-continuum/fast-syntax-highlighting
 
 # fish-like autosuggestions (it's better to place it after compinit)
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
