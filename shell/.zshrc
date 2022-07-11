@@ -47,6 +47,12 @@ else
     bindkey "^R" history-incremental-pattern-search-backward
 fi
 
+# Cycle through history based on characters already typed on the line (should be before fast-syntax-highlighting)
+HISTORY_SUBSTRING_SEARCH_PREFIXED=1
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND=
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=
+ztupide load --async zsh-users/zsh-history-substring-search
+
 # Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
 ztupide load --async zdharma-continuum/fast-syntax-highlighting
 
@@ -117,6 +123,9 @@ bindkey '^[[1;5C' forward-word
 bindkey "${terminfo[kdch1]}" delete-char
 # Set Insert to enable/disable insert mode
 bindkey "${terminfo[kich1]}" overwrite-mode
+# Set Up/Down arrows substring history search
+bindkey '^[[A' history-substring-search-up # "${terminfo[kcuu1]}" is more portable but doesn't work with gnome terminal
+bindkey '^[[B' history-substring-search-down # "${terminfo[kcud1]}" is more portable but doesn't work with gnome terminal
 # Exit zsh on Ctrl+D even if line is not empty
 exit_zsh() { exit }
 zle -N exit_zsh
@@ -143,6 +152,12 @@ HISTFILE=~/.zhistory
 SAVEHIST=1000
 HISTSIZE=1000
 
+# Easy url support (fix globbing in urls)
+autoload -Uz bracketed-paste-magic
+zle -N bracketed-paste bracketed-paste-magic
+autoload -Uz url-quote-magic
+zle -N self-insert url-quote-magic
+
 # This causes problems with intellij integrated terminal
 # automatically resets terminal for each new prompt in case a command messes it up
 # autoload -Uz add-zsh-hook
@@ -160,23 +175,10 @@ fix() {
     echo -e "\e[0m"
 }
 
+## ALIASES
+
 # download audio from youtube
 alias "audio-dl=youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s'"
 alias "df=df -h"
 alias "cp=cp -i"
 alias "bat=bat --theme=TwoDark"
-
-# Cycle through history based on characters already typed on the line
-autoload -U up-line-or-beginning-search
-autoload -U down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
-# Up/Down arrows history search
-bindkey "\e[A" up-line-or-beginning-search # "${terminfo[kcuu1]}" is more portable but doesn't work with gnome terminal
-bindkey "\e[B" down-line-or-beginning-search # "${terminfo[kcud1]}" is more portable but doesn't work with gnome terminal
-
-# Easy url support (fix globbing in urls)
-autoload -Uz bracketed-paste-magic
-zle -N bracketed-paste bracketed-paste-magic
-autoload -Uz url-quote-magic
-zle -N self-insert url-quote-magic
