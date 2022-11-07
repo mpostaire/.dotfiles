@@ -75,6 +75,14 @@ ztupide load --async zsh-users/zsh-autosuggestions '_zsh_autosuggest_start'
 # Prompt (can be async only if it support it or else first prompt may not correctly show up)
 ztupide load mpostaire/bref-zsh-prompt
 
+if [ $TERM != "linux" ]; then
+    _zsh_window_title() {
+        echo -ne "\033]0;$(print -Pn -- '%n@%M: %~')\a"
+    }
+    chpwd_functions+=("_zsh_window_title")
+    _zsh_window_title
+fi
+
 ## MODULES
 
 # Enables completion list-colors
