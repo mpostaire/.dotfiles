@@ -1,3 +1,6 @@
+0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"
+0="${${(M)0:#/*}:-$PWD/$0}"
+
 local _fzf_preview_files='# if realpath empty or doesnt exit, it likely is an argument so print it and return
 if [[ -z $realpath || ! -e $realpath ]]; then
     print $desc
