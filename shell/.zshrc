@@ -2,7 +2,27 @@
 
 [ -f ~/.zsh/ztupide/ztupide.zsh ] || git -C ~/.zsh clone https://github.com/mpostaire/ztupide.git
 # ZTUPIDE_AUTOUPDATE=604800 # 7 days (disabled because annoying - maybe add background update?)
+# ZTUPIDE_DISABLE_ASYNC=0 # disable async plugin loading (enabled by default)
 source ~/.zsh/ztupide/ztupide.zsh
+
+# in virtual console, use bold to change fg color to a distinct typing fg color (but still white)
+# we do this because vconsole can only use 16 colors using bold on top of the 8 normal colors
+# (vconsole don't have a bold font so the only difference will be the color)
+if [ $TERM = "linux" ]; then
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=0,bold"
+    BREF_GIT_COLOR="%B%F{white}"
+    BREF_BATTERY_COLOR="%B%F{yellow}"
+else
+    _zsh_window_title() {
+        echo -ne "\033]0;$(print -Pn -- '%n@%M: %~')\a"
+    }
+    chpwd_functions+=("_zsh_window_title")
+    _zsh_window_title
+fi
+
+# Prompt (can be async only if it supports it or else first prompt may not correctly show up, or even crash zsh)
+# TODO implement instant prompt
+ztupide load mpostaire/bref-zsh-prompt
 
 # Colored ls and manpages (and set auto ls when cd with chpwd in callback to ensure the auto ls is also colored)
 ztupide load --async zsh-colored-ls-manpages 'list() { ls }'
@@ -19,7 +39,7 @@ ztupide load --async zsh-users/zsh-completions
 
 # even more completion functions, then init completion system (must be after all
 # the completion functions have been added to fpath)
-autoload -U compinit
+autoload -Uz compinit
 ztupide load --async zsh-more-completions 'compinit'
 
 # TODO for auto-generated completions of commands without them, add the following line
@@ -60,28 +80,9 @@ ztupide load --async zdharma-continuum/fast-syntax-highlighting
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # this adds a huge prompt display speedup but may cause problems (see plugin's readme)
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-# in virtual console, use bold to change fg color to a distinct typing fg color (but still white)
-# we do this because vconsole can only use 16 colors using bold on top of the 8 normal colors
-# (vconsole don't have a bold font so the only difference will be the color)
-if [ $TERM = "linux" ]; then
-    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=0,bold"
-    BREF_GIT_COLOR="%B%F{white}"
-    BREF_BATTERY_COLOR="%B%F{yellow}"
-fi
 # we call _zsh_autosuggest_start function after the plugin is loaded (it's needed if
 # loading in async mode and if using ZSH_AUTOSUGGEST_USE_ASYNC=1).
 ztupide load --async zsh-users/zsh-autosuggestions '_zsh_autosuggest_start'
-
-# Prompt (can be async only if it support it or else first prompt may not correctly show up)
-ztupide load mpostaire/bref-zsh-prompt
-
-if [ $TERM != "linux" ]; then
-    _zsh_window_title() {
-        echo -ne "\033]0;$(print -Pn -- '%n@%M: %~')\a"
-    }
-    chpwd_functions+=("_zsh_window_title")
-    _zsh_window_title
-fi
 
 ## MODULES
 
@@ -190,3 +191,5 @@ alias "audio-dl=youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thu
 alias "df=df -h"
 alias "cp=cp -i"
 alias "bat=bat --theme=TwoDark"
+# uninstall unused dependency packages
+alias 'rmu=yay -Rcns $(yay -Qtdq)'

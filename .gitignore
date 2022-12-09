@@ -5,7 +5,7 @@ shell/.zsh/plugins/*
 !shell/.zsh/plugins/zsh-more-completions
 shell/.zsh/cache
 shell/.zsh/ztupide
-*.zwc
+*.zwc*
 gtk-bookmarks/.config/gtk-3.0/*
 !gtk-bookmarks/.config/gtk-3.0/bookmarks
 awesome/.local/share/fonts/.uuid
