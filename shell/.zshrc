@@ -2,7 +2,7 @@
 
 [ -f ~/.zsh/ztupide/ztupide.zsh ] || git -C ~/.zsh clone https://github.com/mpostaire/ztupide.git
 # ZTUPIDE_AUTOUPDATE=604800 # 7 days (disabled because annoying - maybe add background update?)
-# ZTUPIDE_DISABLE_ASYNC=0 # disable async plugin loading (enabled by default)
+# ZTUPIDE_DISABLE_ASYNC=1 # disable async plugin loading (enabled by default)
 source ~/.zsh/ztupide/ztupide.zsh
 
 # in virtual console, use bold to change fg color to a distinct typing fg color (but still white)
