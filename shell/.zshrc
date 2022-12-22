@@ -138,6 +138,11 @@ bindkey -M menuselect "${terminfo[kcbt]}" reverse-menu-complete
 none() {}
 zle -N none
 bindkey "${terminfo[kcbt]}" none
+# Set Ctrl+E to edit current command inside $EDITOR
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+bindkey '^E' edit-command-line
 
 ## SETTINGS
 
