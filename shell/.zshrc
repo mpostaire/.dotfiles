@@ -70,7 +70,7 @@ HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=
 ztupide load --async zsh-users/zsh-history-substring-search
 
 # Syntax-highlighting for Zshell (should be before zsh-autosuggestions)
-ztupide load --async zdharma-continuum/fast-syntax-highlighting '{ [ -z $FAST_THEME_NAME ] && fast-theme default; }; FAST_HIGHLIGHT_STYLES[defaultprecommand]=fg=green,underline'
+ztupide load --async zdharma-continuum/fast-syntax-highlighting '{ [ -z $FAST_THEME_NAME ] && fast-theme default > /dev/null; }; FAST_HIGHLIGHT_STYLES[defaultprecommand]=fg=green,underline'
 
 # fish-like autosuggestions (it's better to place it after compinit)
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
