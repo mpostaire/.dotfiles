@@ -12,17 +12,13 @@ if [ $TERM = "linux" ]; then
     ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=0,bold"
     BREF_GIT_COLOR="%B%F{white}"
     BREF_BATTERY_COLOR="%B%F{yellow}"
-else
-    _zsh_window_title() {
-        echo -ne "\033]0;$(print -Pn -- '%n@%M: %~')\a"
-    }
-    chpwd_functions+=("_zsh_window_title")
-    _zsh_window_title
 fi
 
 # Prompt (can be async only if it supports it or else first prompt may not correctly show up, or even crash zsh)
 # TODO implement instant prompt
 ztupide load mpostaire/bref-zsh-prompt
+
+ztupide load --async zsh-termsupport 'omz_termsupport_precmd'
 
 # Colored ls and manpages (and set auto ls when cd with chpwd in callback to ensure the auto ls is also colored)
 ztupide load --async zsh-colored-ls-manpages 'list() { ls }'

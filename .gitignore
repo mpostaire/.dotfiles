@@ -3,11 +3,10 @@ shell/.zsh/plugins/*
 !shell/.zsh/plugins/zsh-colored-ls-manpages
 !shell/.zsh/plugins/zsh-fzf-config
 !shell/.zsh/plugins/zsh-more-completions
+!shell/.zsh/plugins/zsh-termsupport
 shell/.zsh/cache
 shell/.zsh/ztupide
 *.zwc*
-gtk-bookmarks/.config/gtk-3.0/*
-!gtk-bookmarks/.config/gtk-3.0/bookmarks
 awesome/.local/share/fonts/.uuid
 awesome/.config/autostart/*.desktop
 !awesome/.config/autostart/clipit.desktop
