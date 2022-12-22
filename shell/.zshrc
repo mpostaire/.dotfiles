@@ -27,9 +27,6 @@ chpwd_functions+=("list")
 # Auto-close and delete matching delimiters in zsh (fork of hlissner/zsh-autopair that handles backward-kill-word)
 ztupide load --async mpostaire/zsh-autopair
 
-# Try this plugin when it is less buggy (may be incompatible with fzf-tab plugin)
-# ztupide load --async marlonrichert/zsh-autocomplete
-
 # more completion functions
 ztupide load --async zsh-users/zsh-completions
 
