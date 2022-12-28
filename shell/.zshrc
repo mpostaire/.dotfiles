@@ -106,6 +106,9 @@ zstyle ':completion:*' cache-path ~/.zsh/cache
 # This may make the upper 2 lines useless
 zstyle ":completion:*:commands" rehash true
 
+# allow completion in the middle of a word
+setopt COMPLETE_IN_WORD
+
 ## BINDINGS
 
 # backward-kill-word stops at slashes and equals
