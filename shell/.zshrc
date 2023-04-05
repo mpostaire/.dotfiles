@@ -192,5 +192,7 @@ alias "audio-dl=youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thu
 alias "df=df -h"
 alias "cp=cp -i"
 alias "bat=bat --theme=TwoDark"
+alias "vi=nvim"
+alias "vim=nvim"
 # uninstall unused dependency packages
-alias 'rmu=yay -Rcns $(yay -Qtdq)'
+alias "rmu=yay -Rcns $(yay -Qtdq)"
