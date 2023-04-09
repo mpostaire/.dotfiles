@@ -195,4 +195,4 @@ alias "bat=bat --theme=TwoDark"
 alias "vi=nvim"
 alias "vim=nvim"
 # uninstall unused dependency packages
-alias "rmu=yay -Rcns $(yay -Qtdq)"
+alias 'rmu=yay -Rcns $(yay -Qtdq)'
