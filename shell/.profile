@@ -1,9 +1,17 @@
-# qt native gtk integration
-export QT_QPA_PLATFORMTHEME=qt5ct
-export EDITOR=/usr/bin/vim
 export TERMINAL=/usr/bin/urxvt
 # fix "xdg-open fork-bomb" export your preferred browser from here
 export BROWSER=/usr/bin/firefox
+
+if [[ -x /usr/bin/nvim ]]; then
+    export EDITOR=/usr/bin/nvim
+elif [[ -x /usr/bin/vim ]]; then
+    export EDITOR=/usr/bin/vim
+else
+    export EDITOR=/usr/bin/nano
+fi
+
+# qt native gtk integration
+export QT_QPA_PLATFORMTHEME=qt5ct
 
 # fix android emulator
 export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
@@ -11,10 +19,13 @@ export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 # time command format
 export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
 
+export GOPATH="$HOME/.go"
+
 # set PATH so it includes user's private bin if it exists
 [ -d "$HOME/bin" ] && PATH="$PATH:$HOME/bin"
 [ -d "$HOME/.local/bin" ] && PATH="$PATH:$HOME/.local/bin"
 [ -d "$HOME/.cargo/bin" ] && PATH="$PATH:$HOME/.cargo/bin"
+[ -d "$HOME/.go/bin" ] && PATH="$PATH:$HOME/.go/bin"
 
 # enable gtk appmenu
 if [ -n "$GTK_MODULES" ]; then
