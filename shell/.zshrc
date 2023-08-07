@@ -188,7 +188,7 @@ fix() {
 ## ALIASES
 
 # download audio from youtube
-alias "audio-dl=youtube-dl -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s'"
+alias "audio-dl=yt-dlp -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s'"
 alias "df=df -h"
 alias "cp=cp -i"
 alias "bat=bat --theme=TwoDark"
