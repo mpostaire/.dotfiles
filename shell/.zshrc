@@ -1,9 +1,11 @@
 ## PLUGINS
 
-[ -f ~/.zsh/ztupide/ztupide.zsh ] || git -C ~/.zsh clone https://github.com/mpostaire/ztupide.git
+ZTUPIDE_DIR=${ZDOTDIR:-$HOME}/ztupide
+[ -f ${ZTUPIDE_DIR}/ztupide.zsh ] || git -C ${ZTUPIDE_DIR:h} clone https://github.com/mpostaire/ztupide.git
 # ZTUPIDE_AUTOUPDATE=604800 # 7 days (disabled because annoying - maybe add background update?)
 # ZTUPIDE_DISABLE_ASYNC=1 # disable async plugin loading (enabled by default)
-source ~/.zsh/ztupide/ztupide.zsh
+ZTUPIDE_PLUGIN_PATH=~/.zsh/plugins # needed because I don't use ZDOTDIR and zsh config is split between $HOME and $HOME/.zsh
+source ${ZTUPIDE_DIR}/ztupide.zsh
 
 # in virtual console, use bold to change fg color to a distinct typing fg color (but still white)
 # we do this because vconsole can only use 16 colors using bold on top of the 8 normal colors
@@ -196,3 +198,5 @@ alias "vi=nvim"
 alias "vim=nvim"
 # uninstall unused dependency packages
 alias 'rmu=yay -Rcns $(yay -Qtdq)'
+
+[ -e "$HOME/dev/emsdk/emsdk_env.sh" ] && source "$HOME/dev/emsdk/emsdk_env.sh" &> /dev/null
