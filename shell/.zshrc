@@ -1,6 +1,6 @@
 ## PLUGINS
 
-ZTUPIDE_DIR=${ZDOTDIR:-$HOME}/ztupide
+ZTUPIDE_DIR=${ZDOTDIR:-$HOME}/.zsh/ztupide
 [ -f ${ZTUPIDE_DIR}/ztupide.zsh ] || git -C ${ZTUPIDE_DIR:h} clone https://github.com/mpostaire/ztupide.git
 # ZTUPIDE_AUTOUPDATE=604800 # 7 days (disabled because annoying - maybe add background update?)
 # ZTUPIDE_DISABLE_ASYNC=1 # disable async plugin loading (enabled by default)
