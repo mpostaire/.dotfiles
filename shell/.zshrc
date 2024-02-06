@@ -56,7 +56,7 @@ if command -v fzf > /dev/null; then
     # This may cause some scripts to fail when launched from an interactive shell but it's acceptable as
     # I generally don't want children processes surviving after a terminal is closed except for daemons but
     # they won't be affected.
-    trap "pkill -P $$" EXIT
+    trap "/usr/bin/pkill -P $$" EXIT
 else
     echo 'Install the "fzf" package to enable fzf integration.'
     bindkey "^R" history-incremental-pattern-search-backward
@@ -198,3 +198,5 @@ alias "vi=nvim"
 alias "vim=nvim"
 # uninstall unused dependency packages
 alias 'rmu=yay -Rcns $(yay -Qtdq)'
+
+[ -e "$HOME/dev/emsdk/emsdk_env.sh" ] && source "$HOME/dev/emsdk/emsdk_env.sh" &> /dev/null
