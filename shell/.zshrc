@@ -180,7 +180,7 @@ zle -N self-insert url-quote-magic
 
 # manually resets terminal if a command really messes it up and the precmd hook wasn't enough
 fix() {
-    reset
+    tput reset
     stty sane
     tput rs1
     clear
@@ -189,6 +189,7 @@ fix() {
 
 ## ALIASES
 
+alias "reset=tput reset"
 # download audio from youtube
 alias "audio-dl=yt-dlp -x --audio-format 'm4a' --audio-quality 0 --embed-thumbnail --add-metadata --output '%(title)s.%(ext)s'"
 alias "df=df -h"
