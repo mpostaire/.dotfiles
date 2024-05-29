@@ -199,5 +199,3 @@ alias "vi=nvim"
 alias "vim=nvim"
 # uninstall unused dependency packages
 alias 'rmu=yay -Rcns $(yay -Qtdq)'
-
-[ -e "$HOME/dev/emsdk/emsdk_env.sh" ] && source "$HOME/dev/emsdk/emsdk_env.sh" &> /dev/null
