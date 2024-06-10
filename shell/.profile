@@ -19,6 +19,9 @@ export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 # time command format
 export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
 
+# enable ssh gnome-keyring password popup
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
+
 export GOPATH="$HOME/.go"
 
 # set PATH so it includes user's private bin if it exists
