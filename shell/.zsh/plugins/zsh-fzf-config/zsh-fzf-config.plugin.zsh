@@ -10,16 +10,8 @@ export FZF_CTRL_R_OPTS="--cycle --reverse --preview 'print {2..}' --preview-wind
 export FZF_ALT_C_OPTS="--cycle --ansi --preview 'export realpath={}; source ${0:A:h}/functions.zsh && fzf_preview_files' --preview-window=~2"
 export FZF_CTRL_T_OPTS="--cycle --preview 'export realpath={}; source ${0:A:h}/functions.zsh && fzf_preview_files' --preview-window=~2"
 
-if [[ -a /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
-    # Debian installation
-    source /usr/share/doc/fzf/examples/key-bindings.zsh
-    source /usr/share/doc/fzf/examples/completion.zsh
-elif [[ -a /usr/share/fzf/key-bindings.zsh ]]; then
-    # Arch installation
-    source /usr/share/fzf/key-bindings.zsh
-    source /usr/share/fzf/completion.zsh
-fi
-[[ -a ~/.fzf.zsh ]] && source ~/.fzf.zsh
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
 
 # preview manpages
 zstyle ':fzf-tab:complete:man:*' fzf-preview \
