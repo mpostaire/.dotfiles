@@ -41,4 +41,4 @@ if [ -z "$UBUNTU_MENUPROXY" ]; then
 fi
 
 # auto startx if connected in tty1 and X is not running (useful if not using a login manager)
-[[ -z $DISPLAY && $(tty) = "/dev/tty1" ]] && exec startx
+#[[ -z $DISPLAY && $(tty) = "/dev/tty1" ]] && exec startx
