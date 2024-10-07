@@ -56,7 +56,7 @@ if command -v fzf > /dev/null; then
     # This may cause some scripts to fail when launched from an interactive shell but it's acceptable as
     # I generally don't want children processes surviving after a terminal is closed except for daemons but
     # they won't be affected.
-    trap "/usr/bin/pkill -P $$" EXIT
+    trap "/usr/bin/pkill -KILL -P $$ || true" EXIT
 else
     echo 'Install the "fzf" package to enable fzf integration.'
     bindkey "^R" history-incremental-pattern-search-backward
