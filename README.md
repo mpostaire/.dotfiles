@@ -2,7 +2,7 @@
 
 My dotfiles.
 
-See awesomewm instructions [here](awesome/README.md).
+See awesomewm instructions [here](https://github.com/mpostaire/.dotfiles/blob/awesomewm/awesome/README.md).
 
 ## Installation
 
